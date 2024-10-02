@@ -1,9 +1,10 @@
 "use client"
+import useRouterHook from '@/app/hooks/useRouterHook';
 import Image from 'next/image';
 import React from 'react';
 
 const Banner = () => {
-
+    const router = useRouterHook();
     const handleQuicktExam = () => {
         router.push('/exam');
     }
