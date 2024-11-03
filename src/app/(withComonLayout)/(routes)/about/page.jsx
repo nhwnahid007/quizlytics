@@ -15,14 +15,13 @@ const page = () => {
           Welcome to <span className="font-bold">Quizlytics</span>—where you unlock knowledge, track progress, and ace every challenge. Built for learners in Bangladesh, Quizlytics is your all-in-one tool for mastering MCQs in board exams, job tests, and more. Join us to make learning engaging, personalized, and impactful!
         </p>
 
-        {/* Key Features Section */}
-        <h2 className="text-4xl font-bold text-primary-color mb-5">Explore Key Features</h2>
+      
 
         {/* Feature 1 - AI Generated Quizzes */}
         <div className="flex flex-col md:flex-row items-center justify-between bg-gray-50 py-10 px-5">
           {/* Text Section */}
           <div className="w-full md:w-1/2 md:pr-10 text-center md:text-left">
-            <h1 className="text-3xl font-bold text-primary-color mb-3">
+            <h1 className=" text-xl lg:text-3xl  font-bold text-primary-color mb-3">
               Test your Knowledge with AI-Generated Quizzes
             </h1>
             <p className=" text-gray-700 leading-relaxed">
@@ -57,7 +56,7 @@ const page = () => {
 
           {/* Text Section */}
           <div className="w-full md:w-1/2 md:pl-10 text-center md:text-left order-1 md:order-2">
-            <h1 className="text-3xl  font-bold text-primary-color mb-3">
+            <h1 className="text-xl lg:text-3xl font-bold text-primary-color mb-3">
               Custom Quizzes by Teachers or Instructors
             </h1>
             <p className=" text-gray-700 leading-relaxed">
@@ -70,7 +69,7 @@ const page = () => {
         <div className="flex flex-col md:flex-row items-center justify-between bg-gray-50 py-10 px-5">
           {/* Text Section */}
           <div className="w-full md:w-1/2 md:pr-10 text-center md:text-left">
-            <h1 className="text-3xl  font-bold text-primary-color mb-3">
+            <h1 className="text-xl lg:text-3xl  font-bold text-primary-color mb-3">
               Give quizzes on any article
             </h1>
             <p className=" text-gray-700 leading-relaxed">
@@ -105,7 +104,7 @@ const page = () => {
 
           {/* Text Section */}
           <div className="w-full md:w-1/2 md:pl-10 text-center md:text-left order-1 md:order-2">
-            <h1 className="text-3xl font-bold text-primary-color mb-3">
+            <h1 className="text-xl lg:text-3xl font-bold text-primary-color mb-3">
               Read and Share Insights with Blogs
             </h1>
             <p className=" text-gray-700 leading-relaxed">
@@ -118,7 +117,7 @@ const page = () => {
         <div className="flex flex-col md:flex-row items-center justify-between bg-gray-50 py-10 px-5">
           {/* Text Section */}
           <div className="w-full md:w-1/2 md:pr-10 text-center md:text-left">
-            <h1 className="text-3xl  font-bold text-primary-color mb-3">
+            <h1 className="text-xl lg:text-3xl  font-bold text-primary-color mb-3">
               Showcase Your Skills with the Leaderboard
             </h1>
             <p className=" text-gray-700 leading-relaxed">
