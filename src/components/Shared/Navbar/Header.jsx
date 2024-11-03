@@ -37,7 +37,9 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 w-full py-[10px] z-20 transition-all duration-300 ${
-        isScrolled ? "bg-white text-black shadow-md" : "bg-transparent text-white"
+        isScrolled
+          ? "bg-white text-black shadow-md"
+          : "bg-transparent text-white"
       }`}
     >
       <div className="px-2 md:px-5 lg:px-20 mx-auto flex items-center justify-between">
@@ -70,7 +72,7 @@ const Header = () => {
               </Link>
               <Link
                 href="/register"
-                className="border border-purple-600 text-secondary-color font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
+                className="border border-purple-600 hidden md:block text-secondary-color font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
               >
                 Sign Up
               </Link>
@@ -82,7 +84,11 @@ const Header = () => {
                   {/* Smaller Profile Image */}
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <Image
-                      src={profile || image || "https://i.ibb.co/ts4kH5c/istockphoto-1337144146-612x612.jpg"}
+                      src={
+                        profile ||
+                        image ||
+                        "https://i.ibb.co/ts4kH5c/istockphoto-1337144146-612x612.jpg"
+                      }
                       alt="user"
                       width={40}
                       height={40}

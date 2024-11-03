@@ -8,7 +8,6 @@ import { Rocket, Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
 
-
 const Banner = () => {
   const router = useRouterHook();
   const [isMounted, setIsMounted] = useState(false);
@@ -26,8 +25,6 @@ const Banner = () => {
     }
   };
 
-
-
   if (!isMounted) {
     return null; // or a loading skeleton
   }
@@ -41,7 +38,7 @@ const Banner = () => {
         <div className="absolute left-1/4 top-1/3 w-28 h-28 bg-pink-200 rounded-lg transform rotate-24 animate-float"></div>
         <div className="absolute left-10 bottom-1/3 w-16 h-16 bg-green-200 rounded-lg transform -rotate-12 animate-float"></div>
         <div className="absolute left-1/3 bottom-40 w-36 h-36 bg-primary-color bg-opacity-25 rounded-lg transform rotate-45 animate-float"></div>
-        
+
         {/* Right Side Elements */}
         <div className="absolute right-20 top-40 w-32 h-32 bg-blue-200 rounded-lg transform -rotate-12 animate-float-delayed"></div>
         <div className="absolute right-1/4 top-20 w-24 h-24 bg-purple-200 rounded-full transform animate-float-delayed"></div>
@@ -56,23 +53,35 @@ const Banner = () => {
             {/* Top Content */}
             <div>
               {/* Intro Section */}
-              <div className="md:mb-4 pt-5 sm:mb-8">
-                <SectionTitleMinimal heading="Master Any Topic Through Interactive Quizzes" subHeading={"Transform Your Learning Journey"} />
+              <div className="md:mb-4 pt-5 sm:mb-8 mt-12">
+                <SectionTitleMinimal
+                  heading="Master Any Topic Through Interactive Quizzes"
+                  subHeading={"Transform Your Learning Journey"}
+                />
               </div>
-                
 
               {/* Description Box */}
               <div className="p-2 max-w-6xl mb-4 2xl:mb-2">
                 <p className="text-[#555555] text-base sm:text-lg md:text-xl 2xl:text-2xl leading-relaxed">
                   <span className="inline-flex items-center">
                     <Rocket className="w-6 h-6 text-primary-color mr-2" />
-                    <span className="font-bold text-purple-600 2xl:text-3xl">Transform Your Learning Journey</span>
-                  </span> with our 
-                  <span className="font-bold text-primary-color 2xl:text-3xl"> AI-Powered Quiz Platform!</span> Whether you&apos;re preparing for exams, 
-                  upskilling for your career, or simply curious to learn, we&apos;ve got you covered. Create personalized quizzes, 
-                  generate AI questions, or instantly turn any article into an interactive learning experience.  
+                    <span className="font-bold text-purple-600 2xl:text-3xl">
+                      Transform Your Learning Journey
+                    </span>
+                  </span>{" "}
+                  with our
+                  <span className="font-bold text-primary-color 2xl:text-3xl">
+                    {" "}
+                    AI-Powered Quiz Platform!
+                  </span>{" "}
+                  Whether you&apos;re preparing for exams, upskilling for your
+                  career, or simply curious to learn, we&apos;ve got you
+                  covered. Create personalized quizzes, generate AI questions,
+                  or instantly turn any article into an interactive learning
+                  experience.
                   <span className="font-bold mt-2 text-primary-color inline-flex items-center 2xl:text-3xl">
-                     Join thousands of learners who&apos;ve already unlocked their potential! 
+                    Join thousands of learners who&apos;ve already unlocked
+                    their potential!
                     <Sparkles className="w-6 h-6 ml-2" />
                   </span>
                 </p>
@@ -88,7 +97,6 @@ const Banner = () => {
                 >
                   Get Started
                 </Button>
-                
               </div>
             </div>
 

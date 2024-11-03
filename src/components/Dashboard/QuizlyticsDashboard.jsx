@@ -187,17 +187,18 @@ const QuizlyticsDashboard = () => {
   return (
     <div className="min-h-screen lg:mx-20 mx-auto overflow-hidden">
       <SectionTitleMinimal
-        heading={"Welcome to your dashboard!"} subHeading={"Take your quizzes and improve your skills here!"}
+        heading={"Welcome to your dashboard!"}
+        subHeading={"Take your quizzes and improve your skills here!"}
       ></SectionTitleMinimal>
-
-    
 
       {/* Quiz Cards here */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-12 mb-2">
         {/* QuickExam */}
         <Card className="h-auto w-full flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Quick Exam on AI Generated Quiz</CardTitle>
+            <CardTitle className="text-primary-color text-xl">
+              AI Generated Quiz
+            </CardTitle>
             <CardDescription>
               Instant AI-generated quizzes on any topic and difficulty level!
             </CardDescription>
@@ -232,9 +233,12 @@ const QuizlyticsDashboard = () => {
         {/* CustomExam */}
         <Card className="h-auto w-full flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Exam on Custom Quiz</CardTitle>
+            <CardTitle className="text-primary-color text-xl">
+              Exam on Custom Quiz
+            </CardTitle>
             <CardDescription>
-              Unique exams with personalized questions and a secure access key given by your teacher.
+              Unique exams with personalized questions and a secure access key
+              given by your teacher.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2">
@@ -267,7 +271,9 @@ const QuizlyticsDashboard = () => {
         {/* QuizByLink */}
         <Card className="h-auto w-full flex flex-col justify-between">
           <CardHeader>
-            <CardTitle>Quiz from any Article Link</CardTitle>
+            <CardTitle className="text-primary-color text-xl">
+              Quiz from any Article Link
+            </CardTitle>
             <CardDescription>
               Generate quizzes from any article link to test your understanding
               of the content.
@@ -301,7 +307,6 @@ const QuizlyticsDashboard = () => {
         </Card>
       </div>
 
-
       <div className="grid grid-cols-1 pt-8 lg:grid-cols-3 gap-6 mb-5 px-5">
         <div className="bg-primary-color bg-opacity-35 py-4 lg:py-8 px-2 lg:px-4 rounded-lg shadow-md flex items-center justify-center">
           <div className="w-8 lg:w-12 h-8 lg:h-12 bg-gray-100 rounded-full flex justify-center items-center mr-2 lg:mr-4">
@@ -331,7 +336,9 @@ const QuizlyticsDashboard = () => {
           </div>
           <div>
             <p className="text-lg lg:text-xl font-semibold">Quiz History</p>
-            <p className="text-xl lg:text-2xl font-bold">{getRecentQuizzes()} days</p>
+            <p className="text-xl lg:text-2xl font-bold">
+              {getRecentQuizzes()} days
+            </p>
           </div>
         </div>
       </div>
