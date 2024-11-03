@@ -21,7 +21,7 @@ const Footer = () => {
               height={200}
               width={200}
               alt="icon"
-              className="rounded-full -ms-6"
+              className="rounded-full -mx-6"
             />
             <p className="mt-2 text-black">
               <span className="text-xl font-bold">Quizlytics Ltd.</span>
@@ -30,74 +30,70 @@ const Footer = () => {
             </p>
           </div>
 
-          
-            <div>
-              <h3 className="text-xl font-semibold mb-2 text-Black">Company</h3>
-              <nav>
-                <Link href={"/about"}>
-                  {" "}
-                  <p className="block hover:text-yellow-400 transition-colors duration-300">
-                    About us
-                  </p>
-                </Link>
-                <Link href={"/contact"}>
-                  {" "}
-                  <p className="block hover:text-yellow-400 transition-colors duration-300">
-                    Contact
-                  </p>
-                </Link>
-                <Link href={"/team"}>
-                  {" "}
-                  <p className="block hover:text-yellow-400 transition-colors duration-300">
-                    Our team
-                  </p>
-                </Link>
-              </nav>
+          <div>
+            <h3 className="text-xl font-semibold mb-2 text-Black">Company</h3>
+            <nav>
+              <Link href={"/about"}>
+                {" "}
+                <p className="block hover:text-yellow-400 transition-colors duration-300">
+                  About us
+                </p>
+              </Link>
+              <Link href={"/contact"}>
+                {" "}
+                <p className="block hover:text-yellow-400 transition-colors duration-300">
+                  Contact
+                </p>
+              </Link>
+              <Link href={"/team"}>
+                {" "}
+                <p className="block hover:text-yellow-400 transition-colors duration-300">
+                  Our team
+                </p>
+              </Link>
+            </nav>
+          </div>
+
+          <div className="text-Black">
+            <h6 className="text-xl font-semibold mb-2 text-Black">Follow Us</h6>
+            <div className="flex space-x-6 mt-5">
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" transform hover:scale-125 hover:text-blue-500 transition-transform duration-300 ease-in-out animate-bounce"
+              >
+                <FaFacebook size={30} />
+              </a>
+
+              <a
+                href="https://www.twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" transform hover:scale-125 hover:text-blue-300 transition-transform duration-300 ease-in-out animate-bounce"
+              >
+                <FaTwitter size={30} />
+              </a>
+
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" transform hover:scale-125 hover:text-blue-600 transition-transform duration-300 ease-in-out animate-bounce"
+              >
+                <FaLinkedin size={30} />
+              </a>
+
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className=" transform hover:scale-125 hover:text-pink-400 transition-transform duration-300 ease-in-out animate-bounce"
+              >
+                <FaInstagram size={30} />
+              </a>
             </div>
-
-            <div className="text-Black">
-              <h6 className="text-xl font-semibold mb-2 text-Black">
-                Follow Us
-              </h6>
-              <div className="flex space-x-6 mt-5">
-                <a
-                  href="https://www.facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className=" transform hover:scale-125 hover:text-blue-500 transition-transform duration-300 ease-in-out animate-bounce"
-                >
-                  <FaFacebook size={30} />
-                </a>
-
-                <a
-                  href="https://www.twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className=" transform hover:scale-125 hover:text-blue-300 transition-transform duration-300 ease-in-out animate-bounce"
-                >
-                  <FaTwitter size={30} />
-                </a>
-
-                <a
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className=" transform hover:scale-125 hover:text-blue-600 transition-transform duration-300 ease-in-out animate-bounce"
-                >
-                  <FaLinkedin size={30} />
-                </a>
-
-                <a
-                  href="https://www.instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className=" transform hover:scale-125 hover:text-pink-400 transition-transform duration-300 ease-in-out animate-bounce"
-                >
-                  <FaInstagram size={30} />
-                </a>
-              </div>
-            </div>
-          
+          </div>
         </div>
 
         <div className="text-center font-semibold bg-gray-100 -mt-4 mb-10 text-[#333333]">

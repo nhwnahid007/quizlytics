@@ -43,13 +43,13 @@ const Feedback = () => {
         plugins={[autoplay]}
         className="w-full max-w-5xl mx-auto"
       >
-        <CarouselContent className="-ml-1">
+        <CarouselContent className="flex justify-center md:justify-start -ml-1">
           {feedback.map((item, index) => (
             <CarouselItem
               key={index}
               className="pl-1 md:basis-1/2 lg:basis-1/3"
             >
-              <div className="p-1">
+              <div className="p-1 flex justify-center items-center">
                 <Card className="relative p-3 bg-white shadow-lg rounded-lg overflow-hidden w-80 h-80 border-l-4 border-primary-color">
                   <div className="flex items-center p-4">
                     <div className="w-16 h-16 bg-primary-color rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
