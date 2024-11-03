@@ -124,22 +124,21 @@ const BlogFormPage = () => {
             ></textarea>
           </div>
 
-          {/* Photo Upload */}
-          {/* Photo Upload */}
-<div className="mb-4 w-1/5 p-3 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex flex-col items-center">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Upload Blog Photo:
-  </label>
-  <input
-    type="file"
-    onChange={handleImageUpload}
-    className="mt-1 cursor-pointer w-full text-gray-600 text-sm
-              file:mr-4 file:py-2 file:px-4 file:rounded-full
-              file:border-0 file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100 transition"
-  />
-</div>
+{/* Photo Upload */}
+<div className="mb-4 w-full md:w-1/2 p-3 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex flex-col items-center">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Upload Blog Photo
+            </label>
+            <input
+              type="file"
+              onChange={handleImageUpload}
+              className="cursor-pointer w-full text-gray-600 text-sm
+                        file:mr-4 file:py-2 file:px-4 file:rounded-full
+                        file:border-0 file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100 transition"
+            />
+          </div>
 
           {/* Submit Button */}
           <Button
