@@ -13,7 +13,7 @@ const SubmitCard = ({ item, markedAnswer, idx }) => {
   const isCorrect = item.correct_answer == markedAnswer;
 
   return (
-    <div className="mb-6 mx-2 lg:mx-auto max-w-4xl  ">
+    <div className="mb-6 mx-2 lg:mx-auto max-w-4xl ">
       <Card className="shadow-xl border border-gray-200 rounded-lg">
         <CardHeader className="bg-primary-color p-4 rounded-t-lg">
           <CardTitle className="text-white text-lg font-bold">

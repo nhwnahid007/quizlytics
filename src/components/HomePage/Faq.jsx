@@ -24,7 +24,9 @@ const Faq = () => {
               What is Quizlytics?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              Quizlytics is an all-in-one tool designed for learners in Bangladesh to master MCQs in board exams, job tests, and more. It aims to make learning engaging, personalized, and impactful.
+              Quizlytics is an all-in-one tool designed for learners in
+              Bangladesh to master MCQs in board exams, job tests, and more. It
+              aims to make learning engaging, personalized, and impactful.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem
@@ -35,7 +37,9 @@ const Faq = () => {
               How can Quizlytics help me track my progress?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              Quizlytics offers features like AI-generated quizzes, custom quizzes, and a leaderboard to help you track your progress and showcase your skills.
+              Quizlytics offers features like AI-generated quizzes, custom
+              quizzes, and a leaderboard to help you track your progress and
+              showcase your skills.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem
@@ -46,7 +50,9 @@ const Faq = () => {
               Can teachers create custom quizzes on Quizlytics?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              Yes, teachers and instructors can create, manage, and share custom quizzes seamlessly, simplifying exam administration and enhancing the learning experience.
+              Yes, teachers and instructors can create, manage, and share custom
+              quizzes seamlessly, simplifying exam administration and enhancing
+              the learning experience.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem
@@ -57,7 +63,9 @@ const Faq = () => {
               How does Quizlytics generate quizzes from articles?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              Quizlytics uses advanced AI to create questions based on any provided article link, ensuring comprehension and retention for focused study sessions.
+              Quizlytics uses advanced AI to create questions based on any
+              provided article link, ensuring comprehension and retention for
+              focused study sessions.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem
@@ -68,7 +76,9 @@ const Faq = () => {
               What kind of content can I find in the Quizlytics blog section?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              The blog section offers insightful articles on exams, study strategies, and more, allowing users to engage in valuable discussions and deepen their understanding.
+              The blog section offers insightful articles on exams, study
+              strategies, and more, allowing users to engage in valuable
+              discussions and deepen their understanding.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem
@@ -79,7 +89,9 @@ const Faq = () => {
               How does the Quizlytics leaderboard work?
             </AccordionTrigger>
             <AccordionContent className="pt-2">
-              The leaderboard tracks your progress and compares your scores with peers, using engaging graphical representations to visualize performance and improvements.
+              The leaderboard tracks your progress and compares your scores with
+              peers, using engaging graphical representations to visualize
+              performance and improvements.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
