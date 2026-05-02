@@ -1,0 +1,61 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "dev": {
+      "dependsOn": [
+        "@quizlytics/db#build",
+        "@quizlytics/types#build"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^lint"
+      ]
+    },
+    "@quizlytics/db#build": {
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "@quizlytics/types#build": {
+      "dependsOn": [
+        "@quizlytics/db#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "@quizlytics/server#build": {
+      "dependsOn": [
+        "@quizlytics/db#build",
+        "@quizlytics/types#build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
+    },
+    "@quizlytics/client#build": {
+      "dependsOn": [
+        "@quizlytics/db#build",
+        "@quizlytics/types#build",
+        "@quizlytics/server#build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    }
+  }
+}

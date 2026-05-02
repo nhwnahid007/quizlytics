@@ -1,0 +1,70 @@
+[
+  {
+    "quizTitle": "Basic Math",
+    "quizCategory": "Children",
+    "quizStartKey": "0223KP",
+    "quizArr": [
+      {
+        "id": 1,
+        "question": "4+4",
+        "options": ["3", "5", "6", "8"],
+        "correct_answer": "3"
+      },
+      {
+        "id": 2,
+        "question": "5+5",
+        "options": ["8", "7", "9", "10"],
+        "correct_answer": "3"
+      },
+      {
+        "id": 3,
+        "question": "7-3",
+        "options": ["4", "5", "6", "7"],
+        "correct_answer": "0"
+      },
+      {
+        "id": 4,
+        "question": "2x3",
+        "options": ["6", "7", "8", "9"],
+        "correct_answer": "0"
+      },
+      {
+        "id": 5,
+        "question": "12 ÷ 4",
+        "options": ["2", "3", "4", "6"],
+        "correct_answer": "1"
+      },
+      {
+        "id": 6,
+        "question": "9+8",
+        "options": ["15", "16", "17", "18"],
+        "correct_answer": "2"
+      },
+      {
+        "id": 7,
+        "question": "5x6",
+        "options": ["25", "30", "35", "40"],
+        "correct_answer": "1"
+      },
+      {
+        "id": 8,
+        "question": "18 ÷ 2",
+        "options": ["7", "8", "9", "10"],
+        "correct_answer": "2"
+      },
+      {
+        "id": 9,
+        "question": "14-7",
+        "options": ["6", "7", "8", "9"],
+        "correct_answer": "1"
+      },
+      {
+        "id": 10,
+        "question": "3x4",
+        "options": ["9", "10", "11", "12"],
+        "correct_answer": "3"
+      }
+    ],
+    "quizCreator": "rafiul.razib@gmail.com"
+  }
+]
