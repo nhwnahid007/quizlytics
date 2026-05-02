@@ -8,6 +8,8 @@ import type {
   UserExamAnswer,
 } from "@quizlytics/types";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 export type ManualQuizWithQuestions = Omit<ManualQuiz, "quizArr"> & {
   _id?: string;
   quizArr?: QuizQuestion[];
@@ -20,7 +22,7 @@ export type LinkHistoryWithMongoId = LinkQuizHistory & { _id?: string };
 export const getMCQ = async (category: string, level: string): Promise<QuizQuestion[]> => {
     console.log(category, level);
     try {
-        const res = await axios.get<QuizQuestion[]>(`https://quizlytics.jonomukti.org/quiz?category=${category}&skill=${level}`);
+        const res = await axios.get<QuizQuestion[]>(`${BASE_URL}/quiz?category=${category}&skill=${level}`);
         return res.data;
     } catch (error) {   
         console.error("Error fetching MCQ:", error);
@@ -31,7 +33,7 @@ export const getMCQ = async (category: string, level: string): Promise<QuizQuest
 export const getQuizByLink = async (artLink: string): Promise<QuizQuestion[]> => {
     
     try {
-        const res = await axios.get<QuizQuestion[]>(`https://quizlytics.jonomukti.org/testByLink?link=${artLink}`);
+        const res = await axios.get<QuizQuestion[]>(`${BASE_URL}/testByLink?link=${artLink}`);
         return res.data;
     } catch (error) {   
         console.error("Error fetching MCQ:", error);
@@ -51,7 +53,7 @@ export const getMark = async(examId: string): Promise<UserExamAnswer[]> => {
 
 export const getCustomQuiz = async(quizKey: string | null | undefined): Promise<ManualQuizWithQuestions[]> =>{
     try{
-        const res = await axios.get<ManualQuizWithQuestions[]>(`https://quizlytics.jonomukti.org/getCustomQuizByKey?qKey=${quizKey ?? ""}`)
+        const res = await axios.get<ManualQuizWithQuestions[]>(`${BASE_URL}/getCustomQuizByKey?qKey=${quizKey ?? ""}`)
         return res.data;
     } catch(error){
         console.error("Error fetching Custom Quiz:", error);
@@ -62,7 +64,7 @@ export const getCustomQuiz = async(quizKey: string | null | undefined): Promise<
 
 export const allCustomQuiz = async(): Promise<ManualQuizWithQuestions[]> =>{
     try{
-        const res = await axios.get<ManualQuizWithQuestions[]>(`https://quizlytics.jonomukti.org/allCustomQuiz`)
+        const res = await axios.get<ManualQuizWithQuestions[]>(`${BASE_URL}/allCustomQuiz`)
         return res.data;
     } catch(error){
         console.error("Error fetching All Custom Quiz:", error);
@@ -72,7 +74,7 @@ export const allCustomQuiz = async(): Promise<ManualQuizWithQuestions[]> =>{
 
 export const getSubmissionByKey = async (key: string, email: string): Promise<HistoryWithMongoId[]>=>{
     try{
-        const res = await axios.get<HistoryWithMongoId[]>(`https://quizlytics.jonomukti.org/historyByKey?qKey=${key}&email=${email}`)
+        const res = await axios.get<HistoryWithMongoId[]>(`${BASE_URL}/historyByKey?qKey=${key}&email=${email}`)
         return res.data;
     } catch(error){
         console.error("Error fetching submissions by key:", error)
@@ -81,7 +83,7 @@ export const getSubmissionByKey = async (key: string, email: string): Promise<Hi
 }
 export const getSubmissionByQuizTitle = async (searchCategory: string, email: string): Promise<AiHistoryWithMongoId[]>=>{
     try{
-        const res = await axios.get<AiHistoryWithMongoId[]>(`https://quizlytics.jonomukti.org/historyByUserAi?qTitle=${searchCategory}&email=${email}`)
+        const res = await axios.get<AiHistoryWithMongoId[]>(`${BASE_URL}/historyByUserAi?qTitle=${searchCategory}&email=${email}`)
         return res.data;
     } catch(error){
         console.error("Error fetching submissions by key:", error)
@@ -92,7 +94,7 @@ export const getSubmissionByQuizTitle = async (searchCategory: string, email: st
 
 export const getLinkHistoryByUser = async(email: string): Promise<LinkHistoryWithMongoId[]>=>{
     try{
-        const res = await axios.get<LinkHistoryWithMongoId[]>(`https://quizlytics.jonomukti.org/linkHistoryByUser?email=${email}`)
+        const res = await axios.get<LinkHistoryWithMongoId[]>(`${BASE_URL}/linkHistoryByUser?email=${email}`)
         return res.data
     }
     catch(error){
@@ -103,7 +105,7 @@ export const getLinkHistoryByUser = async(email: string): Promise<LinkHistoryWit
 
 // export const getLeaders = async()=>{
 //     try{
-//         const res = await axios.get(`https://quizlytics.jonomukti.org/leaderboard`)
+//         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/leaderboard`)
 //         return res.data;
 //     } catch(error){
 //         console.log("Error fetching leaderboard:", error);
@@ -112,7 +114,7 @@ export const getLinkHistoryByUser = async(email: string): Promise<LinkHistoryWit
 // }
 export const getExaminees = async (): Promise<HistoryWithMongoId[]> => {
     try {
-      const res = await axios.get<HistoryWithMongoId[]>("https://quizlytics.jonomukti.org/allExaminee");
+      const res = await axios.get<HistoryWithMongoId[]>(`${BASE_URL}/allExaminee`);
       return res.data; 
     } catch (error) {
       console.error("Error fetching allExaminee:", error);
@@ -121,7 +123,7 @@ export const getExaminees = async (): Promise<HistoryWithMongoId[]> => {
   };
 export const getMarks = async(email: string): Promise<HistoryWithMongoId[]>=>{
     try{
-        const res = await axios.get<HistoryWithMongoId[]>(`https://quizlytics.jonomukti.org/userHistory?email=${email}`)
+        const res = await axios.get<HistoryWithMongoId[]>(`${BASE_URL}/userHistory?email=${email}`)
         return res.data;
     } catch(error){
         console.log("Error fetching leaderboard:", error);
@@ -130,7 +132,7 @@ export const getMarks = async(email: string): Promise<HistoryWithMongoId[]>=>{
 }
 export const getSubmissionById = async(id: string): Promise<HistoryWithMongoId | null>=>{
     try{
-        const res = await axios.get<HistoryWithMongoId>(`https://quizlytics.jonomukti.org/userHistory/${id}`)
+        const res = await axios.get<HistoryWithMongoId>(`${BASE_URL}/userHistory/${id}`)
         return res.data;
     } catch(error){
         console.log("Error fetching History:", error);

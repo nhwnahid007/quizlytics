@@ -84,11 +84,11 @@ const QuizResult = ({
 
   let postUrl = "";
   if (quizStartKey) {
-    postUrl = "https://quizlytics.jonomukti.org/saveHistory";
+    postUrl = `${process.env.NEXT_PUBLIC_API_URL}/saveHistory`;
   } else if (searchCategory) {
-    postUrl = "https://quizlytics.jonomukti.org/saveAiQuiz";
+    postUrl = `${process.env.NEXT_PUBLIC_API_URL}/saveAiQuiz`;
   } else {
-    postUrl = "https://quizlytics.jonomukti.org/linkQuiz";
+    postUrl = `${process.env.NEXT_PUBLIC_API_URL}/linkQuiz`;
   }
 
   const handleSaveRecord = async () => {
@@ -122,14 +122,14 @@ const QuizResult = ({
     router.push("/Dashboard");
   };
 
-  let viewSubmission = ``;
+  let viewSubmission = "";
 
   if (quizStartKey) {
     viewSubmission = `/viewSubmission/${quizStartKey}`;
   } else if (searchCategory) {
     viewSubmission = `/viewSubmissionAi/${searchCategory}`;
   } else {
-    viewSubmission = `viewSubmissionByLink/${email}`;
+    viewSubmission = `/viewSubmissionByLink/${email}`;
   }
 
   const handleViewAnswers = () => {

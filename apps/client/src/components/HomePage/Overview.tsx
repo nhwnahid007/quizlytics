@@ -54,7 +54,7 @@ const Overview = () => {
   const fetchExaminees = async () => {
     try {
       const res = await axios.get<HistoryWithMongoId[]>(
-        "https://quizlytics.jonomukti.org/allExaminee"
+        `${process.env.NEXT_PUBLIC_API_URL}/allExaminee`
       );
       const data = res.data;
 

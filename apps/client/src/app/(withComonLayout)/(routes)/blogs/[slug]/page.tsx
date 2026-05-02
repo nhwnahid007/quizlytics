@@ -19,7 +19,7 @@ export default function Post({ params }: { params: Promise<{ slug: string }> }) 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get<BlogRecord>(`https://quizlytics.jonomukti.org/blog/${id}`);
+        const response = await axios.get<BlogRecord>(`${process.env.NEXT_PUBLIC_API_URL}/blog/${id}`);
         setPost(response.data);
       } catch (err) {
         setError('Failed to load post');
@@ -30,7 +30,7 @@ export default function Post({ params }: { params: Promise<{ slug: string }> }) 
 
     const fetchOtherPosts = async () => {
       try {
-        const response = await axios.get<BlogRecord[]>('https://quizlytics.jonomukti.org/allBlogs');
+        const response = await axios.get<BlogRecord[]>(`${process.env.NEXT_PUBLIC_API_URL}/allBlogs`);
         // Filter out the current post by ID and limit to 3 posts
         const otherPosts = response.data.filter((post: BlogRecord) => post._id !== id).slice(0, 3);
         setOtherPosts(otherPosts);

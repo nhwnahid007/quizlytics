@@ -23,7 +23,7 @@ const Feedback = () => {
     const fetchFeedback = async () => {
       try {
         const response = await axios.get<FeedbackRecord[]>(
-          "https://quizlytics.jonomukti.org/all-feedback"
+          `${process.env.NEXT_PUBLIC_API_URL}/all-feedback`
         );
         setFeedback(response.data);
       } catch (err: unknown) {

@@ -57,7 +57,7 @@ const BlogFormPage = () => {
     };
 
     try {
-      const response = await axios.post('https://quizlytics.jonomukti.org/blog', postData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/blog`, postData, {
         headers: {
           'Content-Type': 'application/json',
         },

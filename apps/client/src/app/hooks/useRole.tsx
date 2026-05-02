@@ -19,7 +19,7 @@ const useRole = () => {
           return null; // Return null if email is not available
         }
         try {
-          const { data } = await axios.get<RoleResponse>(`https://quizlytics.jonomukti.org/user/role?email=${user.email}`);
+          const { data } = await axios.get<RoleResponse>(`${process.env.NEXT_PUBLIC_API_URL}/user/role?email=${user.email}`);
           console.log(data);
   
           return data.role || "user"; // Ensure a valid return value

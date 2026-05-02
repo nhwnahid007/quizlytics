@@ -136,7 +136,7 @@ const Page = () => {
     try {
       // Replace with your backend API endpoint
       const response = await axios.post(
-        "https://quizlytics.jonomukti.org/saveManualQuiz",
+        `${process.env.NEXT_PUBLIC_API_URL}/saveManualQuiz`,
         quizSet
       );
       Swal.fire({

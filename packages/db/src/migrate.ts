@@ -1,5 +1,5 @@
 import { migrate } from "drizzle-orm/postgres-js/migrator";
-import { db, sql } from "./index";
+import { db, sql } from "./index.js";
 
 const runMigrations = async (): Promise<void> => {
   if (!process.env.DATABASE_URL) {

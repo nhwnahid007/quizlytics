@@ -7,8 +7,8 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import type { DbJsonValue } from "./json";
-import { users } from "./users";
+import type { DbJsonValue } from "./json.js";
+import { users } from "./users.js";
 
 export const manualQuiz = pgTable(
   "manual_quiz",

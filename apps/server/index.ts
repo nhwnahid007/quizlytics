@@ -118,6 +118,9 @@ type LinkGenerateQuery = {
 const app = express();
 const port = process.env.PORT || 4000;
 const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY ?? "");
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
+  "http://localhost:3000",
+];
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
@@ -134,9 +137,8 @@ const withMongoId = <T extends { id: string }>(row: T): ApiDocument<T> => ({
   _id: row.id,
 });
 
-const withMongoIds = <T extends { id: string }>(
-  rows: T[],
-): ApiDocument<T>[] => rows.map(withMongoId);
+const withMongoIds = <T extends { id: string }>(rows: T[]): ApiDocument<T>[] =>
+  rows.map(withMongoId);
 
 const toInsertOneResult = (rows: { id: string }[]): InsertOneResult => {
   const inserted = rows[0];
@@ -165,7 +167,7 @@ const toUpdateOneResult = (updatedCount: number): UpdateOneResult => ({
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://quizlytics.vercel.app"],
+    origin: allowedOrigins,
   }),
 );
 app.use(express.json());
@@ -282,7 +284,11 @@ app.delete(
 app.patch(
   "/updateUserRole",
   async (
-    req: Request<EmptyParams, UpdateOneResult | { message: string }, UpdateUserRoleBody>,
+    req: Request<
+      EmptyParams,
+      UpdateOneResult | { message: string },
+      UpdateUserRoleBody
+    >,
     res: Response<UpdateOneResult | { message: string }>,
   ): Promise<void> => {
     const { email, role } = req.body;
@@ -392,7 +398,10 @@ app.post(
 app.get(
   "/leaderboard",
   async (
-    _req: Request<EmptyParams, ApiDocument<Partial<QuizHistory> & { id: string }>[]>,
+    _req: Request<
+      EmptyParams,
+      ApiDocument<Partial<QuizHistory> & { id: string }>[]
+    >,
     res: Response<ApiDocument<Partial<QuizHistory> & { id: string }>[]>,
   ): Promise<void> => {
     const result = await db
@@ -417,7 +426,10 @@ app.get(
 app.get(
   "/allExaminee",
   async (
-    _req: Request<EmptyParams, ApiDocument<Partial<QuizHistory> & { id: string }>[]>,
+    _req: Request<
+      EmptyParams,
+      ApiDocument<Partial<QuizHistory> & { id: string }>[]
+    >,
     res: Response<ApiDocument<Partial<QuizHistory> & { id: string }>[]>,
   ): Promise<void> => {
     const result = await db
@@ -588,11 +600,13 @@ app.post(
   async (
     req: Request<
       EmptyParams,
-      { insertResult: InsertOneResult; updateResult: UpdateOneResult } | { error: string },
+      | { insertResult: InsertOneResult; updateResult: UpdateOneResult }
+      | { error: string },
       SavePaymentBody
     >,
     res: Response<
-      { insertResult: InsertOneResult; updateResult: UpdateOneResult } | { error: string }
+      | { insertResult: InsertOneResult; updateResult: UpdateOneResult }
+      | { error: string }
     >,
   ): Promise<void> => {
     const paymentInfo = req.body;
@@ -646,7 +660,9 @@ app.get(
       if (result[0]) {
         res.send(withMongoId(result[0]));
       } else {
-        res.status(404).send({ message: "User not found in payment database!" });
+        res
+          .status(404)
+          .send({ message: "User not found in payment database!" });
       }
     } catch (error: unknown) {
       console.error("Error getting paid user:", error);

@@ -100,23 +100,25 @@ npm run migrate
 
 ## Environment Variables
 
-| Variable | Description |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string used by Drizzle. |
-| `PORT` | Express server port. Defaults to `4000`. |
-| `AI_API_KEY` | Google Generative AI API key used by quiz generation endpoints. |
-| `AUTH_SECRET` | NextAuth JWT/session secret. |
-| `NEXTAUTH_URL` | Public URL for the Next.js app, used by NextAuth. |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth client ID. |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_SECRET` | Google OAuth client secret. |
-| `NEXT_PUBLIC_GITHUB_ID` | GitHub OAuth client ID. |
-| `NEXT_PUBLIC_GITHUB_SECRET` | GitHub OAuth client secret. |
-| `STRIPE_SECRET_KEY` | Stripe secret key for payment intent API route. |
-| `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` | Stripe publishable key for client payment pages. |
-| `NEXT_PUBLIC_IMG_HOSTING_KEY` | Image hosting API key used by upload flows. |
-| `NEXT_PUBLIC_EMAILJS_SERVICE_ID` | EmailJS service ID for contact form. |
-| `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID` | EmailJS template ID for contact form. |
-| `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` | EmailJS public key for contact form. |
+| Variable                           | Description                                                     |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `DATABASE_URL`                     | PostgreSQL connection string used by Drizzle.                   |
+| `NEXT_PUBLIC_API_URL`              | Public base URL for the Express API consumed by client requests. |
+| `PORT`                             | Express server port. Defaults to `4000`.                        |
+| `ALLOWED_ORIGINS`                  | Comma-separated client origins allowed by server CORS.          |
+| `AI_API_KEY`                       | Google Generative AI API key used by quiz generation endpoints. |
+| `AUTH_SECRET`                      | NextAuth JWT/session secret.                                    |
+| `NEXTAUTH_URL`                     | Public URL for the Next.js app, used by NextAuth.               |
+| `GOOGLE_CLIENT_ID`                 | Google OAuth client ID (server-only).                           |
+| `GOOGLE_CLIENT_SECRET`             | Google OAuth client secret (server-only).                       |
+| `GITHUB_ID`                        | GitHub OAuth client ID (server-only).                           |
+| `GITHUB_SECRET`                    | GitHub OAuth client secret (server-only).                       |
+| `STRIPE_SECRET_KEY`                | Stripe secret key for payment intent API route.                 |
+| `NEXT_PUBLIC_STRIPE_PUBLIC_KEY`    | Stripe publishable key for client payment pages.                |
+| `NEXT_PUBLIC_IMG_HOSTING_KEY`      | Image hosting API key used by upload flows.                     |
+| `NEXT_PUBLIC_EMAILJS_SERVICE_ID`   | EmailJS service ID for contact form.                            |
+| `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`  | EmailJS template ID for contact form.                           |
+| `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY`   | EmailJS public key for contact form.                            |
 
 ## Notes
 

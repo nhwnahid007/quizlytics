@@ -12,7 +12,7 @@ const useAllQuiz = () => {
     queryKey: ["customQuiz"],
     queryFn: async () => {
       const res = await axios.get<ManualQuizWithQuestions[]>(
-        "https://quizlytics.jonomukti.org/allCustomQuiz"
+        `${process.env.NEXT_PUBLIC_API_URL}/allCustomQuiz`
       );
       return res.data;
     },

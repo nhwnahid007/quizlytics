@@ -59,7 +59,7 @@ const CheckoutPage = ({ prices }: { clientSecret: string; prices: string | null 
 
       try {
         const response = await axios.post<PaymentHistoryResponse>(
-          "https://quizlytics.jonomukti.org/paymentHistory",
+          `${process.env.NEXT_PUBLIC_API_URL}/paymentHistory`,
           paymentInfo,
           {
             headers: {

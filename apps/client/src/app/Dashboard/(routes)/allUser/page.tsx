@@ -40,7 +40,7 @@ const AllUser = () => {
   } = useQuery({
     queryKey: ["allUsers"],
     queryFn: async () => {
-      const { data } = await axios.get<UserRow[]>(`https://quizlytics.jonomukti.org/allUsers`);
+      const { data } = await axios.get<UserRow[]>(`${process.env.NEXT_PUBLIC_API_URL}/allUsers`);
       return data;
     },
     enabled: role === 'admin', // Only fetch if the role is 'admin'
@@ -63,7 +63,7 @@ if (roleError || userRoleError) return <div>Error loading data</div>;
     try {
       console.log(email);
 
-      const response = await axios.delete(`https://quizlytics.jonomukti.org/deleteUser?email=${email}`);
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/deleteUser?email=${email}`);
       if (response.data) {
         toast.success("Deleted successfully");
         refetch();
@@ -75,7 +75,7 @@ if (roleError || userRoleError) return <div>Error loading data</div>;
 
   const handleRoleChange = async (email: string, newRole: string) => {
     try {
-      const response = await axios.patch(`https://quizlytics.jonomukti.org/updateUserRole`, {
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/updateUserRole`, {
         email,
         role: newRole,
       });

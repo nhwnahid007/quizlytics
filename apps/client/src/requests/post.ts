@@ -2,6 +2,8 @@ import axios from 'axios';
 import type { AxiosResponse } from "axios";
 import type { ApiMessageResponse, InsertRegisteredUser, UserExamAnswer } from "@quizlytics/types";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 type NewRegisteredUser = InsertRegisteredUser;
 type LegacyMarkPayload = {
   id?: string;
@@ -15,7 +17,7 @@ type LegacyMarkPayload = {
 
 export const postNewUser = async (newUser: NewRegisteredUser): Promise<AxiosResponse<ApiMessageResponse>> => {
   try {
-    const response = await axios.post<ApiMessageResponse>('https://quizlytics.jonomukti.org/registered_users', newUser);
+    const response = await axios.post<ApiMessageResponse>(`${BASE_URL}/registered_users`, newUser);
     return response;
   } catch (error) {
     console.error("Error posting new user:", error);
@@ -25,7 +27,7 @@ export const postNewUser = async (newUser: NewRegisteredUser): Promise<AxiosResp
 
 export const postUserWithProvider = async (newUser: NewRegisteredUser): Promise<AxiosResponse<ApiMessageResponse>> => {
   try {
-    const response = await axios.post<ApiMessageResponse>('https://quizlytics.jonomukti.org/authenticating_with_providers', newUser);
+    const response = await axios.post<ApiMessageResponse>(`${BASE_URL}/authenticating_with_providers`, newUser);
     return response;
   } catch (error) {
     console.error("Error posting user with provider:", error);
