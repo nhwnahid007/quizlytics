@@ -37,7 +37,7 @@ export const postUserWithProvider = async (newUser: NewRegisteredUser): Promise<
 
 export const postUserExamData = async (userExamData: UserExamAnswer[]): Promise<AxiosResponse<ApiMessageResponse>> => {
   try {
-    const response = await axios.post<ApiMessageResponse>("https://quizlytics-server-gamma.vercel.app/user_exam_data", userExamData);
+    const response = await axios.post<ApiMessageResponse>(`${BASE_URL}/user_exam_data`, userExamData);
     return response;
   } catch (error) {
     console.error("Error posting user exam data:", error);
@@ -47,7 +47,7 @@ export const postUserExamData = async (userExamData: UserExamAnswer[]): Promise<
 
 export const postOnlyMark = async (userMark: LegacyMarkPayload): Promise<AxiosResponse<ApiMessageResponse>> => {
   try {
-    const response = await axios.post<ApiMessageResponse>("https://quizlytics-server-gamma.vercel.app/only_user_mark", userMark);
+    const response = await axios.post<ApiMessageResponse>(`${BASE_URL}/only_user_mark`, userMark);
     return response;
   } catch (error) {
     console.error("Error posting only mark:", error);

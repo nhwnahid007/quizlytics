@@ -135,6 +135,7 @@ type LinkGenerateQuery = {
 const app = express();
 const port = process.env.PORT || 4000;
 const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY ?? "");
+const aiModelName = process.env.AI_MODEL || "gemini-2.5-flash";
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
   "http://localhost:3000",
 ];
@@ -148,6 +149,26 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 const queryText = (value: string | undefined): string => value ?? "";
+
+const parseGeneratedQuizPayload = (text: string): unknown => {
+  const cleanedText = text
+    .replace(/\\"/g, '"')
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .replace(/`/g, "")
+    .trim();
+
+  return JSON.parse(cleanedText);
+};
+
+const isValidHttpUrl = (url: string): boolean => {
+  try {
+    const parsedUrl = new URL(url);
+    return ["http:", "https:"].includes(parsedUrl.protocol);
+  } catch {
+    return false;
+  }
+};
 
 const withMongoId = <T extends { id: string }>(row: T): ApiDocument<T> => ({
   ...row,
@@ -768,11 +789,22 @@ app.get(
     req: Request<EmptyParams, unknown, unknown, QuizGenerateQuery>,
     res: Response,
   ): Promise<void> => {
-    const category = req.query?.category;
-    const skill = req.query?.skill;
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-    });
+    const category = queryText(req.query?.category).trim();
+    const skill = queryText(req.query?.skill).trim();
+
+    if (!category || !skill) {
+      res
+        .status(400)
+        .json({ message: "Both category and skill query parameters are required" });
+      return;
+    }
+
+    if (!process.env.AI_API_KEY) {
+      res
+        .status(503)
+        .json({ message: "AI service is not configured. Missing AI_API_KEY." });
+      return;
+    }
 
     const prompt = `
 Generate a JSON array of exactly 10 unique multiple-choice questions based on the topic "${category}". Each question should be designed for a learner at the "${skill}" level and can feature formats like "fill in the blanks", "find the true statement", or similar types.
@@ -787,18 +819,22 @@ Each question object must meet the following criteria:
 The output should be only the JSON array without any additional commentary or headings.
 `;
 
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-
-    const cleanedText = text
-      .replace(/\\"/g, '"')
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .replace(/`/g, "")
-      .trim();
-    const jsonResult: unknown = JSON.parse(cleanedText);
-    res.json(jsonResult);
+    try {
+      const model = genAI.getGenerativeModel({
+        model: aiModelName,
+      });
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
+      const jsonResult = parseGeneratedQuizPayload(text);
+      res.json(jsonResult);
+    } catch (error: unknown) {
+      console.error("Quiz generation failed:", error);
+      res.status(502).json({
+        message: "Failed to generate quiz from AI provider",
+        error: getErrorMessage(error),
+      });
+    }
   },
 );
 
@@ -808,8 +844,24 @@ app.get(
     req: Request<EmptyParams, unknown, unknown, LinkGenerateQuery>,
     res: Response,
   ): Promise<void> => {
-    const link = req.query.link;
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const link = queryText(req.query.link).trim();
+    if (!link) {
+      res.status(400).json({ message: "link query parameter is required" });
+      return;
+    }
+
+    if (!isValidHttpUrl(link)) {
+      res.status(400).json({ message: "link must be a valid http/https URL" });
+      return;
+    }
+
+    if (!process.env.AI_API_KEY) {
+      res
+        .status(503)
+        .json({ message: "AI service is not configured. Missing AI_API_KEY." });
+      return;
+    }
+
     const prompt = `
 Generate a JSON array of maximum unique multiple-choice questions possible based on the article of provided "${link}". Each question should feature formats like "fill in the blanks", "find the true statement", or similar types.
 
@@ -823,20 +875,20 @@ Each question object must meet the following criteria:
 The output should be only the JSON array without any additional commentary or headings.
 `;
 
-    // console.log(prompt);
-
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-
-    const cleanedText = text
-      .replace(/\\"/g, '"')
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .replace(/`/g, "")
-      .trim();
-    const jsonResult: unknown = JSON.parse(cleanedText);
-    res.json(jsonResult);
+    try {
+      const model = genAI.getGenerativeModel({ model: aiModelName });
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
+      const jsonResult = parseGeneratedQuizPayload(text);
+      res.json(jsonResult);
+    } catch (error: unknown) {
+      console.error("Quiz-by-link generation failed:", error);
+      res.status(502).json({
+        message: "Failed to generate quiz from article link",
+        error: getErrorMessage(error),
+      });
+    }
   },
 );
 
