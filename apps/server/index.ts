@@ -68,6 +68,19 @@ type ApiMessageResponse = {
   message: string;
   error?: unknown;
 };
+type AuthLoginResponse =
+  | {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      profile?: string | null;
+      role?: string | null;
+      userStatus?: string | null;
+    }
+  | {
+      message: string;
+    };
 
 type RegisterUserBody = Omit<
   InsertRegisteredUser,
@@ -93,6 +106,10 @@ type SaveManualQuizBody = InsertManualQuiz;
 type SaveFeedbackBody = InsertFeedback;
 type SaveBlogBody = InsertBlog;
 type SavePaymentBody = InsertPayment;
+type LoginBody = {
+  email?: string;
+  password?: string;
+};
 
 type EmailQuery = {
   email?: string;
@@ -171,6 +188,60 @@ app.use(
   }),
 );
 app.use(express.json());
+
+app.post(
+  "/auth/login",
+  async (
+    req: Request<EmptyParams, AuthLoginResponse, LoginBody>,
+    res: Response<AuthLoginResponse>,
+  ): Promise<void> => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ message: "Email and password are required" });
+      return;
+    }
+
+    try {
+      const result = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+      const currentUser = result[0];
+
+      if (!currentUser || !currentUser.password) {
+        res.status(401).json({ message: "Invalid user credentials" });
+        return;
+      }
+
+      const storedPassword = currentUser.password;
+      const isBcryptHash =
+        typeof storedPassword === "string" &&
+        /^\$2[aby]\$\d{2}\$/.test(storedPassword);
+      const passwordMatched = isBcryptHash
+        ? await bcrypt.compare(password, storedPassword)
+        : storedPassword === password;
+
+      if (!passwordMatched) {
+        res.status(401).json({ message: "Invalid user credentials" });
+        return;
+      }
+
+      res.status(200).json({
+        id: currentUser.id,
+        name: currentUser.name,
+        email: currentUser.email,
+        image: currentUser.image ?? currentUser.profile,
+        profile: currentUser.profile,
+        role: currentUser.role,
+        userStatus: currentUser.userStatus,
+      });
+    } catch (error: unknown) {
+      console.error("Auth login error:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
+);
 
 // API route for registering users with register form
 app.post(
@@ -699,7 +770,9 @@ app.get(
   ): Promise<void> => {
     const category = req.query?.category;
     const skill = req.query?.skill;
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+    });
 
     const prompt = `
 Generate a JSON array of exactly 10 unique multiple-choice questions based on the topic "${category}". Each question should be designed for a learner at the "${skill}" level and can feature formats like "fill in the blanks", "find the true statement", or similar types.
