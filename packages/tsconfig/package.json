@@ -1,0 +1,11 @@
+{
+  "name": "@quizlytics/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo \"@quizlytics/tsconfig: shared config package\""
+  },
+  "files": [
+    "base.json"
+  ]
+}
