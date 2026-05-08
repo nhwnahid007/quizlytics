@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Quizlytics
 
-## Getting Started
+Quizlytics is a full-stack quiz platform with a Next.js client, Express API server, shared TypeScript types, and a PostgreSQL database layer powered by Drizzle ORM.
 
-First, run the development server:
+## Monorepo Structure
+
+```text
+quizlytics/
+├── apps/
+│   ├── client/              # Next.js frontend
+│   └── server/              # Express API server
+├── packages/
+│   ├── db/                  # Drizzle schema, database client, migrations
+│   ├── tsconfig/            # Shared TypeScript config
+│   └── types/               # Shared app/API model types
+├── .env.example
+├── package.json
+├── tsconfig.base.json
+└── turbo.json
+```
+
+## Prerequisites
+
+- Node.js 20+
+- npm 10+
+- PostgreSQL
+
+## Setup
+
+```bash
+git clone <repo-url>
+cd quizlytics
+cp .env.example .env
+```
+
+Fill `.env` with your local secrets and service credentials.
+
+```bash
+npm install
+cd packages/db
+npm run generate
+npm run migrate
+cd ../..
+turbo dev
+```
+
+If `turbo` is not installed globally, use:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Build
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+turbo build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Equivalent npm script:
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Workspace Commands
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm --workspace @quizlytics/client run dev
+npm --workspace @quizlytics/client run build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+npm --workspace @quizlytics/server run dev
+npm --workspace @quizlytics/server run build
 
-## Deploy on Vercel
+npm --workspace @quizlytics/db run build
+npm --workspace @quizlytics/db run generate
+npm --workspace @quizlytics/db run migrate
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+npm --workspace @quizlytics/types run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Database
+
+Drizzle schema files live in `packages/db/src/schema`.
+
+Generate migrations:
+
+```bash
+cd packages/db
+npm run generate
+```
+
+Run migrations:
+
+```bash
+cd packages/db
+npm run migrate
+```
+
+`DATABASE_URL` must point to a PostgreSQL database before running migrations.
+
+## Environment Variables
+
+| Variable                           | Description                                                     |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `DATABASE_URL`                     | PostgreSQL connection string used by Drizzle.                   |
+| `NEXT_PUBLIC_API_URL`              | Public base URL for the Express API consumed by client requests. |
+| `PORT`                             | Express server port. Defaults to `4000`.                        |
+| `ALLOWED_ORIGINS`                  | Comma-separated client origins allowed by server CORS.          |
+| `AI_API_KEY`                       | Google Generative AI API key used by quiz generation endpoints. |
+| `AUTH_SECRET`                      | NextAuth JWT/session secret.                                    |
+| `NEXTAUTH_URL`                     | Public URL for the Next.js app, used by NextAuth.               |
+| `GOOGLE_CLIENT_ID`                 | Google OAuth client ID (server-only).                           |
+| `GOOGLE_CLIENT_SECRET`             | Google OAuth client secret (server-only).                       |
+| `GITHUB_ID`                        | GitHub OAuth client ID (server-only).                           |
+| `GITHUB_SECRET`                    | GitHub OAuth client secret (server-only).                       |
+| `STRIPE_SECRET_KEY`                | Stripe secret key for payment intent API route.                 |
+| `NEXT_PUBLIC_STRIPE_PUBLIC_KEY`    | Stripe publishable key for client payment pages.                |
+| `NEXT_PUBLIC_IMG_HOSTING_KEY`      | Image hosting API key used by upload flows.                     |
+| `NEXT_PUBLIC_EMAILJS_SERVICE_ID`   | EmailJS service ID for contact form.                            |
+| `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`  | EmailJS template ID for contact form.                           |
+| `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY`   | EmailJS public key for contact form.                            |
+
+## Notes
+
+- Client code does not connect to the database directly.
+- Server database access goes through `@quizlytics/db`.
+- Shared data models are exported from `@quizlytics/types`.
+- NextAuth uses the Drizzle adapter with the PostgreSQL Auth.js tables in `packages/db`.
