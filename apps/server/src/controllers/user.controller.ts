@@ -44,3 +44,15 @@ export const updateUserRole = async (
     .status(200)
     .json(await userService.updateUserRole(body.email, body.role));
 };
+
+type UpdateDisplayNameValidated = ValidatedRequestData & {
+  body: { email: string; name: string };
+};
+
+export const updateDisplayName = async (
+  _req: unknown,
+  res: Response,
+): Promise<void> => {
+  const { body } = getValidated<UpdateDisplayNameValidated>(res);
+  res.status(200).json(await userService.updateDisplayName(body.email, body.name));
+};

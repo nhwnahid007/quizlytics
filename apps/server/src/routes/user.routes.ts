@@ -1,10 +1,11 @@
 import { Router } from "express";
 import * as userController from "../controllers/user.controller.js";
-import { requireAdmin } from "../middleware/auth.middleware.js";
+import { requireAdmin, requireAuth } from "../middleware/auth.middleware.js";
 import { validateRequest } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
   emailQuerySchema,
+  updateDisplayNameBodySchema,
   updateUserRoleBodySchema,
 } from "../validators/user.validator.js";
 
@@ -34,4 +35,11 @@ userRouter.patch(
   requireAdmin,
   validateRequest({ body: updateUserRoleBodySchema }),
   asyncHandler(userController.updateUserRole),
+);
+
+userRouter.patch(
+  "/user/displayName",
+  requireAuth,
+  validateRequest({ body: updateDisplayNameBodySchema }),
+  asyncHandler(userController.updateDisplayName),
 );

@@ -67,3 +67,13 @@ export const updateUserRole = async (
 
   return toUpdateOneResult(result.length);
 };
+
+export const updateDisplayName = async (email: string, name: string) => {
+  const result = await db
+    .update(users)
+    .set({ name })
+    .where(eq(users.email, email))
+    .returning({ id: users.id });
+
+  return toUpdateOneResult(result.length);
+};
