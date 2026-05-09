@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { ReactQueryClientProvider } from "@/components/ReactQuery/ReactQueryClientProvider";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { ThemeProvider } from "@/providers/ThemeProvider";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Quizlytics",
@@ -12,11 +14,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <ReactQueryClientProvider>
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </ReactQueryClientProvider>
+        <ThemeProvider>
+          <ReactQueryClientProvider>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </ReactQueryClientProvider>
+          <Toaster richColors position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

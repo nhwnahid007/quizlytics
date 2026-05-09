@@ -21,5 +21,6 @@ export const config = {
     "/customQuiz",
     "/quizByLink",
     "/blogs/:path*",
+    "/profile",
   ],
 };

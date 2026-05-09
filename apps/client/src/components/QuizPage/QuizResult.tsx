@@ -17,9 +17,12 @@ import {
 } from "next-share";
 import LoadingSpinner from "../Spinner/LoadingSpinner";
 import UserFeedback from "../Modals/UserFeedback";
+import ShareQuizDialog from "./ShareQuizDialog";
 import type { QuizQuestion, QuizResultSummary } from "@quizlytics/types";
 import type { ManualQuizRecord, MarkedAnswer } from "@/types/client";
 import { saveAiQuiz, saveHistory, saveLinkQuiz } from "@/services/quiz.service";
+import { exportToPDF } from "@/lib/export-utils";
+import { Download } from "lucide-react";
 
 const QuizResult = ({
   result,
@@ -127,56 +130,76 @@ const QuizResult = ({
     router.push(viewSubmission);
   };
 
+  const handleExportPDF = async () => {
+    await exportToPDF("quiz-result-card", `quiz-result-${Date.now()}`);
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
 
   // Determine the remark based on the score
-  let remark = "";
   let remarkColor = "";
 
   if (result?.percentageMark > 70) {
-    remark = "Excellent!";
     remarkColor = "text-green-600";
   } else if (result?.percentageMark >= 50) {
-    remark = "Good!";
     remarkColor = "text-primary-color";
   } else {
-    remark = "Needs Improvement";
     remarkColor = "text-red-600";
   }
 
+  const quizLink = quizStartKey
+    ? `/startQuiz?qKey=${quizStartKey}`
+    : searchCategory
+      ? `/quickExam`
+      : `/quizByLink`;
+
   return (
-    <div className="fixed h-screen inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] md:w-[580px] p-8 rounded-lg shadow-lg">
+    <div className="fixed h-screen inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div id="quiz-result-card" className="bg-card w-[90%] md:w-145 p-8 rounded-2xl shadow-lg border border-border">
         <div
-          className={`w-[200px] h-[200px] mx-auto my-4 md:my-8 border-8 p-8 rounded-full flex justify-center items-center border-primary-color border-opacity-70`}
+          className="w-50 h-50 mx-auto my-4 md:my-8 border-8 p-8 rounded-full flex justify-center items-center border-primary-color border-opacity-70"
         >
-          <h1 className={`text-4xl font-bold  text-primary-color`}>
+          <h1 className="text-4xl font-bold text-primary-color">
             {result?.correctAnswers} / {result?.totalQuiz}
           </h1>
         </div>
         <h1 className={`mb-5 text-center text-4xl ${remarkColor}`}>
-          {/* {result?.percentageMark}% */}
         </h1>
-        <div className="my-4 flex flex-col md:flex-row gap-4 justify-center items-center">
-          <Button className="lg:px-10 " onClick={handleSaveRecord}>
+        <div className="my-4 flex flex-col md:flex-row gap-3 justify-center items-center flex-wrap">
+          <Button className="lg:px-10" onClick={handleSaveRecord}>
             Submit
           </Button>
           <Button onClick={handleViewAnswers} disabled={isDisabled}>
             View Submission
           </Button>
-          <Button onClick={handleGoToHome}>Back to Dashboard</Button>
+          <ShareQuizDialog
+            quizLink={quizLink}
+            quizTitle={attemptDetails.quizTitle}
+          />
+          <Button onClick={handleGoToHome} variant="outline">
+            Back to Dashboard
+          </Button>
         </div>
-        <h1 className="text-secondary-color text-center text-xl lg:text-4xl mb-2 md:mb-10">
+        <h1 className="text-foreground text-center text-xl lg:text-4xl mb-2 md:mb-6">
           You achieved {result?.percentageMark}% mark!
         </h1>
+        
+        {/* Export PDF */}
+        <div className="flex justify-center mb-4">
+          <Button variant="outline" size="sm" onClick={handleExportPDF} className="gap-2 rounded-xl">
+            <Download className="h-4 w-4" />
+            Export as PDF
+          </Button>
+        </div>
+
         <div>
           <UserFeedback />
         </div>
         <div className="mt-4 flex justify-center gap-4 w-full">
-          <div className="font-medium py-1 px-8 border border-secondary-color rounded-md">
-            <h2 className="text-xl mb-5 text-center">Share Social Media:</h2>
+          <div className="font-medium py-1 px-8 border border-border rounded-md">
+            <h2 className="text-xl mb-5 text-center text-foreground">Share Social Media:</h2>
             <FacebookShareButton
               url={"https://quizlytics.vercel.app/"}
               quote={`I scored ${result?.percentageMark}% on my exam! Check it out on Quizlytics.`}

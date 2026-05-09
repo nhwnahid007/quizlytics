@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import MainNav from "./MainNav"; // Keep this for your main navigation
+import MainNav from "./MainNav";
 import MobileNav from "./MobileNav";
 import {
   DropdownMenu,
@@ -13,10 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, LayoutDashboardIcon, LogOut } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LayoutDashboardIcon, LogOut, User } from "lucide-react";
 
 const Header = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const name = session?.user?.name;
   const profile = session?.user?.profile;
   const image = session?.user?.image;
@@ -36,9 +37,9 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full py-[10px] z-20 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full py-2.5 z-20 transition-all duration-300 ${
         isScrolled
-          ? "bg-white text-black shadow-md"
+          ? "bg-background text-foreground shadow-md"
           : "bg-transparent text-white"
       }`}
     >
@@ -56,12 +57,13 @@ const Header = () => {
         </Link>
 
         {/* Main Navigation for larger screens */}
-        <div className="hidden md:flex justify-center flex-grow">
+        <div className="hidden md:flex justify-center grow">
           <MainNav />
         </div>
 
-        {/* Profile or Login/Register */}
-        <div className="relative flex items-center justify-center gap-4">
+        {/* Theme Toggle + Profile */}
+        <div className="relative flex items-center justify-center gap-2">
+          <ThemeToggle />
           {!session ? (
             <div className="flex gap-2">
               <Link
@@ -72,7 +74,7 @@ const Header = () => {
               </Link>
               <Link
                 href="/register"
-                className="border border-purple-600 hidden md:block text-secondary-color font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
+                className="border border-purple-600 hidden md:block text-secondary-color dark:text-white font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
               >
                 Sign Up
               </Link>
@@ -81,7 +83,6 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex items-center cursor-pointer">
-                  {/* Smaller Profile Image */}
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <Image
                       src={
@@ -98,22 +99,27 @@ const Header = () => {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="bg-white rounded-md p-4 shadow-lg absolute right-0 mt-2 z-50 w-48"
+                className="bg-popover rounded-md p-4 shadow-lg absolute right-0 mt-2 z-50 w-48"
                 sideOffset={10}
               >
                 <DropdownMenuLabel className="text-center font-bold text-sm truncate">
                   {name}
                 </DropdownMenuLabel>
                 <DropdownMenuItem className="bg-purple-600 flex flex-row items-center gap-2 text-white p-2 text-sm rounded-md mb-2 text-center">
+                  <Link href="/profile" className="flex items-center gap-2">
+                    <User className="h-4 w-4" /> Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="bg-purple-600 flex flex-row items-center gap-2 text-white p-2 text-sm rounded-md mb-2 text-center">
                   <Link href="/Dashboard" className="flex items-center gap-2">
-                    <LayoutDashboardIcon /> Dashboard
+                    <LayoutDashboardIcon className="h-4 w-4" /> Dashboard
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="bg-purple-600 text-sm flex flex-row items-center gap-2 text-white p-2 rounded-md text-center cursor-pointer"
                   onClick={() => signOut()}
                 >
-                  <LogOut /> Logout
+                  <LogOut className="h-4 w-4" /> Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

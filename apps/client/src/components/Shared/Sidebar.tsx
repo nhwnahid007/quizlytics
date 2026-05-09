@@ -2,13 +2,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  FaChartLine,
-  FaCommentDots,
-  FaDatabase,
-  FaPeopleArrows,
-  FaUser,
-} from "react-icons/fa";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { signOut } from "next-auth/react";
 import {
@@ -22,6 +15,7 @@ import {
   ShieldQuestion,
   UserCog,
   Users,
+  UserCircle,
 } from "lucide-react";
 import useRole from "@/app/hooks/useRole";
 
@@ -80,6 +74,11 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
       icon: <History />,
     },
     {
+      title: "My Profile",
+      route: "/profile",
+      icon: <UserCircle />,
+    },
+    {
       title: "All Examinee",
       route: "/Dashboard/allExaminee",
       icon: <Users />,
@@ -93,7 +92,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
     (menu) =>
       role === "admin" ||
       (role === "user" &&
-        ["Leaderboard", "My Progress", "Take your Quiz"].includes(menu.title)) ||
+        ["Leaderboard", "My Progress", "Take your Quiz", "My Profile"].includes(menu.title)) ||
       (role === "teacher" &&
         !["User Management", "Payment"].includes(menu.title)),
   );
@@ -103,11 +102,11 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
       <div
         className={`${
           isSidebarOpen ? "w-72 p-4" : "w-16 p-2"
-        } bg-white/80 backdrop-blur-md border-r border-gray-200 h-auto pt-8 relative duration-300 text-primary-color flex flex-col justify-between shadow-xl`}
+        } bg-card/80 backdrop-blur-md border-r border-border h-auto pt-8 relative duration-300 text-primary-color flex flex-col justify-between shadow-xl`}
       >
         <div>
           <button
-            className="absolute text-3xl cursor-pointer -right-3 top-9 w-7 h-7 border-gray-200 border rounded-full bg-white text-primary-color shadow-md flex items-center justify-center hover:scale-110 transition-transform"
+            className="absolute text-3xl cursor-pointer -right-3 top-9 w-7 h-7 border-border border rounded-full bg-card text-primary-color shadow-md flex items-center justify-center hover:scale-110 transition-transform"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             {isSidebarOpen ? (
@@ -136,14 +135,14 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
                   className={`flex rounded-xl p-3 cursor-pointer transition-all duration-200 items-center gap-x-3 group ${
                     isActive(Menu.route)
                       ? "bg-primary-color text-white shadow-lg shadow-primary-color/30"
-                      : "hover:bg-primary-color/10 text-gray-600 hover:text-primary-color"
+                      : "hover:bg-primary-color/10 text-muted-foreground hover:text-primary-color"
                   }`}
                 >
                   <span
                     className={`text-xl transition-colors ${
                       isActive(Menu.route)
                         ? "text-white"
-                        : "text-gray-400 group-hover:text-primary-color"
+                        : "text-muted-foreground group-hover:text-primary-color"
                     }`}
                   >
                     {Menu.icon}
@@ -162,8 +161,8 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
         </div>
         <div className="flex flex-col gap-y-2 mt-auto pt-10">
           <Link href="/">
-            <li className="flex rounded-xl p-3 cursor-pointer hover:bg-gray-100 text-gray-600 font-medium items-center gap-x-4 transition-colors">
-              <span className="text-xl text-gray-400">
+            <li className="flex rounded-xl p-3 cursor-pointer hover:bg-muted text-muted-foreground font-medium items-center gap-x-4 transition-colors">
+              <span className="text-xl text-muted-foreground">
                 <House />
               </span>
               <span
@@ -177,9 +176,9 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
           </Link>
           <button
             onClick={() => signOut()}
-            className="flex rounded-xl p-3 cursor-pointer hover:bg-red-50 text-gray-600 hover:text-red-600 font-medium items-center gap-x-4 transition-colors"
+            className="flex rounded-xl p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-600 font-medium items-center gap-x-4 transition-colors"
           >
-            <span className="text-xl text-gray-400 group-hover:text-red-600">
+            <span className="text-xl text-muted-foreground group-hover:text-red-600">
               <LogOut />
             </span>
             <span

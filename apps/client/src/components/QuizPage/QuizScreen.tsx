@@ -1,20 +1,21 @@
 "use client";
-import getMCQ, { getCustomQuiz } from "@/requests/get";
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import QuizResult from "./QuizResult";
 import Quiz from "./Quiz";
+import QuizTimer from "./QuizTimer";
 import LoadingSpinner from "../Spinner/LoadingSpinner";
 import type { QuizQuestion } from "@quizlytics/types";
 import type { ManualQuizRecord, MarkedAnswer } from "@/types/client";
 
 const QuizScreen = ({
   quizKey,
-  allQuestions = [], // Default to an empty array
+  allQuestions = [],
   quizSet,
   isLoading = false,
   searchCategory,
   searchLavel,
   artLink,
+  timerMinutes,
 }: {
   quizKey?: string | null;
   allQuestions?: QuizQuestion[];
@@ -23,14 +24,16 @@ const QuizScreen = ({
   searchCategory?: string;
   searchLavel?: string;
   artLink?: string;
+  timerMinutes?: number | null;
 }) => {
   const [currentQuizIndex, setCurrentQuizIndex] = useState<number>(0);
+  const [forceEnd, setForceEnd] = useState(false);
 
   const [markedAnswer, setMarkedAnswer] = useState<MarkedAnswer[]>(
     new Array(allQuestions?.length)
   );
 
-  const isQuizEnded = currentQuizIndex === allQuestions?.length;
+  const isQuizEnded = currentQuizIndex === allQuestions?.length || forceEnd;
 
   const calculateResult = () => {
     let correctAnswers = 0;
@@ -47,15 +50,18 @@ const QuizScreen = ({
     };
   };
 
+  const handleTimeUp = useCallback(() => {
+    setForceEnd(true);
+  }, []);
+
   // Check if allQuestions is an array
   if (!Array.isArray(allQuestions)) {
     return null;
-    return <div>Error: Questions data is not available.</div>;
   }
 
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto text-center  py-30">
+      <div className="max-w-6xl mx-auto text-center py-30">
         <LoadingSpinner />
       </div>
     );
@@ -63,6 +69,15 @@ const QuizScreen = ({
 
   return (
     <div className="h-screen">
+      {/* Timer */}
+      {timerMinutes && !isQuizEnded && (
+        <QuizTimer
+          durationMinutes={timerMinutes}
+          quizKey={quizKey}
+          onTimeUp={handleTimeUp}
+        />
+      )}
+
       {isQuizEnded ? (
         <QuizResult
           quizSet={quizSet}
@@ -82,7 +97,7 @@ const QuizScreen = ({
           totalQuestion={allQuestions?.length}
           setAnswer={(index: MarkedAnswer) => {
             setMarkedAnswer((arr) => {
-              let newArray = [...arr];
+              const newArray = [...arr];
               newArray[currentQuizIndex] = index;
               return newArray;
             });
