@@ -15,7 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^2.0.1",
     "@quizlytics/db": "file:../../packages/db",
     "@quizlytics/types": "file:../../packages/types",
     "@types/bcrypt": "^6.0.0",

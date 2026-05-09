@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@quizlytics/db";
 import {
@@ -19,7 +19,7 @@ import { env } from "../config/env.js";
 import { AppError } from "../errors/app-error.js";
 import { getErrorMessage, toDeleteOneResult, toInsertOneResult, withMongoIds } from "../utils/api.js";
 
-const genAI = new GoogleGenerativeAI(env.AI_API_KEY);
+const ai = new GoogleGenAI({ apiKey: env.AI_API_KEY });
 
 const parseGeneratedQuizPayload = (text: string): unknown => {
   const cleanedText = text
@@ -34,9 +34,15 @@ const parseGeneratedQuizPayload = (text: string): unknown => {
 
 const generateContent = async (prompt: string): Promise<unknown> => {
   try {
-    const model = genAI.getGenerativeModel({ model: env.AI_MODEL });
-    const result = await model.generateContent(prompt);
-    return parseGeneratedQuizPayload(result.response.text());
+    const response = await ai.models.generateContent({
+      model: env.AI_MODEL,
+      contents: prompt,
+    });
+    const text = response.text;
+    if (!text) {
+      throw new Error("AI provider returned empty response");
+    }
+    return parseGeneratedQuizPayload(text);
   } catch (error) {
     throw new AppError(
       502,
