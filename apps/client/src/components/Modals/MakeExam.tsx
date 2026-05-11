@@ -57,7 +57,7 @@ const MakeExam = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] md:w-[580px] p-8 rounded-lg shadow-lg relative">
+      <div className="bg-white w-[90%] md:w-145 p-8 rounded-lg shadow-lg relative">
         <button
           onClick={() => router.push("/Dashboard")}
           className="absolute top-4 right-4 text-black"
@@ -67,7 +67,7 @@ const MakeExam = ({
         <h1 className="text-primary-color font-bold text-center text-xl md:text-3xl">
           Quick Exam
         </h1>
-        <div className="w-full md:w-[480px] mx-auto mt-8 flex flex-col md:flex-row text-center md:text-start justify-around">
+        <div className="w-full md:w-120 mx-auto mt-8 flex flex-col md:flex-row text-center md:text-start justify-around">
           <div className="flex flex-col space-y-1">
             <h1 className="font-medium">
               <span className="font-bold">Duration:</span> 300 Seconds
@@ -86,29 +86,29 @@ const MakeExam = ({
             </h1>
           </div>
         </div>
-        <div className="w-full md:w-[480px] mx-auto flex flex-col md:flex-row gap-4 mt-6">
+        <div className="w-full md:w-120 mx-auto flex flex-col md:flex-row gap-4 mt-6">
           <div className="w-full md:w-1/2">
             <input
               onChange={(e) => setSearch(e.target.value)}
               type="text"
-              className=" bg-secondary-color bg-opacity-20 text-black w-full py-2 px-4 rounded-lg text-md md:text-lg placeholder-gray-500 h-11"
+              className="bg-secondary-color/10 text-gray-900 w-full py-2 px-4 rounded-lg text-md md:text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all h-11"
               placeholder="Write topics"
             />
-            {searchError && <p className="text-red-600">{searchError}</p>}
+            {searchError && <p className="text-red-600 text-xs mt-1">{searchError}</p>}
           </div>
           <div className="w-full md:w-1/2">
             <select
               onChange={(e) => setLavel(e.target.value)}
-              className="bg-secondary-color bg-opacity-20 w-full py-2 px-4 text-gray-800 rounded-lg text-lg h-11"
+              className="bg-secondary-color/10 w-full py-2 px-4 text-gray-900 rounded-lg text-lg h-11 focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all"
             >
               <option value="" disabled selected>
-                <span className="text-gray-500 text-md md:text-lg">Level</span>
+                Level
               </option>
               <option value="beginner">Beginner</option>
               <option value="moderate">Moderate</option>
               <option value="advanced">Advanced</option>
             </select>
-            {levelError && <p className="text-red-600">{levelError}</p>}
+            {levelError && <p className="text-red-600 text-xs mt-1">{levelError}</p>}
           </div>
         </div>
         <div className="flex justify-center mt-6">

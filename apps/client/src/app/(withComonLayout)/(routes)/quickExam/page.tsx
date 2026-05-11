@@ -7,8 +7,9 @@ import QuizScreen from "@/components/QuizPage/QuizScreen";
 import QuizEditor from "@/components/QuizPage/QuizEditor";
 import { getMCQ } from "@/requests/get";
 import React, { useEffect, useState, useCallback } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import type { QuizQuestion } from "@quizlytics/types";
+import { Button } from "@/components/ui/button";
 
 const STEPS = [
   "Analyzing topic...",
@@ -76,28 +77,34 @@ const Page = () => {
   const [showEditor, setShowEditor] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [generationStep, setGenerationStep] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchQuiz = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     setGenerationStep(0);
 
-    // Animate through steps
-    const timer1 = setTimeout(() => setGenerationStep(1), 2000);
-    const timer2 = setTimeout(() => setGenerationStep(2), 5000);
+    // Update steps dynamically every 1.5s while waiting
+    const stepInterval = setInterval(() => {
+      setGenerationStep((prev) => (prev < 2 ? prev + 1 : prev));
+    }, 1500);
 
     try {
       const data = await getMCQ(searchCategory, searchLavel);
+      if (!data || data.length === 0) {
+        throw new Error("No questions were generated. Please try again.");
+      }
       setAllMCQ(data);
+      clearInterval(stepInterval);
       setGenerationStep(3);
-      // Brief pause to show "Finalizing" completion
-      await new Promise((r) => setTimeout(r, 500));
-      setShowEditor(true);
-    } catch {
+      // Small pause to let the "Finalizing" success state be visible
+      await new Promise((r) => setTimeout(r, 400));
+    } catch (err) {
       setAllMCQ([]);
+      clearInterval(stepInterval);
+      setError(err instanceof Error ? err.message : "Failed to generate quiz. AI might be busy.");
     } finally {
       setIsLoading(false);
-      clearTimeout(timer1);
-      clearTimeout(timer2);
     }
   }, [searchCategory, searchLavel, setAllMCQ]);
 
@@ -133,6 +140,30 @@ const Page = () => {
           />
         ) : isLoading ? (
           <GenerationProgress step={generationStep} />
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
+            <div className="bg-red-50 p-6 rounded-3xl border border-red-100 max-w-md">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Generation Failed</h2>
+              <p className="text-gray-600 mb-6">{error}</p>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={() => fetchQuiz()}
+                  className="bg-primary-color hover:bg-primary-color/90 text-white gap-2 h-12 rounded-xl"
+                >
+                  <RefreshCw className="h-5 w-5" />
+                  Try Again
+                </Button>
+                <Button 
+                  variant="ghost"
+                  onClick={() => setShowMakeExam(true)}
+                  className="text-muted-foreground"
+                >
+                  Change Topic
+                </Button>
+              </div>
+            </div>
+          </div>
         ) : showEditor && allMCQ.length > 0 ? (
           <QuizEditor
             questions={allMCQ}
