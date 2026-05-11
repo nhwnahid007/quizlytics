@@ -22,14 +22,28 @@ import { getErrorMessage, toDeleteOneResult, toInsertOneResult, withMongoIds } f
 const ai = new GoogleGenAI({ apiKey: env.AI_API_KEY });
 
 const parseGeneratedQuizPayload = (text: string): unknown => {
-  const cleanedText = text
-    .replace(/\\"/g, '"')
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .replace(/`/g, "")
-    .trim();
+  try {
+    // 1. Clean common AI wrapping
+    let cleanedText = text
+      .replace(/\\"/g, '"')
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-  return JSON.parse(cleanedText) as unknown;
+    // 2. Try to extract JSON array if there's surrounding text
+    const arrayMatch = cleanedText.match(/\[[\s\S]*\]/);
+    if (arrayMatch) {
+      cleanedText = arrayMatch[0];
+    }
+
+    // 3. Remove trailing commas in arrays/objects (common AI error)
+    cleanedText = cleanedText.replace(/,\s*([\]}])/g, "$1");
+
+    return JSON.parse(cleanedText) as unknown;
+  } catch (error) {
+    console.error("Failed to parse AI JSON:", text);
+    throw new Error(`JSON Parse Error: ${getErrorMessage(error)}`);
+  }
 };
 
 const generateContent = async (prompt: string): Promise<unknown> => {
