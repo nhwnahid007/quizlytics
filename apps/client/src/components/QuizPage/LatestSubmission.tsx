@@ -15,7 +15,16 @@ import type { HistoryRecord, MarkedAnswer } from "@/types/client";
 import type { QuizQuestion } from "@quizlytics/types";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Download, Share2, RotateCcw, Trophy, CheckCircle, XCircle, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Share2,
+  RotateCcw,
+  Trophy,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from "lucide-react";
 import { Button } from "../ui/button";
 
 const isQuizQuestion = (value: unknown): value is QuizQuestion => {
@@ -37,7 +46,8 @@ const LatestSubmission = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
 
-  const [latestSubmission, setLatestSubmission] = useState<HistoryRecord | null>(null);
+  const [latestSubmission, setLatestSubmission] =
+    useState<HistoryRecord | null>(null);
 
   const { data: session } = useSession();
   const email = session?.user?.email;
@@ -53,7 +63,10 @@ const LatestSubmission = ({
           setIsLoading(false);
         } else if (searchCategory) {
           setLatestSubmission(null);
-          const data = await getSubmissionByQuizTitle(searchCategory, email ?? "");
+          const data = await getSubmissionByQuizTitle(
+            searchCategory,
+            email ?? ""
+          );
           setLatestSubmission(data.at(-1) ?? null);
           setIsLoading(false);
         } else if (quizId) {
@@ -159,7 +172,7 @@ const LatestSubmission = ({
           <div className="absolute top-0 right-0 p-4 opacity-5">
             <Trophy size={120} />
           </div>
-          
+
           <div className="relative z-10">
             <h1 className="text-3xl font-bold text-foreground mb-6">
               {quizId ? "Exam Results" : "Your Latest Submission"}
@@ -173,7 +186,10 @@ const LatestSubmission = ({
                     <span className="text-sm font-semibold">Score</span>
                   </div>
                   <p className="text-2xl font-bold">
-                    {score} <span className="text-sm text-muted-foreground font-medium">/ {submissionQuestions.length}</span>
+                    {score}{" "}
+                    <span className="text-sm text-muted-foreground font-medium">
+                      / {submissionQuestions.length}
+                    </span>
                   </p>
                 </div>
 
@@ -250,8 +266,12 @@ const LatestSubmission = ({
             <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
               <XCircle className="text-muted-foreground h-10 w-10" />
             </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">No Submissions Found</h3>
-            <p className="text-muted-foreground">It seems you haven't taken this quiz yet.</p>
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              No Submissions Found
+            </h3>
+            <p className="text-muted-foreground">
+              It seems you haven&apos;t taken this quiz yet.
+            </p>
           </div>
         )}
       </div>
