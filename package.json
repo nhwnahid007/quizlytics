@@ -13,14 +13,32 @@
     "lint": "turbo lint",
     "start": "npm --workspace @quizlytics/server run start",
     "db:generate": "npm --workspace @quizlytics/db run generate",
-    "db:migrate": "npm --workspace @quizlytics/db run migrate"
+    "db:migrate": "npm --workspace @quizlytics/db run migrate",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
+    "prettier": "^3.8.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "turbo": "^2.5.0"
   },
   "dependencies": {
     "zod": "^4.4.3"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,mjs,json,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }

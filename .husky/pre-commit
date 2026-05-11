@@ -1,0 +1,51 @@
+
+echo "🔍 Running lint check..."
+npm run lint || {
+  echo "❌ Lint failed! Commit blocked."
+  exit 1
+}
+
+echo "🏗️ Running build check..."
+npm run build || {
+  echo "❌ Build failed! Commit blocked."
+  exit 1
+}
+
+echo "✨ Checking and formatting staged files one by one..."
+
+formatted_count=0
+checked_count=0
+
+for file in $(git diff --cached --name-only --diff-filter=ACMR); do
+  case "$file" in
+  *.js|*.ts|*.tsx|*.mjs|*.json|*.css|*.md)
+    if [ ! -f "$file" ]; then
+      continue
+    fi
+
+    checked_count=$((checked_count + 1))
+    echo "🔎 Checking: $file"
+
+    if npx prettier --check "$file" >/dev/null 2>&1; then
+      echo "👌 Already formatted: $file"
+    else
+      npx prettier --write "$file" >/dev/null 2>&1 || {
+        echo "❌ Formatting failed: $file"
+        exit 1
+      }
+
+      git add "$file"
+      formatted_count=$((formatted_count + 1))
+      echo "✅ Formatted: $file"
+    fi
+    ;;
+  esac
+done
+
+if [ "$checked_count" -eq 0 ]; then
+  echo "ℹ️ No staged files matched formatting rules."
+else
+  echo "🧾 Checked: $checked_count file(s), formatted: $formatted_count file(s)."
+fi
+
+echo "✅ All checks passed!"

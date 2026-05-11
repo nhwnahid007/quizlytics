@@ -1,0 +1,296 @@
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/eslint.config.mjs
+  3:1  warning  Assign array to a variable before exporting as module default  import/no-anonymous-default-export
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/(routes)/profile/page.tsx
+  37:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/(routes)/profile/page.tsx:37:5
+  35 |
+  36 |   useEffect(() => {
+> 37 |     setDisplayName(name);
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |   }, [name]);
+  39 |
+  40 |   useEffect(() => {  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/(routes)/quickExam/page.tsx
+  106:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/(routes)/quickExam/page.tsx:106:7
+  104 |   useEffect(() => {
+  105 |     if (loadData) {
+> 106 |       fetchQuiz();
+      |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  107 |     }
+  108 |   }, [loadData, fetchQuiz]);
+  109 |  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/layout.tsx
+  14:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/layout.tsx:14:9
+  12 |
+  13 |     useEffect(() => {
+> 14 |         setIsLoading(false);
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  15 |     }, []);
+  16 |
+  17 |     if (isLoading) {  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/page.tsx
+  17:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/(withComonLayout)/page.tsx:17:5
+  15 |
+  16 |   useEffect(() => {
+> 17 |     setIsLoading(false);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |   }, []);
+  19 |
+  20 |   if (isLoading) {  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/customquestion/page.tsx
+  32:33  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/customquestion/page.tsx:32:33
+  30 |     // Generate 4 random numbers
+  31 |     for (let i = 0; i < 4; i++) {
+> 32 |       key += numbers[Math.floor(Math.random() * numbers.length)];
+     |                                 ^^^^^^^^^^^^^ Cannot call impure function
+  33 |     }
+  34 |
+  35 |     // Generate 2 random alphabets                                                                                                                                                                                                                                                                                                              react-hooks/purity
+  37:35  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/customquestion/page.tsx:37:35
+  35 |     // Generate 2 random alphabets
+  36 |     for (let i = 0; i < 2; i++) {
+> 37 |       key += alphabets[Math.floor(Math.random() * alphabets.length)];
+     |                                   ^^^^^^^^^^^^^ Cannot call impure function
+  38 |     }
+  39 |
+  40 |     return key;                                                                                                                                                                                                                                                                                                                         react-hooks/purity
+  46:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/customquestion/page.tsx:46:5
+  44 |
+  45 |   useEffect(() => {
+> 46 |     setQuizKey(newKey);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |     // eslint-disable-next-line react-hooks/exhaustive-deps
+  48 |   }, []);
+  49 |  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/examinersDashboard/page.tsx
+  46:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/Dashboard/(routes)/examinersDashboard/page.tsx:46:7
+  44 |   useEffect(() => {
+  45 |     if (AllQuiz.length > 0 || roleError) {
+> 46 |       setLoading(false);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |     }
+  48 |   }, [AllQuiz, roleError]);
+  49 |  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/hooks/useDate.tsx
+  10:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/hooks/useDate.tsx:10:9
+   8 |         const today = new Date();
+   9 |         const formattedDate = today.toISOString().split('T')[0];
+> 10 |         setToday(formattedDate);
+     |         ^^^^^^^^ Avoid calling setState() directly within an effect
+  11 |     }, []);
+  12 |
+  13 |     return today;  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/hooks/useExamId.tsx
+  14:11  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/app/hooks/useExamId.tsx:14:11
+  12 |           
+  13 |           const examId = generateExamId();
+> 14 |           setExamId(examId);
+     |           ^^^^^^^^^ Avoid calling setState() directly within an effect
+  15 |     }, [])
+  16 |
+  17 |     return [examId, setExamId] as const;  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/HomePage/Banner.tsx
+  17:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/HomePage/Banner.tsx:17:5
+  15 |
+  16 |   useEffect(() => {
+> 17 |     setIsMounted(true);
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |   }, []);
+  19 |
+  20 |   const handleGetStarted = () => {  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/HomePage/Overview.tsx
+  84:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/HomePage/Overview.tsx:84:5
+  82 |
+  83 |     // Call the function to fetch examinee data when the component mounts
+> 84 |     fetchExaminees();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  85 |   }, []);
+  86 |
+  87 |   return (  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/QuizPage/QuizTimer.tsx
+  21:3  error  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/QuizPage/QuizTimer.tsx:21:3
+  19 |   const storageKey = `${STORAGE_PREFIX}${quizKey ?? "default"}`;
+  20 |   const onTimeUpRef = useRef(onTimeUp);
+> 21 |   onTimeUpRef.current = onTimeUp;
+     |   ^^^^^^^^^^^^^^^^^^^ Cannot update ref during render
+  22 |
+  23 |   const getInitialSeconds = useCallback((): number => {
+  24 |     if (typeof window === "undefined") return durationMinutes * 60;  react-hooks/refs
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/Shared/Leaders.tsx
+  92:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/Shared/Leaders.tsx:92:5
+  90 |       .slice(0, 10);
+  91 |
+> 92 |     setLeaders(averaged);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |   }, [allData, timeFilter]);
+  94 |
+  95 |   if (loading) {  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/Shared/MCQ.tsx
+  80:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/Shared/MCQ.tsx:80:13
+  78 |         if (clickNext || secondsRemaining === 0) {
+  79 |             saveExamData();
+> 80 |             setClickNext(false);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  81 |         }
+  82 |     }, [clickNext, secondsRemaining, exactMCQ, selectedAnswer, examId, name, email, profile, image, options, setUserExamData]);
+  83 |  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/ui/carousel.tsx
+  105:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/ui/carousel.tsx:105:5
+  103 |     }
+  104 |
+> 105 |     onSelect(api);
+      |     ^^^^^^^^ Avoid calling setState() directly within an effect
+  106 |     api.on("reInit", onSelect);
+  107 |     api.on("select", onSelect);
+  108 |  react-hooks/set-state-in-effect
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/ui/theme-toggle.tsx
+  13:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/nahid/projects/Quzlytics/quizlytics-client/apps/client/src/components/ui/theme-toggle.tsx:13:5
+  11 |
+  12 |   useEffect(() => {
+> 13 |     setMounted(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |   }, []);
+  15 |
+  16 |   if (!mounted) {  react-hooks/set-state-in-effect
+
+✖ 18 problems (17 errors, 1 warning)
+
