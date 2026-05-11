@@ -164,7 +164,7 @@ const QuizlyticsDashboard = () => {
             <CardFooter>
               <Button 
                 onClick={() => router.push(mode.route)}
-                className="w-full bg-gray-900 hover:bg-primary-color text-white rounded-2xl py-6 font-bold group-hover:gap-4 transition-all"
+                className="w-full bg-gray-900 hover:bg-primary-color text-white hover:text-white rounded-2xl py-6 font-bold group-hover:gap-4 transition-all"
               >
                 {mode.btnText}
                 <ArrowRight size={18} />

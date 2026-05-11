@@ -8,6 +8,7 @@ export default [
       "react-hooks/purity": "off",
       "react-hooks/refs": "off",
       "import/no-anonymous-default-export": "off",
+      "react/no-unescaped-entities": "off",
     },
   },
 ];

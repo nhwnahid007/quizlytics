@@ -63,7 +63,7 @@ export default function QuizEditor({
           </Button>
           <Button
             onClick={() => onConfirm(editedQuestions)}
-            className="gap-2 rounded-xl bg-primary-color hover:bg-primary-color/90 text-white"
+            className="gap-2 rounded-xl bg-primary-color hover:bg-primary-color/90 text-white hover:text-white"
           >
             <Play className="h-4 w-4" />
             Start Quiz
