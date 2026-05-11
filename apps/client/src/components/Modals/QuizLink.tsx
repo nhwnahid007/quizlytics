@@ -41,7 +41,7 @@ const QuizLink = ({ setQuizByLink, setArtLink, setIsLoading }: QuizLinkProps) =>
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] md:w-[580px] p-8 rounded-lg shadow-lg relative">
+      <div className="bg-white w-[90%] md:w-145 p-8 rounded-lg shadow-lg relative">
         <button
           onClick={() => router.push("/Dashboard")}
           className="absolute top-4 right-4 text-black"
@@ -52,15 +52,15 @@ const QuizLink = ({ setQuizByLink, setArtLink, setIsLoading }: QuizLinkProps) =>
           Generate Quiz From Link
         </h1>
 
-        <div className="w-full md:w-[480px] mx-auto mt-6">
+        <div className="w-full md:w-120 mx-auto mt-6">
           <div className="w-full">
             <input
               onChange={(e) => setSearch(e.target.value)}
               type="text"
-              className="bg-secondary-color bg-opacity-20 placeholder-gray-500 w-full py-2 px-4 text-gray-800 rounded-lg text-md md:text-lg text-center"
+              className="bg-secondary-color/10 placeholder:text-gray-500 w-full py-3 px-4 text-gray-900 rounded-lg text-md md:text-lg text-center focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all"
               placeholder="Paste Any Article URL Here"
             />
-            {searchError && <p className="text-red-600">{searchError}</p>}
+            {searchError && <p className="text-red-600 text-sm mt-1 text-center">{searchError}</p>}
           </div>
         </div>
         <div className="flex justify-center mt-6">

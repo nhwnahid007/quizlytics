@@ -46,3 +46,5 @@ next-env.d.ts
 .DS_Store
 *.pem
 .vscode/settings.json
+temp_auto_push.bat
+temp_interactive_push.bat
