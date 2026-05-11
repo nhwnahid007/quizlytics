@@ -101,7 +101,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
     <div className={`flex ${className ?? ""}`} style={style}>
       <div
         className={`${
-          isSidebarOpen ? "w-72 p-4" : "w-16 p-2"
+          isSidebarOpen ? "w-72 p-4" : "w-20 p-2"
         } bg-card/80 backdrop-blur-md border-r border-border h-auto pt-8 relative duration-300 text-primary-color flex flex-col justify-between shadow-xl`}
       >
         <div>
@@ -128,18 +128,22 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
               Quizlytics
             </Link>
           </div>
-          <ul className="pt-8 space-y-2">
+          <ul className="pt-8 flex flex-col gap-4">
             {Menus.map((Menu, index) => (
-              <Link href={Menu.route} key={index}>
+              <Link href={Menu.route} key={index} className="block">
                 <li
-                  className={`flex rounded-xl p-3 cursor-pointer transition-all duration-200 items-center gap-x-3 group ${
+                  className={`flex rounded-xl transition-all duration-300 items-center group ${
+                    !isSidebarOpen ? "justify-center p-2 mx-auto w-12 h-12" : "p-3 gap-x-3"
+                  } ${
                     isActive(Menu.route)
-                      ? "bg-primary-color text-white shadow-lg shadow-primary-color/30"
-                      : "hover:bg-primary-color/10 text-muted-foreground hover:text-primary-color"
+                      ? "bg-primary-color text-white shadow-xl shadow-primary-color/20 scale-[1.02]"
+                      : "hover:bg-primary-color/10 text-muted-foreground hover:text-primary-color hover:scale-[1.02] hover:shadow-md"
                   }`}
                 >
                   <span
-                    className={`text-xl transition-colors ${
+                    className={`transition-colors duration-300 flex items-center justify-center ${
+                      !isSidebarOpen ? "text-2xl" : "text-xl"
+                    } ${
                       isActive(Menu.route)
                         ? "text-white"
                         : "text-muted-foreground group-hover:text-primary-color"
@@ -148,7 +152,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
                     {Menu.icon}
                   </span>
                   <span
-                    className={`origin-left font-medium duration-200 ${
+                    className={`origin-left font-medium duration-300 ${
                       !isSidebarOpen ? "hidden" : "block"
                     }`}
                   >
@@ -159,7 +163,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
             ))}
           </ul>
         </div>
-        <div className="flex flex-col gap-y-2 mt-auto pt-10">
+        <div className="flex flex-col gap-y-4 mt-auto pt-10">
           <Link href="/">
             <li className="flex rounded-xl p-3 cursor-pointer hover:bg-muted text-muted-foreground font-medium items-center gap-x-4 transition-colors">
               <span className="text-xl text-muted-foreground">
