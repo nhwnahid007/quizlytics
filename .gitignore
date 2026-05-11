@@ -6,8 +6,6 @@ node_modules/
 .yarn/install-state.gz
 
 # Environment
-.env
-.env.*
 !.env.example
 !.env*.example
 
@@ -46,3 +44,4 @@ next-env.d.ts
 .DS_Store
 *.pem
 .vscode/settings.json
+config.bat
