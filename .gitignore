@@ -6,8 +6,6 @@ node_modules/
 .yarn/install-state.gz
 
 # Environment
-.env
-.env.*
 !.env.example
 !.env*.example
 
@@ -48,3 +46,4 @@ next-env.d.ts
 .vscode/settings.json
 temp_auto_push.bat
 temp_interactive_push.bat
+config.bat

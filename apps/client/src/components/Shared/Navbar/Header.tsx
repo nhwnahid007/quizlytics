@@ -106,7 +106,10 @@ const Header = () => {
                   {name}
                 </DropdownMenuLabel>
                 <DropdownMenuItem className="bg-purple-600 flex flex-row items-center gap-2 text-white p-2 text-sm rounded-md mb-2 text-center">
-                  <Link href="/profile" className="flex items-center gap-2">
+                  <Link
+                    href="/Dashboard/profile"
+                    className="flex items-center gap-2"
+                  >
                     <User className="h-4 w-4" /> Profile
                   </Link>
                 </DropdownMenuItem>
