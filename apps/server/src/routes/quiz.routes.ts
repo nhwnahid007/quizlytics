@@ -7,6 +7,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import {
   emailQuerySchema,
   generateQuizQuerySchema,
+  historyByIdQuerySchema,
   historyByKeyQuerySchema,
   historyByUserAiQuerySchema,
   linkQuizQuerySchema,
@@ -30,55 +31,60 @@ export const quizRouter = Router();
 quizRouter.post(
   "/linkQuiz",
   validateRequest({ body: saveLinkQuizHistoryBodySchema }),
-  asyncHandler(quizController.saveLinkQuiz),
+  asyncHandler(quizController.saveLinkQuiz)
 );
 
 quizRouter.get(
   "/linkHistoryByUser",
   validateRequest({ query: emailQuerySchema }),
-  asyncHandler(quizController.getLinkHistoryByUser),
+  asyncHandler(quizController.getLinkHistoryByUser)
 );
 
 quizRouter.post(
   "/saveAiQuiz",
   requireAuth,
   validateRequest({ body: saveAiQuizHistoryBodySchema }),
-  asyncHandler(quizController.saveAiQuiz),
+  asyncHandler(quizController.saveAiQuiz)
 );
 
 quizRouter.get(
   "/historyByUserAi",
   validateRequest({ query: historyByUserAiQuerySchema }),
-  asyncHandler(quizController.getHistoryByUserAi),
+  asyncHandler(quizController.getHistoryByUserAi)
 );
 
 quizRouter.post(
   "/saveHistory",
   requireAuth,
   validateRequest({ body: saveQuizHistoryBodySchema }),
-  asyncHandler(quizController.saveHistory),
+  asyncHandler(quizController.saveHistory)
 );
 
 quizRouter.get("/leaderboard", asyncHandler(quizController.getLeaderboard));
 quizRouter.get("/allExaminee", asyncHandler(quizController.getAllExaminees));
+quizRouter.get(
+  "/historyById",
+  validateRequest({ query: historyByIdQuerySchema }),
+  asyncHandler(quizController.getHistoryById)
+);
 
 quizRouter.get(
   "/historyByKey",
   validateRequest({ query: historyByKeyQuerySchema }),
-  asyncHandler(quizController.getHistoryByKey),
+  asyncHandler(quizController.getHistoryByKey)
 );
 
 quizRouter.get(
   "/userHistory",
   validateRequest({ query: emailQuerySchema }),
-  asyncHandler(quizController.getUserHistory),
+  asyncHandler(quizController.getUserHistory)
 );
 
 quizRouter.post(
   "/saveManualQuiz",
   requireAuth,
   validateRequest({ body: saveManualQuizBodySchema }),
-  asyncHandler(quizController.saveManualQuiz),
+  asyncHandler(quizController.saveManualQuiz)
 );
 
 quizRouter.get("/allCustomQuiz", asyncHandler(quizController.getAllCustomQuiz));
@@ -86,21 +92,21 @@ quizRouter.get("/allCustomQuiz", asyncHandler(quizController.getAllCustomQuiz));
 quizRouter.get(
   "/getCustomQuizByKey",
   validateRequest({ query: quizKeyQuerySchema }),
-  asyncHandler(quizController.getCustomQuizByKey),
+  asyncHandler(quizController.getCustomQuizByKey)
 );
 
 quizRouter.delete(
   "/deleteCustomQuiz",
   requireAuth,
   validateRequest({ query: quizKeyQuerySchema }),
-  asyncHandler(quizController.deleteCustomQuiz),
+  asyncHandler(quizController.deleteCustomQuiz)
 );
 
 quizRouter.post(
   "/feedback",
   requireAuth,
   validateRequest({ body: saveFeedbackBodySchema }),
-  asyncHandler(quizController.saveFeedback),
+  asyncHandler(quizController.saveFeedback)
 );
 
 quizRouter.get("/all-feedback", asyncHandler(quizController.getAllFeedback));
@@ -109,12 +115,12 @@ quizRouter.get(
   "/quiz",
   aiLimiter,
   validateRequest({ query: generateQuizQuerySchema }),
-  asyncHandler(quizController.generateQuiz),
+  asyncHandler(quizController.generateQuiz)
 );
 
 quizRouter.get(
   "/testByLink",
   aiLimiter,
   validateRequest({ query: linkQuizQuerySchema }),
-  asyncHandler(quizController.generateQuizByLink),
+  asyncHandler(quizController.generateQuizByLink)
 );

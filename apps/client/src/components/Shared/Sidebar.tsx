@@ -19,7 +19,10 @@ import {
 } from "lucide-react";
 import useRole from "@/app/hooks/useRole";
 
-const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => {
+const Sidebar = ({
+  className,
+  style,
+}: React.HTMLAttributes<HTMLDivElement>) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -75,7 +78,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
     },
     {
       title: "My Profile",
-      route: "/profile",
+      route: "/Dashboard/profile",
       icon: <UserCircle />,
     },
     {
@@ -89,12 +92,18 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
       icon: <UserCog />,
     },
   ].filter(
-    (menu) =>
+    menu =>
       role === "admin" ||
       (role === "user" &&
-        ["Leaderboard", "My Progress", "Take your Quiz", "My Profile"].includes(menu.title)) ||
+        [
+          "Leaderboard",
+          "My Progress",
+          "Take your Quiz",
+          "My Profile",
+          "Quiz History",
+        ].includes(menu.title)) ||
       (role === "teacher" &&
-        !["User Management", "Payment"].includes(menu.title)),
+        !["User Management", "Payment"].includes(menu.title))
   );
 
   return (
@@ -117,7 +126,7 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
           </button>
           <div className="flex gap-x-4 items-center px-2">
             <div className="bg-primary-color p-2 rounded-xl">
-               <BookOpenCheck className="text-white w-6 h-6" />
+              <BookOpenCheck className="text-white w-6 h-6" />
             </div>
             <Link
               href="/Dashboard"
@@ -133,7 +142,9 @@ const Sidebar = ({ className, style }: React.HTMLAttributes<HTMLDivElement>) => 
               <Link href={Menu.route} key={index} className="block">
                 <li
                   className={`flex rounded-xl transition-all duration-300 items-center group ${
-                    !isSidebarOpen ? "justify-center p-2 mx-auto w-12 h-12" : "p-3 gap-x-3"
+                    !isSidebarOpen
+                      ? "justify-center p-2 mx-auto w-12 h-12"
+                      : "p-3 gap-x-3"
                   } ${
                     isActive(Menu.route)
                       ? "bg-primary-color text-white shadow-xl shadow-primary-color/20 scale-[1.02]"

@@ -2,7 +2,15 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Pencil, Check, X, Trophy, Target, Activity, Clock } from "lucide-react";
+import {
+  Pencil,
+  Check,
+  X,
+  Trophy,
+  Target,
+  Activity,
+  Clock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getMarks } from "@/requests/get";
 import type { HistoryWithMongoId } from "@/requests/get";
@@ -15,7 +23,7 @@ function getInitials(name?: string | null): string {
   if (!name) return "?";
   return name
     .split(" ")
-    .map((w) => w[0])
+    .map(w => w[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
@@ -83,12 +91,12 @@ export default function ProfilePage() {
   const totalQuizzes = history.length;
   const avgScore =
     totalQuizzes > 0
-      ? (history.reduce((acc, h) => acc + (h.marks ?? 0), 0) / totalQuizzes).toFixed(1)
+      ? (
+          history.reduce((acc, h) => acc + (h.marks ?? 0), 0) / totalQuizzes
+        ).toFixed(1)
       : "0";
   const bestScore =
-    totalQuizzes > 0
-      ? Math.max(...history.map((h) => h.marks ?? 0))
-      : 0;
+    totalQuizzes > 0 ? Math.max(...history.map(h => h.marks ?? 0)) : 0;
   const recentActivity = history.slice(0, 5);
 
   return (
@@ -110,7 +118,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
+                      onChange={e => setDisplayName(e.target.value)}
                       className="text-2xl font-bold bg-transparent border-b-2 border-primary-color outline-none text-foreground"
                       autoFocus
                     />
@@ -186,7 +194,9 @@ export default function ProfilePage() {
               key={i}
               className="bg-card p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow"
             >
-              <div className={`${stat.color} p-3 rounded-xl text-white shadow-lg w-fit mb-3`}>
+              <div
+                className={`${stat.color} p-3 rounded-xl text-white shadow-lg w-fit mb-3`}
+              >
                 <stat.icon size={20} />
               </div>
               <p className="text-muted-foreground text-sm font-medium">
@@ -210,7 +220,7 @@ export default function ProfilePage() {
             </p>
           ) : (
             <div className="space-y-3">
-              {recentActivity.map((item) => {
+              {recentActivity.map(item => {
                 const score = item.marks ?? 0;
                 const color =
                   score > 70
