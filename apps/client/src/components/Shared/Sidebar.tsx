@@ -78,7 +78,7 @@ const Sidebar = ({
     },
     {
       title: "My Profile",
-      route: "/profile",
+      route: "/Dashboard/profile",
       icon: <UserCircle />,
     },
     {

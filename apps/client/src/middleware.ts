@@ -13,7 +13,6 @@ export async function middleware(req: NextRequest) {
   return NextResponse.redirect(new URL(`/login?redirect=${pathname}`, req.url));
 }
 
-
 export const config = {
   matcher: [
     "/quickExam",
@@ -21,6 +20,5 @@ export const config = {
     "/customQuiz",
     "/quizByLink",
     "/blogs/:path*",
-    "/profile",
   ],
 };
