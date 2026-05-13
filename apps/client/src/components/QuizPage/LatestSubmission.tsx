@@ -51,34 +51,36 @@ const LatestSubmission = ({
 
   const { data: session } = useSession();
   const email = session?.user?.email;
-  const name = session?.user?.name;
 
   useEffect(() => {
     const getLatestSubmission = async () => {
       try {
+        const sessionEmail = email ?? undefined;
+
+        setIsLoading(true);
         if (quizKey) {
+          if (!sessionEmail) return;
           setLatestSubmission(null);
-          const data = await getSubmissionByKey(quizKey, email ?? "");
+          const data = await getSubmissionByKey(quizKey, sessionEmail);
           setLatestSubmission(data.at(-1) ?? null);
-          setIsLoading(false);
         } else if (searchCategory) {
+          if (!sessionEmail) return;
           setLatestSubmission(null);
           const data = await getSubmissionByQuizTitle(
             searchCategory,
-            email ?? ""
+            sessionEmail
           );
           setLatestSubmission(data.at(-1) ?? null);
-          setIsLoading(false);
         } else if (quizId) {
           setLatestSubmission(null);
           const data = await getSubmissionById(quizId);
           setLatestSubmission(data);
-          setIsLoading(false);
         } else {
+          const linkHistoryEmail = linkUser ?? sessionEmail;
+          if (!linkHistoryEmail) return;
           setLatestSubmission(null);
-          const data = await getLinkHistoryByUser(linkUser ?? email ?? "");
+          const data = await getLinkHistoryByUser(linkHistoryEmail);
           setLatestSubmission(data?.at(-1) ?? null);
-          setIsLoading(false);
         }
       } catch {
         Swal.fire({
@@ -87,6 +89,8 @@ const LatestSubmission = ({
           text: "Something went wrong!!!",
           toast: true,
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     getLatestSubmission();

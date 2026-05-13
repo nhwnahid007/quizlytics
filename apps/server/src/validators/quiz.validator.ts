@@ -64,6 +64,10 @@ export const historyByUserAiQuerySchema = emailQuerySchema.extend({
   qTitle: z.string().min(1),
 });
 
+export const historyByIdQuerySchema = z.object({
+  id: z.string().uuid(),
+});
+
 export const generateQuizQuerySchema = z.object({
   category: z.string().min(1),
   skill: z.string().min(1),

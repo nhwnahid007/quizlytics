@@ -72,17 +72,11 @@ const QuizHistory = () => {
   };
 
   const handleViewAnswers = (item: HistoryWithMongoId) => {
-    if (item.quizStartKey) {
-      router.push(`/viewSubmission/${item.quizStartKey}`);
-    } else if (item.quizTitle) {
-      router.push(`/viewSubmissionAi/${item.quizCategory || item.quizTitle}`);
-    } else {
-      router.push(`/viewSubmissionByLink/${item.userEmail}`);
-    }
+    router.push(`/Dashboard/viewHistory/${item._id ?? item.id ?? ""}`);
   };
 
   const handleExportCSV = () => {
-    const csvData = history.map((item) => ({
+    const csvData = history.map(item => ({
       "Quiz Name": item.quizCategory || item.quizTitle || "General",
       "Score (%)": item.marks ?? 0,
       Date: item.date ? moment(item.date).format("YYYY-MM-DD") : "",
@@ -121,10 +115,14 @@ const QuizHistory = () => {
   const getVisiblePages = () => {
     const pages: (number | string)[] = [];
     for (let i = 1; i <= totalPages; i++) {
-      if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
         pages.push(i);
-      } else if (pages[pages.length - 1] !== '...') {
-        pages.push('...');
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
       }
     }
     return pages;
@@ -145,7 +143,7 @@ const QuizHistory = () => {
             <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
             <select
               value={sortBy}
-              onChange={(e) => {
+              onChange={e => {
                 setSortBy(e.target.value as SortOption);
                 setCurrentPage(1);
               }}
@@ -175,31 +173,51 @@ const QuizHistory = () => {
             <Table className="w-full">
               <TableHeader className="bg-muted/50">
                 <TableRow className="hover:bg-transparent border-none">
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">Date</TableHead>
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">Quiz Topic</TableHead>
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">Examiner</TableHead>
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-center">Score</TableHead>
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-center">Status</TableHead>
-                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-right">Actions</TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">
+                    Date
+                  </TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">
+                    Quiz Topic
+                  </TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest">
+                    Examiner
+                  </TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-center">
+                    Score
+                  </TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-center">
+                    Status
+                  </TableHead>
+                  <TableHead className="py-5 px-6 text-muted-foreground font-bold uppercase text-[11px] tracking-widest text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-40 text-center">
-                      <div className="flex justify-center"><LoadingSpinner /></div>
+                      <div className="flex justify-center">
+                        <LoadingSpinner />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : sortedHistory.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-40 text-center text-muted-foreground font-medium">
+                    <TableCell
+                      colSpan={6}
+                      className="h-40 text-center text-muted-foreground font-medium"
+                    >
                       No quiz history found. Start your first journey!
                     </TableCell>
                   </TableRow>
                 ) : (
                   sortedHistory
-                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                    .map((item) => {
+                    .slice(
+                      (currentPage - 1) * itemsPerPage,
+                      currentPage * itemsPerPage
+                    )
+                    .map(item => {
                       const score = item.marks ?? 0;
                       const colors = getScoreColor(score);
                       return (
@@ -209,21 +227,29 @@ const QuizHistory = () => {
                         >
                           <TableCell className="py-5 px-6">
                             <div className="flex flex-col">
-                               <span className="text-foreground font-medium">{moment(item.date).format("MMM Do, YYYY")}</span>
-                               <span className="text-[10px] text-muted-foreground">{moment(item.date).fromNow()}</span>
+                              <span className="text-foreground font-medium">
+                                {moment(item.date).format("MMM Do, YYYY")}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {moment(item.date).fromNow()}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell className="py-5 px-6">
-                             <div className="font-bold text-foreground group-hover:text-primary-color transition-colors">
-                               {item.quizCategory || "General"}
-                             </div>
+                            <div className="font-bold text-foreground group-hover:text-primary-color transition-colors">
+                              {item.quizCategory || "General"}
+                            </div>
                           </TableCell>
                           <TableCell className="py-5 px-6 text-muted-foreground italic text-sm">
                             {item.quizCreator || "System AI"}
                           </TableCell>
                           <TableCell className="py-5 px-6">
                             <div className="flex flex-col items-center gap-1.5">
-                              <span className={`text-lg font-black ${colors.text}`}>{score}%</span>
+                              <span
+                                className={`text-lg font-black ${colors.text}`}
+                              >
+                                {score}%
+                              </span>
                               <div className="w-full max-w-20">
                                 <Progress
                                   value={score}
@@ -238,7 +264,9 @@ const QuizHistory = () => {
                           <TableCell className="py-5 px-6 text-right">
                             <div className="flex gap-2 justify-end">
                               <Button
-                                onClick={() => handleDetails(item._id ?? item.id ?? "")}
+                                onClick={() =>
+                                  handleDetails(item._id ?? item.id ?? "")
+                                }
                                 variant="outline"
                                 size="sm"
                                 className="rounded-xl border-border hover:bg-primary-color hover:text-white hover:border-primary-color"
@@ -277,26 +305,35 @@ const QuizHistory = () => {
               Previous
             </Button>
             <div className="flex gap-1">
-              {getVisiblePages().map((page, idx) => (
-                page === '...' ? (
-                  <span key={`dots-${idx}`} className="px-3 py-2 text-muted-foreground">...</span>
+              {getVisiblePages().map((page, idx) =>
+                page === "..." ? (
+                  <span
+                    key={`dots-${idx}`}
+                    className="px-3 py-2 text-muted-foreground"
+                  >
+                    ...
+                  </span>
                 ) : (
                   <Button
                     key={page}
                     variant={currentPage === page ? "default" : "ghost"}
                     onClick={() => setCurrentPage(Number(page))}
                     className={`w-10 h-10 rounded-xl font-bold ${
-                      currentPage === page ? "bg-primary-color text-white shadow-lg shadow-primary-color/20" : "text-muted-foreground"
+                      currentPage === page
+                        ? "bg-primary-color text-white shadow-lg shadow-primary-color/20"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {page}
                   </Button>
                 )
-              ))}
+              )}
             </div>
             <Button
               variant="outline"
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              onClick={() =>
+                setCurrentPage(prev => Math.min(totalPages, prev + 1))
+              }
               disabled={currentPage === totalPages}
               className="rounded-xl border-border hover:bg-primary-color hover:text-white"
             >

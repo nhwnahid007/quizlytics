@@ -17,7 +17,12 @@ import type {
 } from "@quizlytics/types";
 import { env } from "../config/env.js";
 import { AppError } from "../errors/app-error.js";
-import { getErrorMessage, toDeleteOneResult, toInsertOneResult, withMongoIds } from "../utils/api.js";
+import {
+  getErrorMessage,
+  toDeleteOneResult,
+  toInsertOneResult,
+  withMongoIds,
+} from "../utils/api.js";
 
 const ai = new GoogleGenAI({ apiKey: env.AI_API_KEY });
 
@@ -60,7 +65,7 @@ const generateContent = async (prompt: string): Promise<unknown> => {
   } catch (error) {
     throw new AppError(
       502,
-      `Failed to generate quiz from AI provider: ${getErrorMessage(error)}`,
+      `Failed to generate quiz from AI provider: ${getErrorMessage(error)}`
     );
   }
 };
@@ -94,7 +99,10 @@ export const getHistoryByUserAi = async (email: string, qTitle: string) => {
     .select()
     .from(aiQuizHistory)
     .where(
-      and(eq(aiQuizHistory.userEmail, email), eq(aiQuizHistory.quizTitle, qTitle)),
+      and(
+        eq(aiQuizHistory.userEmail, email),
+        eq(aiQuizHistory.quizTitle, qTitle)
+      )
     );
   return withMongoIds(result);
 };
@@ -129,10 +137,22 @@ export const getAllExaminees = async () => {
   ]);
 
   const combined = [...standard, ...ai, ...link].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
   );
 
   return withMongoIds(combined);
+};
+
+export const getHistoryById = async (id: string) => {
+  const [standard, ai, link] = await Promise.all([
+    db.select().from(quizHistory).where(eq(quizHistory.id, id)),
+    db.select().from(aiQuizHistory).where(eq(aiQuizHistory.id, id)),
+    db.select().from(linkQuizHistory).where(eq(linkQuizHistory.id, id)),
+  ]);
+
+  const found = [...standard, ...ai, ...link];
+  if (found.length === 0) return null;
+  return withMongoIds(found)[0] ?? null;
 };
 
 export const getHistoryByKey = async (qKey: string, email: string) => {
@@ -140,7 +160,7 @@ export const getHistoryByKey = async (qKey: string, email: string) => {
     .select()
     .from(quizHistory)
     .where(
-      and(eq(quizHistory.quizStartKey, qKey), eq(quizHistory.userEmail, email)),
+      and(eq(quizHistory.quizStartKey, qKey), eq(quizHistory.userEmail, email))
     );
   return withMongoIds(result);
 };
@@ -149,11 +169,14 @@ export const getUserHistory = async (email: string) => {
   const [standard, ai, link] = await Promise.all([
     db.select().from(quizHistory).where(eq(quizHistory.userEmail, email)),
     db.select().from(aiQuizHistory).where(eq(aiQuizHistory.userEmail, email)),
-    db.select().from(linkQuizHistory).where(eq(linkQuizHistory.userEmail, email)),
+    db
+      .select()
+      .from(linkQuizHistory)
+      .where(eq(linkQuizHistory.userEmail, email)),
   ]);
 
   const combined = [...standard, ...ai, ...link].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
   );
 
   return withMongoIds(combined);

@@ -19,7 +19,7 @@ export type LinkHistoryWithMongoId = LinkQuizHistory & { _id?: string };
 
 export const getMCQ = async (
   category: string,
-  level: string,
+  level: string
 ): Promise<QuizQuestion[]> => {
   const { data } = await apiClient.get<QuizQuestion[]>("/quiz", {
     params: { category, skill: level },
@@ -28,7 +28,7 @@ export const getMCQ = async (
 };
 
 export const getQuizByLink = async (
-  artLink: string,
+  artLink: string
 ): Promise<QuizQuestion[]> => {
   const { data } = await apiClient.get<QuizQuestion[]>("/testByLink", {
     params: { link: artLink },
@@ -39,11 +39,11 @@ export const getQuizByLink = async (
 export const getMark = async (_examId: string): Promise<UserExamAnswer[]> => [];
 
 export const getCustomQuiz = async (
-  quizKey: string | null | undefined,
+  quizKey: string | null | undefined
 ): Promise<ManualQuizWithQuestions[]> => {
   const { data } = await apiClient.get<ManualQuizWithQuestions[]>(
     "/getCustomQuizByKey",
-    { params: { qKey: quizKey ?? "" } },
+    { params: { qKey: quizKey ?? "" } }
   );
   return data;
 };
@@ -56,7 +56,7 @@ export const allCustomQuiz = async (): Promise<ManualQuizWithQuestions[]> => {
 
 export const getSubmissionByKey = async (
   key: string,
-  email: string,
+  email: string
 ): Promise<HistoryWithMongoId[]> => {
   const { data } = await apiClient.get<HistoryWithMongoId[]>("/historyByKey", {
     params: { qKey: key, email },
@@ -66,21 +66,21 @@ export const getSubmissionByKey = async (
 
 export const getSubmissionByQuizTitle = async (
   searchCategory: string,
-  email: string,
+  email: string
 ): Promise<AiHistoryWithMongoId[]> => {
   const { data } = await apiClient.get<AiHistoryWithMongoId[]>(
     "/historyByUserAi",
-    { params: { qTitle: searchCategory, email } },
+    { params: { qTitle: searchCategory, email } }
   );
   return data;
 };
 
 export const getLinkHistoryByUser = async (
-  email: string,
+  email: string
 ): Promise<LinkHistoryWithMongoId[]> => {
   const { data } = await apiClient.get<LinkHistoryWithMongoId[]>(
     "/linkHistoryByUser",
-    { params: { email } },
+    { params: { email } }
   );
   return data;
 };
@@ -91,7 +91,7 @@ export const getExaminees = async (): Promise<HistoryWithMongoId[]> => {
 };
 
 export const getMarks = async (
-  email: string,
+  email: string
 ): Promise<HistoryWithMongoId[]> => {
   const { data } = await apiClient.get<HistoryWithMongoId[]>("/userHistory", {
     params: { email },
@@ -100,8 +100,16 @@ export const getMarks = async (
 };
 
 export const getSubmissionById = async (
-  _id: string,
-): Promise<HistoryWithMongoId | null> => null;
+  _id: string
+): Promise<HistoryWithMongoId | null> => {
+  const { data } = await apiClient.get<HistoryWithMongoId | null>(
+    "/historyById",
+    {
+      params: { id: _id },
+    }
+  );
+  return data;
+};
 
 export const saveHistory = async (body: unknown) => {
   const { data } = await apiClient.post("/saveHistory", body);

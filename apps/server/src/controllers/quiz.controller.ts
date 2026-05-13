@@ -18,6 +18,10 @@ type QuizKeyQueryValidated = ValidatedRequestData & {
   query: { qKey: string };
 };
 
+type HistoryByIdValidated = ValidatedRequestData & {
+  query: { id: string };
+};
+
 type HistoryByKeyValidated = ValidatedRequestData & {
   query: { email: string; qKey: string };
 };
@@ -56,7 +60,7 @@ type SaveFeedbackValidated = ValidatedRequestData & {
 
 export const saveLinkQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveLinkHistoryValidated>(res);
   res.status(200).json(await quizService.saveLinkQuiz(body));
@@ -64,7 +68,7 @@ export const saveLinkQuiz = async (
 
 export const getLinkHistoryByUser = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<EmailQueryValidated>(res);
   res.status(200).json(await quizService.getLinkHistoryByUser(query.email));
@@ -72,7 +76,7 @@ export const getLinkHistoryByUser = async (
 
 export const saveAiQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveAiHistoryValidated>(res);
   res.status(200).json(await quizService.saveAiQuiz(body));
@@ -80,7 +84,7 @@ export const saveAiQuiz = async (
 
 export const getHistoryByUserAi = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<HistoryByUserAiValidated>(res);
   res
@@ -90,7 +94,7 @@ export const getHistoryByUserAi = async (
 
 export const saveHistory = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveHistoryValidated>(res);
   res.status(200).json(await quizService.saveHistory(body));
@@ -98,21 +102,29 @@ export const saveHistory = async (
 
 export const getLeaderboard = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await quizService.getLeaderboard());
 };
 
 export const getAllExaminees = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await quizService.getAllExaminees());
 };
 
+export const getHistoryById = async (
+  _req: unknown,
+  res: Response
+): Promise<void> => {
+  const { query } = getValidated<HistoryByIdValidated>(res);
+  res.status(200).json(await quizService.getHistoryById(query.id));
+};
+
 export const getHistoryByKey = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<HistoryByKeyValidated>(res);
   res
@@ -122,7 +134,7 @@ export const getHistoryByKey = async (
 
 export const getUserHistory = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<EmailQueryValidated>(res);
   res.status(200).json(await quizService.getUserHistory(query.email));
@@ -130,7 +142,7 @@ export const getUserHistory = async (
 
 export const saveManualQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveManualQuizValidated>(res);
   res.status(200).json(await quizService.saveManualQuiz(body));
@@ -138,14 +150,14 @@ export const saveManualQuiz = async (
 
 export const getAllCustomQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await quizService.getAllCustomQuiz());
 };
 
 export const getCustomQuizByKey = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<QuizKeyQueryValidated>(res);
   res.status(200).json(await quizService.getCustomQuizByKey(query.qKey));
@@ -153,7 +165,7 @@ export const getCustomQuizByKey = async (
 
 export const deleteCustomQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<QuizKeyQueryValidated>(res);
   res.status(200).json(await quizService.deleteCustomQuiz(query.qKey));
@@ -161,7 +173,7 @@ export const deleteCustomQuiz = async (
 
 export const saveFeedback = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveFeedbackValidated>(res);
   res.status(200).json(await quizService.saveFeedback(body));
@@ -169,22 +181,24 @@ export const saveFeedback = async (
 
 export const getAllFeedback = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await quizService.getAllFeedback());
 };
 
 export const generateQuiz = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<GenerateQuizValidated>(res);
-  res.status(200).json(await quizService.generateQuiz(query.category, query.skill));
+  res
+    .status(200)
+    .json(await quizService.generateQuiz(query.category, query.skill));
 };
 
 export const generateQuizByLink = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<LinkQuizQueryValidated>(res);
   res.status(200).json(await quizService.generateQuizByLink(query.link));
