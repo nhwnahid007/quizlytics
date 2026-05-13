@@ -18,8 +18,7 @@ import useRouterHook from "@/app/hooks/useRouterHook";
 import { SectionTitleMinimal } from "@/components/Shared/SectionTitle";
 import type { HistoryWithMongoId } from "@/requests/get";
 import LoadingSpinner from "@/components/Spinner/LoadingSpinner";
-import { exportToCSV } from "@/lib/export-utils";
-import { Download, ArrowUpDown, Eye } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 
 type SortOption = "recent" | "highest" | "lowest";
 
@@ -69,20 +68,6 @@ const QuizHistory = () => {
 
   const handleDetails = (id: string) => {
     router.push(`/Dashboard/viewHistory/${id}`);
-  };
-
-  const handleViewAnswers = (item: HistoryWithMongoId) => {
-    router.push(`/Dashboard/viewHistory/${item._id ?? item.id ?? ""}`);
-  };
-
-  const handleExportCSV = () => {
-    const csvData = history.map(item => ({
-      "Quiz Name": item.quizCategory || item.quizTitle || "General",
-      "Score (%)": item.marks ?? 0,
-      Date: item.date ? moment(item.date).format("YYYY-MM-DD") : "",
-      Examiner: item.quizCreator || "System AI",
-    }));
-    exportToCSV(csvData, `quiz-history-${moment().format("YYYY-MM-DD")}`);
   };
 
   const getScoreColor = (marks: number) => {
@@ -154,18 +139,6 @@ const QuizHistory = () => {
               <option value="lowest">Lowest Score</option>
             </select>
           </div>
-
-          {/* Export */}
-          {history.length > 0 && (
-            <Button
-              variant="outline"
-              onClick={handleExportCSV}
-              className="gap-2 rounded-xl border-border"
-            >
-              <Download className="h-4 w-4" />
-              Export CSV
-            </Button>
-          )}
         </div>
 
         <div className="mt-4 bg-card rounded-3xl shadow-xl shadow-muted/50 border border-border overflow-hidden">
@@ -269,18 +242,10 @@ const QuizHistory = () => {
                                 }
                                 variant="outline"
                                 size="sm"
-                                className="rounded-xl border-border hover:bg-primary-color hover:text-white hover:border-primary-color"
+                                className="rounded-xl border-border hover:bg-primary-color hover:text-white hover:border-primary-color gap-1.5"
                               >
+                                <Eye className="h-4 w-4" />
                                 Review
-                              </Button>
-                              <Button
-                                onClick={() => handleViewAnswers(item)}
-                                variant="ghost"
-                                size="sm"
-                                className="rounded-xl gap-1"
-                              >
-                                <Eye className="h-3.5 w-3.5" />
-                                Answers
                               </Button>
                             </div>
                           </TableCell>
