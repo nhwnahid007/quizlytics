@@ -33,7 +33,6 @@ const SocialAuth = () => {
           name: name ?? undefined,
           email,
           image,
-          role: "user",
         };
 
         try {

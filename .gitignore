@@ -8,6 +8,7 @@ node_modules/
 # Environment
 !.env.example
 !.env*.example
+.env
 
 # Build outputs
 dist/

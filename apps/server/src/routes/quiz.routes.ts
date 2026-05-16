@@ -1,7 +1,11 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import * as quizController from "../controllers/quiz.controller.js";
-import { requireAuth } from "../middleware/auth.middleware.js";
+import {
+  requireAuth,
+  requireEducator,
+  requireSelfOrAdmin,
+} from "../middleware/auth.middleware.js";
 import { validateRequest } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
@@ -22,6 +26,7 @@ import {
 const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 20,
+  keyGenerator: (_req, res) => res.locals.authUser?.email ?? "anonymous",
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -30,13 +35,16 @@ export const quizRouter = Router();
 
 quizRouter.post(
   "/linkQuiz",
+  requireAuth,
   validateRequest({ body: saveLinkQuizHistoryBodySchema }),
   asyncHandler(quizController.saveLinkQuiz)
 );
 
 quizRouter.get(
   "/linkHistoryByUser",
+  requireAuth,
   validateRequest({ query: emailQuerySchema }),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
   asyncHandler(quizController.getLinkHistoryByUser)
 );
 
@@ -49,7 +57,9 @@ quizRouter.post(
 
 quizRouter.get(
   "/historyByUserAi",
+  requireAuth,
   validateRequest({ query: historyByUserAiQuerySchema }),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
   asyncHandler(quizController.getHistoryByUserAi)
 );
 
@@ -61,22 +71,31 @@ quizRouter.post(
 );
 
 quizRouter.get("/leaderboard", asyncHandler(quizController.getLeaderboard));
-quizRouter.get("/allExaminee", asyncHandler(quizController.getAllExaminees));
+quizRouter.get(
+  "/allExaminee",
+  requireEducator,
+  asyncHandler(quizController.getAllExaminees)
+);
 quizRouter.get(
   "/historyById",
+  requireAuth,
   validateRequest({ query: historyByIdQuerySchema }),
   asyncHandler(quizController.getHistoryById)
 );
 
 quizRouter.get(
   "/historyByKey",
+  requireAuth,
   validateRequest({ query: historyByKeyQuerySchema }),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
   asyncHandler(quizController.getHistoryByKey)
 );
 
 quizRouter.get(
   "/userHistory",
+  requireAuth,
   validateRequest({ query: emailQuerySchema }),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
   asyncHandler(quizController.getUserHistory)
 );
 
@@ -87,7 +106,11 @@ quizRouter.post(
   asyncHandler(quizController.saveManualQuiz)
 );
 
-quizRouter.get("/allCustomQuiz", asyncHandler(quizController.getAllCustomQuiz));
+quizRouter.get(
+  "/allCustomQuiz",
+  requireEducator,
+  asyncHandler(quizController.getAllCustomQuiz)
+);
 
 quizRouter.get(
   "/getCustomQuizByKey",
@@ -113,6 +136,7 @@ quizRouter.get("/all-feedback", asyncHandler(quizController.getAllFeedback));
 
 quizRouter.get(
   "/quiz",
+  requireAuth,
   aiLimiter,
   validateRequest({ query: generateQuizQuerySchema }),
   asyncHandler(quizController.generateQuiz)
@@ -120,6 +144,7 @@ quizRouter.get(
 
 quizRouter.get(
   "/testByLink",
+  requireAuth,
   aiLimiter,
   validateRequest({ query: linkQuizQuerySchema }),
   asyncHandler(quizController.generateQuizByLink)

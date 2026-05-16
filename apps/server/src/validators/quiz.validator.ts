@@ -17,7 +17,7 @@ const quizHistoryBodySchema = z
     userImg: z.string().optional().nullable(),
     marks: z.number().int().optional().nullable(),
   })
-  .passthrough();
+  .strict();
 
 export const saveQuizHistoryBodySchema = quizHistoryBodySchema;
 
@@ -34,7 +34,7 @@ export const saveManualQuizBodySchema = z
     quizCreator: z.string().optional().nullable(),
     quizArr: z.unknown().optional().nullable(),
   })
-  .passthrough();
+  .strict();
 
 export const saveFeedbackBodySchema = z
   .object({
@@ -46,15 +46,19 @@ export const saveFeedbackBodySchema = z
     profile: z.string().optional().nullable(),
     image: z.string().optional().nullable(),
   })
-  .passthrough();
+  .strict();
 
-export const quizKeyQuerySchema = z.object({
-  qKey: z.string().min(1),
-});
+export const quizKeyQuerySchema = z
+  .object({
+    qKey: z.string().min(1),
+  })
+  .strict();
 
-export const emailQuerySchema = z.object({
-  email: z.string().email(),
-});
+export const emailQuerySchema = z
+  .object({
+    email: z.string().email(),
+  })
+  .strict();
 
 export const historyByKeyQuerySchema = emailQuerySchema.extend({
   qKey: z.string().min(1),
@@ -64,15 +68,29 @@ export const historyByUserAiQuerySchema = emailQuerySchema.extend({
   qTitle: z.string().min(1),
 });
 
-export const historyByIdQuerySchema = z.object({
-  id: z.string().uuid(),
-});
+export const historyByIdQuerySchema = z
+  .object({
+    id: z.string().uuid(),
+  })
+  .strict();
 
-export const generateQuizQuerySchema = z.object({
-  category: z.string().min(1),
-  skill: z.string().min(1),
-});
+export const generateQuizQuerySchema = z
+  .object({
+    category: z.string().trim().min(1).max(120),
+    skill: z.string().trim().min(1).max(60),
+  })
+  .strict();
 
-export const linkQuizQuerySchema = z.object({
-  link: z.string().url(),
-});
+export const linkQuizQuerySchema = z
+  .object({
+    link: z
+      .string()
+      .trim()
+      .url()
+      .max(2048)
+      .refine(
+        value => ["http:", "https:"].includes(new URL(value).protocol),
+        "Only http(s) links are supported"
+      ),
+  })
+  .strict();

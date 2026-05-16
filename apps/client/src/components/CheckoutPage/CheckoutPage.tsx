@@ -7,18 +7,19 @@ import {
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Swal from "sweetalert2";
-import { useSession } from "next-auth/react";
 import type { FormEvent } from "react";
 import { savePaymentHistory } from "@/services/payment.service";
 
-const CheckoutPage = ({ prices }: { clientSecret: string; prices: string | null }) => {
+const CheckoutPage = ({
+  prices,
+}: {
+  clientSecret: string;
+  prices: string | null;
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session } = useSession();
-  const name = session?.user?.name;
-  const email = session?.user?.email;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,16 +45,10 @@ const CheckoutPage = ({ prices }: { clientSecret: string; prices: string | null 
     }
 
     if (paymentIntent && paymentIntent.status === "succeeded") {
-      const paymentInfo = {
-        userName: name,
-        email: email,
-        transactionId: paymentIntent.id,
-        amount: Number(prices ?? 0),
-        date: new Date().toISOString(),
-      };
-
       try {
-        const response = await savePaymentHistory(paymentInfo);
+        const response = await savePaymentHistory({
+          transactionId: paymentIntent.id,
+        });
 
         if (response.success) {
           Swal.fire({
@@ -65,9 +60,7 @@ const CheckoutPage = ({ prices }: { clientSecret: string; prices: string | null 
             window.location.href = "/Dashboard";
           });
         } else {
-          throw new Error(
-            response.error || "Failed to update user status"
-          );
+          throw new Error(response.error || "Failed to update user status");
         }
       } catch {
         Swal.fire({

@@ -79,7 +79,7 @@ const Register = () => {
       const profile = await uploadImage(profileImgFill);
 
       // new user info
-      const newUser = { name, email, password, profile, role: "user" }; // Set role here
+      const newUser = { name, email, password, profile };
       let successfull = false;
 
       // sending request with newUser data to backend and then to Database if condition satisfy

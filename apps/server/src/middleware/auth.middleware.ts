@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { decode, type JWT } from "next-auth/jwt";
 import { env } from "../config/env.js";
+import { AppError } from "../errors/app-error.js";
 
 const sessionCookieNames = [
   "__Secure-next-auth.session-token",
@@ -8,13 +9,17 @@ const sessionCookieNames = [
   "__Host-next-auth.csrf-token",
 ];
 
-type AuthUser = {
+export type AuthUser = {
   id?: string;
   email?: string | null;
   role?: string | null;
 };
 
-const parseCookies = (cookieHeader: string | undefined): Map<string, string> => {
+export type AuthenticatedUser = AuthUser & { email: string };
+
+const parseCookies = (
+  cookieHeader: string | undefined
+): Map<string, string> => {
   const cookies = new Map<string, string>();
   if (!cookieHeader) {
     return cookies;
@@ -57,7 +62,7 @@ const tokenToAuthUser = (token: JWT): AuthUser => ({
 export const requireAuth = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> => {
   const sessionToken = getSessionToken(req);
   if (!sessionToken) {
@@ -71,18 +76,66 @@ export const requireAuth = async (
     return;
   }
 
-  res.locals.authUser = tokenToAuthUser(token);
+  const authUser = tokenToAuthUser(token);
+  if (!authUser.email) {
+    res.status(401).json({ success: false, message: "Unauthenticated" });
+    return;
+  }
+
+  res.locals.authUser = authUser;
   next();
 };
+
+export const getAuthUser = (res: Response): AuthenticatedUser => {
+  const authUser = res.locals.authUser as AuthUser | undefined;
+  if (!authUser?.email) {
+    throw new AppError(401, "Unauthenticated");
+  }
+  return { ...authUser, email: authUser.email };
+};
+
+export const requireSelfOrAdmin =
+  (getRequestedEmail: (req: Request, res: Response) => string | undefined) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    const authUser = res.locals.authUser as AuthUser | undefined;
+    const requestedEmail = getRequestedEmail(req, res);
+
+    if (!authUser?.email || !requestedEmail) {
+      res.status(401).json({ success: false, message: "Unauthenticated" });
+      return;
+    }
+
+    if (authUser.role !== "admin" && authUser.email !== requestedEmail) {
+      res.status(403).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    next();
+  };
 
 export const requireAdmin = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> => {
   await requireAuth(req, res, () => {
     const authUser = res.locals.authUser as AuthUser | undefined;
     if (authUser?.role !== "admin") {
+      res.status(403).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+    next();
+  });
+};
+
+export const requireEducator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  await requireAuth(req, res, () => {
+    const authUser = res.locals.authUser as AuthUser | undefined;
+    if (!["admin", "teacher", "examiner"].includes(authUser?.role ?? "")) {
       res.status(403).json({ success: false, message: "Unauthorized" });
       return;
     }

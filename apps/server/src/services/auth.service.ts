@@ -10,6 +10,20 @@ export type LoginCredentials = {
   password: string;
 };
 
+export const isBcryptPasswordHash = (passwordHash: string): boolean =>
+  /^\$2[aby]\$\d{2}\$/.test(passwordHash);
+
+export const verifyPassword = async (
+  password: string,
+  storedPassword: string
+): Promise<boolean> => {
+  if (!isBcryptPasswordHash(storedPassword)) {
+    return false;
+  }
+
+  return bcrypt.compare(password, storedPassword);
+};
+
 export const login = async ({ email, password }: LoginCredentials) => {
   const [currentUser] = await db
     .select({
@@ -30,10 +44,7 @@ export const login = async ({ email, password }: LoginCredentials) => {
     throw new AppError(401, "Invalid user credentials");
   }
 
-  const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(currentUser.password);
-  const passwordMatched = isBcryptHash
-    ? await bcrypt.compare(password, currentUser.password)
-    : currentUser.password === password;
+  const passwordMatched = await verifyPassword(password, currentUser.password);
 
   if (!passwordMatched) {
     throw new AppError(401, "Invalid user credentials");
@@ -51,7 +62,7 @@ export const login = async ({ email, password }: LoginCredentials) => {
 };
 
 export const registerUser = async (
-  newUser: InsertRegisteredUser & { email: string; password: string },
+  newUser: InsertRegisteredUser & { email: string; password: string }
 ) => {
   const [existingUser] = await db
     .select({ id: users.id })
@@ -65,15 +76,21 @@ export const registerUser = async (
 
   const hashedPassword = await bcrypt.hash(newUser.password, 10);
   await db.insert(users).values({
-    ...newUser,
+    name: newUser.name,
+    email: newUser.email,
+    userEmail: newUser.email,
+    profile: newUser.profile,
+    image: newUser.image,
     password: hashedPassword,
+    role: "user",
+    userStatus: "Free",
   });
 
   return { message: "New user successfully created" };
 };
 
 export const authenticateProviderUser = async (
-  newUser: InsertRegisteredUser & { email: string },
+  newUser: InsertRegisteredUser & { email: string }
 ) => {
   const [existingUser] = await db
     .select({ id: users.id })
@@ -85,6 +102,14 @@ export const authenticateProviderUser = async (
     throw new AppError(409, "User already exist!");
   }
 
-  await db.insert(users).values(newUser);
+  await db.insert(users).values({
+    name: newUser.name,
+    email: newUser.email,
+    userEmail: newUser.email,
+    profile: newUser.profile,
+    image: newUser.image,
+    role: "user",
+    userStatus: "Free",
+  });
   return { message: "New user successfully created!" };
 };

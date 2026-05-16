@@ -1,4 +1,3 @@
-import type { InsertPayment } from "@quizlytics/types";
 import { apiClient } from "@/lib/api-client";
 
 export interface PaymentHistoryResponse {
@@ -6,10 +5,10 @@ export interface PaymentHistoryResponse {
   error?: string;
 }
 
-export const savePaymentHistory = async (body: InsertPayment) => {
+export const savePaymentHistory = async (body: { transactionId: string }) => {
   const { data } = await apiClient.post<PaymentHistoryResponse>(
     "/paymentHistory",
-    body,
+    body
   );
   return data;
 };

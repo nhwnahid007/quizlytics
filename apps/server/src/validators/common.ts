@@ -2,9 +2,11 @@ import { z } from "zod";
 
 export const emptyParamsSchema = z.object({}).strict();
 
-export const emailQuerySchema = z.object({
-  email: z.string().email(),
-});
+export const emailQuerySchema = z
+  .object({
+    email: z.string().email(),
+  })
+  .strict();
 
 export const looseJsonSchema: z.ZodType<unknown> = z.unknown();
 
