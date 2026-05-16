@@ -1,12 +1,11 @@
 "use client";
-import React, {useState, useEffect, Suspense} from "react";
-import {useSearchParams} from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
-import {loadStripe} from "@stripe/stripe-js";
-import {Elements} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import CheckoutPage from "@/components/CheckoutPage/CheckoutPage";
 import LoadingSpinner from "@/components/Spinner/LoadingSpinner";
-import {useSession} from "next-auth/react";
 import { clientEnv } from "@/config/env";
 
 const stripePromise = loadStripe(clientEnv.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
@@ -16,9 +15,6 @@ const PaymentCard = () => {
   const prices = searchParams.get("price");
   const plans = searchParams.get("plan");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const {data: session} = useSession();
-  const name = session?.user?.name;
-  const email = session?.user?.email;
 
   useEffect(() => {
     if (prices) {
@@ -29,17 +25,15 @@ const PaymentCard = () => {
         },
         body: JSON.stringify({
           prices: convertToSubcurrency(Number(prices)),
-          email,
-          userName: name,
         }),
       })
-        .then((res) => res.json() as Promise<{ clientSecret?: string }>)
-        .then((data) => setClientSecret(data.clientSecret ?? null))
+        .then(res => res.json() as Promise<{ clientSecret?: string }>)
+        .then(data => setClientSecret(data.clientSecret ?? null))
         .catch(() => {
           setClientSecret(null);
         });
     }
-  }, [email, name, prices]);
+  }, [prices]);
 
   return (
     <div className="max-w-full mx-auto p-6 bg-white shadow-md rounded-lg mt-10 md:mt-20 min-h-[calc(100vh-360px)]">
@@ -59,7 +53,7 @@ const PaymentCard = () => {
         </p>
       )}
       {clientSecret && (
-        <Elements stripe={stripePromise} options={{clientSecret}}>
+        <Elements stripe={stripePromise} options={{ clientSecret }}>
           <CheckoutPage clientSecret={clientSecret} prices={prices} />
         </Elements>
       )}

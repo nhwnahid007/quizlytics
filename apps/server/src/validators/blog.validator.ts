@@ -12,8 +12,10 @@ export const saveBlogBodySchema = z
     postOwner: z.string().optional().nullable(),
     postOwnerPic: z.string().optional().nullable(),
   })
-  .passthrough();
+  .strict();
 
-export const blogIdParamsSchema = z.object({
-  id: z.string().min(1),
-});
+export const blogIdParamsSchema = z
+  .object({
+    id: z.string().min(1),
+  })
+  .strict();

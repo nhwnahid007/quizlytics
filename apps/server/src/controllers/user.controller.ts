@@ -2,6 +2,7 @@ import type { Response } from "express";
 import type { RegisteredUser } from "@quizlytics/types";
 import { getValidated } from "../middleware/validate.middleware.js";
 import type { ValidatedRequestData } from "../middleware/validate.middleware.js";
+import { getAuthUser } from "../middleware/auth.middleware.js";
 import * as userService from "../services/user.service.js";
 
 type EmailQueryValidated = ValidatedRequestData & {
@@ -14,14 +15,14 @@ type UpdateRoleValidated = ValidatedRequestData & {
 
 export const getAllUsers = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await userService.getAllUsers());
 };
 
 export const getUserRoleByEmail = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<EmailQueryValidated>(res);
   res.status(200).json(await userService.getUserRoleByEmail(query.email));
@@ -29,7 +30,7 @@ export const getUserRoleByEmail = async (
 
 export const deleteUser = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<EmailQueryValidated>(res);
   res.status(200).json(await userService.deleteUser(query.email));
@@ -37,22 +38,24 @@ export const deleteUser = async (
 
 export const updateUserRole = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<UpdateRoleValidated>(res);
-  res
-    .status(200)
-    .json(await userService.updateUserRole(body.email, body.role));
+  res.status(200).json(await userService.updateUserRole(body.email, body.role));
 };
 
 type UpdateDisplayNameValidated = ValidatedRequestData & {
-  body: { email: string; name: string };
+  body: { name: string };
 };
 
 export const updateDisplayName = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<UpdateDisplayNameValidated>(res);
-  res.status(200).json(await userService.updateDisplayName(body.email, body.name));
+  res
+    .status(200)
+    .json(
+      await userService.updateDisplayName(getAuthUser(res).email, body.name)
+    );
 };

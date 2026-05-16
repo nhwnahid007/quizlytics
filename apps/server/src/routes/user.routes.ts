@@ -1,6 +1,10 @@
 import { Router } from "express";
 import * as userController from "../controllers/user.controller.js";
-import { requireAdmin, requireAuth } from "../middleware/auth.middleware.js";
+import {
+  requireAdmin,
+  requireAuth,
+  requireSelfOrAdmin,
+} from "../middleware/auth.middleware.js";
 import { validateRequest } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
@@ -14,32 +18,34 @@ export const userRouter = Router();
 userRouter.get(
   "/allUsers",
   requireAdmin,
-  asyncHandler(userController.getAllUsers),
+  asyncHandler(userController.getAllUsers)
 );
 
 userRouter.get(
   "/user/role",
+  requireAuth,
   validateRequest({ query: emailQuerySchema }),
-  asyncHandler(userController.getUserRoleByEmail),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
+  asyncHandler(userController.getUserRoleByEmail)
 );
 
 userRouter.delete(
   "/deleteUser",
   requireAdmin,
   validateRequest({ query: emailQuerySchema }),
-  asyncHandler(userController.deleteUser),
+  asyncHandler(userController.deleteUser)
 );
 
 userRouter.patch(
   "/updateUserRole",
   requireAdmin,
   validateRequest({ body: updateUserRoleBodySchema }),
-  asyncHandler(userController.updateUserRole),
+  asyncHandler(userController.updateUserRole)
 );
 
 userRouter.patch(
   "/user/displayName",
   requireAuth,
   validateRequest({ body: updateDisplayNameBodySchema }),
-  asyncHandler(userController.updateDisplayName),
+  asyncHandler(userController.updateDisplayName)
 );

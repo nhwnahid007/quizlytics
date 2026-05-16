@@ -68,7 +68,6 @@ export default function ProfilePage() {
     setSaving(true);
     try {
       await apiClient.patch("/user/displayName", {
-        email,
         name: displayName.trim(),
       });
       toast.success("Display name updated!");

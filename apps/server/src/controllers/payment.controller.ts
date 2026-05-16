@@ -1,11 +1,11 @@
 import type { Response } from "express";
-import type { InsertPayment } from "@quizlytics/types";
 import { getValidated } from "../middleware/validate.middleware.js";
 import type { ValidatedRequestData } from "../middleware/validate.middleware.js";
+import { getAuthUser } from "../middleware/auth.middleware.js";
 import * as paymentService from "../services/payment.service.js";
 
 type PaymentValidated = ValidatedRequestData & {
-  body: InsertPayment;
+  body: { transactionId: string };
 };
 
 type PaidUserValidated = ValidatedRequestData & {
@@ -14,15 +14,22 @@ type PaidUserValidated = ValidatedRequestData & {
 
 export const savePaymentHistory = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { body } = getValidated<PaymentValidated>(res);
-  res.status(200).json(await paymentService.savePaymentHistory(body));
+  res
+    .status(200)
+    .json(
+      await paymentService.savePaymentHistory(
+        body.transactionId,
+        getAuthUser(res)
+      )
+    );
 };
 
 export const getPaidUser = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { query } = getValidated<PaidUserValidated>(res);
   res.status(200).json(await paymentService.getPaidUser(query.email));
@@ -30,7 +37,7 @@ export const getPaidUser = async (
 
 export const getAllPaidUserInfo = async (
   _req: unknown,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   res.status(200).json(await paymentService.getAllPaidUserInfo());
 };

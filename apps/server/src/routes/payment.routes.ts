@@ -3,6 +3,7 @@ import * as paymentController from "../controllers/payment.controller.js";
 import {
   requireAdmin,
   requireAuth,
+  requireSelfOrAdmin,
 } from "../middleware/auth.middleware.js";
 import { validateRequest } from "../middleware/validate.middleware.js";
 import { asyncHandler } from "../utils/async-handler.js";
@@ -17,17 +18,19 @@ paymentRouter.post(
   "/paymentHistory",
   requireAuth,
   validateRequest({ body: savePaymentBodySchema }),
-  asyncHandler(paymentController.savePaymentHistory),
+  asyncHandler(paymentController.savePaymentHistory)
 );
 
 paymentRouter.get(
   "/paidUser",
+  requireAuth,
   validateRequest({ query: paidUserQuerySchema }),
-  asyncHandler(paymentController.getPaidUser),
+  requireSelfOrAdmin((_req, res) => res.locals.validated.query.email),
+  asyncHandler(paymentController.getPaidUser)
 );
 
 paymentRouter.get(
   "/allPaidUserInfo",
   requireAdmin,
-  asyncHandler(paymentController.getAllPaidUserInfo),
+  asyncHandler(paymentController.getAllPaidUserInfo)
 );

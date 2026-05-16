@@ -1,9 +1,11 @@
 import { z } from "zod";
 
-export const loginBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-});
+export const loginBodySchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(1),
+  })
+  .strict();
 
 export const registerUserBodySchema = z
   .object({
@@ -12,12 +14,11 @@ export const registerUserBodySchema = z
     password: z.string().min(6),
     profile: z.string().url().optional().nullable(),
     image: z.string().url().optional().nullable(),
-    role: z.string().optional().nullable(),
-    userStatus: z.string().optional().nullable(),
-    provider: z.string().optional().nullable(),
   })
-  .passthrough();
+  .strict();
 
-export const providerAuthBodySchema = registerUserBodySchema.omit({
-  password: true,
-});
+export const providerAuthBodySchema = registerUserBodySchema
+  .omit({
+    password: true,
+  })
+  .strict();

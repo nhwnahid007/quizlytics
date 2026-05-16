@@ -8,7 +8,30 @@ import type {
 } from "@quizlytics/types";
 import { getValidated } from "../middleware/validate.middleware.js";
 import type { ValidatedRequestData } from "../middleware/validate.middleware.js";
+import { getAuthUser } from "../middleware/auth.middleware.js";
 import * as quizService from "../services/quiz.service.js";
+
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const authUserId = (res: Response): string | null => {
+  const authUser = getAuthUser(res);
+  return authUser.id && uuidPattern.test(authUser.id) ? authUser.id : null;
+};
+
+const authScopeHistory = <
+  T extends { userId?: string | null; userEmail?: string | null },
+>(
+  body: T,
+  res: Response
+): T => {
+  const authUser = getAuthUser(res);
+  return {
+    ...body,
+    userId: authUserId(res),
+    userEmail: authUser.email,
+  };
+};
 
 type EmailQueryValidated = ValidatedRequestData & {
   query: { email: string };
@@ -63,7 +86,9 @@ export const saveLinkQuiz = async (
   res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveLinkHistoryValidated>(res);
-  res.status(200).json(await quizService.saveLinkQuiz(body));
+  res
+    .status(200)
+    .json(await quizService.saveLinkQuiz(authScopeHistory(body, res)));
 };
 
 export const getLinkHistoryByUser = async (
@@ -79,7 +104,9 @@ export const saveAiQuiz = async (
   res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveAiHistoryValidated>(res);
-  res.status(200).json(await quizService.saveAiQuiz(body));
+  res
+    .status(200)
+    .json(await quizService.saveAiQuiz(authScopeHistory(body, res)));
 };
 
 export const getHistoryByUserAi = async (
@@ -97,7 +124,9 @@ export const saveHistory = async (
   res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveHistoryValidated>(res);
-  res.status(200).json(await quizService.saveHistory(body));
+  res
+    .status(200)
+    .json(await quizService.saveHistory(authScopeHistory(body, res)));
 };
 
 export const getLeaderboard = async (
@@ -119,7 +148,9 @@ export const getHistoryById = async (
   res: Response
 ): Promise<void> => {
   const { query } = getValidated<HistoryByIdValidated>(res);
-  res.status(200).json(await quizService.getHistoryById(query.id));
+  res
+    .status(200)
+    .json(await quizService.getHistoryById(query.id, getAuthUser(res)));
 };
 
 export const getHistoryByKey = async (
@@ -145,14 +176,20 @@ export const saveManualQuiz = async (
   res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveManualQuizValidated>(res);
-  res.status(200).json(await quizService.saveManualQuiz(body));
+  res.status(200).json(
+    await quizService.saveManualQuiz({
+      ...body,
+      userId: authUserId(res),
+      quizCreator: getAuthUser(res).email,
+    })
+  );
 };
 
 export const getAllCustomQuiz = async (
   _req: unknown,
   res: Response
 ): Promise<void> => {
-  res.status(200).json(await quizService.getAllCustomQuiz());
+  res.status(200).json(await quizService.getAllCustomQuiz(getAuthUser(res)));
 };
 
 export const getCustomQuizByKey = async (
@@ -168,7 +205,9 @@ export const deleteCustomQuiz = async (
   res: Response
 ): Promise<void> => {
   const { query } = getValidated<QuizKeyQueryValidated>(res);
-  res.status(200).json(await quizService.deleteCustomQuiz(query.qKey));
+  res
+    .status(200)
+    .json(await quizService.deleteCustomQuiz(query.qKey, getAuthUser(res)));
 };
 
 export const saveFeedback = async (
@@ -176,7 +215,14 @@ export const saveFeedback = async (
   res: Response
 ): Promise<void> => {
   const { body } = getValidated<SaveFeedbackValidated>(res);
-  res.status(200).json(await quizService.saveFeedback(body));
+  const authUser = getAuthUser(res);
+  res.status(200).json(
+    await quizService.saveFeedback({
+      ...body,
+      userId: authUserId(res),
+      email: authUser.email,
+    })
+  );
 };
 
 export const getAllFeedback = async (
