@@ -7,9 +7,8 @@ import {
 } from "@/requests/get";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import SubmitCard from "./SubmitCard";
-import LoadingSpinner from "../Spinner/LoadingSpinner";
 import moment from "moment";
 import type { HistoryRecord, MarkedAnswer } from "@/types/client";
 import type { QuizQuestion } from "@quizlytics/types";
@@ -23,9 +22,13 @@ import {
   Trophy,
   CheckCircle,
   XCircle,
-  Clock,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import {
+  EmptyState,
+  ErrorState,
+  SkeletonBlock,
+} from "@/components/Shared/StateBlocks";
 
 const isQuizQuestion = (value: unknown): value is QuizQuestion => {
   if (typeof value !== "object" || value === null) return false;
@@ -48,6 +51,7 @@ const LatestSubmission = ({
 
   const [latestSubmission, setLatestSubmission] =
     useState<HistoryRecord | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: session } = useSession();
   const email = session?.user?.email;
@@ -55,6 +59,7 @@ const LatestSubmission = ({
   useEffect(() => {
     const getLatestSubmission = async () => {
       try {
+        setError(null);
         const sessionEmail = email ?? undefined;
 
         setIsLoading(true);
@@ -83,12 +88,8 @@ const LatestSubmission = ({
           setLatestSubmission(data?.at(-1) ?? null);
         }
       } catch {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!!!",
-          toast: true,
-        });
+        setError("We could not load this submission.");
+        toast.error("Submission failed to load.");
       } finally {
         setIsLoading(false);
       }
@@ -126,15 +127,12 @@ const LatestSubmission = ({
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      Swal.fire({
-        icon: "success",
-        title: "Link Copied!",
-        text: "Quiz link copied to clipboard.",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Submission link copied.");
+      } catch {
+        toast.error("Could not copy submission link.");
+      }
     }
   };
 
@@ -166,7 +164,9 @@ const LatestSubmission = ({
               Submission Date
             </p>
             <p className="text-sm font-semibold">
-              {moment(latestSubmission?.date).format("MMM Do, YYYY")}
+              {latestSubmission?.date
+                ? moment(latestSubmission.date).format("MMM Do, YYYY")
+                : "Not available"}
             </p>
           </div>
         </div>
@@ -220,11 +220,31 @@ const LatestSubmission = ({
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <LoadingSpinner />
-            <p className="text-muted-foreground animate-pulse font-medium">
-              Loading your submission...
-            </p>
+          <div className="space-y-5">
+            {[0, 1, 2].map(item => (
+              <div
+                key={item}
+                className="rounded-3xl border border-border bg-white p-6 shadow-sm"
+              >
+                <SkeletonBlock className="mb-4 h-5 w-32" />
+                <SkeletonBlock className="mb-5 h-7 w-full" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="py-16">
+            <ErrorState
+              title="Submission unavailable"
+              description="We could not fetch the saved answers. Check your connection and retry."
+              onRetry={() => window.location.reload()}
+              retryLabel="Retry"
+            />
           </div>
         ) : submissionQuestions.length > 0 ? (
           <div className="space-y-8">
@@ -266,16 +286,21 @@ const LatestSubmission = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-20">
-            <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <XCircle className="text-muted-foreground h-10 w-10" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">
-              No Submissions Found
-            </h3>
-            <p className="text-muted-foreground">
-              It seems you haven&apos;t taken this quiz yet.
-            </p>
+          <div className="py-16">
+            <EmptyState
+              icon={XCircle}
+              title="No submissions yet"
+              description="Save a quiz result first, then your answer review will appear here."
+              action={
+                <Button
+                  type="button"
+                  onClick={handleRetake}
+                  className="min-h-11 rounded-xl bg-primary-color px-5 font-bold text-white"
+                >
+                  Start a Quiz
+                </Button>
+              }
+            />
           </div>
         )}
       </div>

@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import QuizResult from "./QuizResult";
 import Quiz from "./Quiz";
 import QuizTimer from "./QuizTimer";
-import LoadingSpinner from "../Spinner/LoadingSpinner";
 import type { QuizQuestion } from "@quizlytics/types";
 import type { ManualQuizRecord, MarkedAnswer } from "@/types/client";
+import { ErrorState, SkeletonBlock } from "@/components/Shared/StateBlocks";
 
 const QuizScreen = ({
   quizKey,
@@ -35,6 +35,12 @@ const QuizScreen = ({
 
   const isQuizEnded = currentQuizIndex === allQuestions?.length || forceEnd;
 
+  useEffect(() => {
+    setCurrentQuizIndex(0);
+    setForceEnd(false);
+    setMarkedAnswer(new Array(allQuestions.length));
+  }, [allQuestions.length]);
+
   const calculateResult = () => {
     let correctAnswers = 0;
     allQuestions?.forEach((element, index) => {
@@ -46,7 +52,10 @@ const QuizScreen = ({
     return {
       totalQuiz: allQuestions?.length,
       correctAnswers,
-      percentageMark: Math.trunc((correctAnswers / allQuestions.length) * 100),
+      percentageMark:
+        allQuestions.length > 0
+          ? Math.trunc((correctAnswers / allQuestions.length) * 100)
+          : 0,
     };
   };
 
@@ -54,21 +63,53 @@ const QuizScreen = ({
     setForceEnd(true);
   }, []);
 
-  // Check if allQuestions is an array
   if (!Array.isArray(allQuestions)) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <ErrorState
+          title="Quiz could not load"
+          description="The questions returned by the server were not in the expected format."
+        />
+      </div>
+    );
   }
 
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto text-center py-30">
-        <LoadingSpinner />
+      <div className="mx-auto flex min-h-screen max-w-4xl items-center justify-center p-4">
+        <div className="w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="space-y-2">
+              <SkeletonBlock className="h-4 w-32" />
+              <SkeletonBlock className="h-5 w-44" />
+            </div>
+            <SkeletonBlock className="h-11 w-20 rounded-xl" />
+          </div>
+          <SkeletonBlock className="mb-6 h-2 w-full" />
+          <SkeletonBlock className="mb-6 h-28 w-full rounded-2xl" />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[0, 1, 2, 3].map(item => (
+              <SkeletonBlock key={item} className="h-16 w-full rounded-2xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (allQuestions.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <ErrorState
+          title="No questions found"
+          description="This quiz has no questions yet. Try another quiz mode or retry generation."
+        />
       </div>
     );
   }
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       {/* Timer */}
       {timerMinutes && !isQuizEnded && (
         <QuizTimer
@@ -96,7 +137,7 @@ const QuizScreen = ({
           currentQuestion={currentQuizIndex + 1}
           totalQuestion={allQuestions?.length}
           setAnswer={(index: MarkedAnswer) => {
-            setMarkedAnswer((arr) => {
+            setMarkedAnswer(arr => {
               const newArray = [...arr];
               newArray[currentQuizIndex] = index;
               return newArray;
