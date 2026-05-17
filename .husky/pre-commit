@@ -113,38 +113,20 @@ IFS="$OLD_IFS"
 
 lint_filters=""
 lint_names=""
-build_filters=""
-build_names=""
 
 if [ "$global_changed" = true ]; then
   warn "Global config changed. Running all workspace checks."
   lint_filters=""
   lint_names="all workspaces"
-  build_filters=""
-  build_names="all workspaces"
 else
   if [ "$client_changed" = true ]; then
     lint_filters="$(append_filter "$lint_filters" "@quizlytics/client")"
     lint_names="$(append_name "$lint_names" "@quizlytics/client")"
-    build_filters="$(append_filter "$build_filters" "@quizlytics/client")"
-    build_names="$(append_name "$build_names" "@quizlytics/client + dependencies")"
   fi
 
   if [ "$server_changed" = true ]; then
     lint_filters="$(append_filter "$lint_filters" "@quizlytics/server")"
     lint_names="$(append_name "$lint_names" "@quizlytics/server")"
-    build_filters="$(append_filter "$build_filters" "@quizlytics/server")"
-    build_names="$(append_name "$build_names" "@quizlytics/server + dependencies")"
-  fi
-
-  if [ "$types_changed" = true ]; then
-    build_filters="$(append_filter "$build_filters" "@quizlytics/types...")"
-    build_names="$(append_name "$build_names" "@quizlytics/types + dependents")"
-  fi
-
-  if [ "$db_changed" = true ]; then
-    build_filters="$(append_filter "$build_filters" "@quizlytics/db...")"
-    build_names="$(append_name "$build_names" "@quizlytics/db + dependents")"
   fi
 fi
 
@@ -165,25 +147,6 @@ if [ -n "$lint_filters" ] || [ "$global_changed" = true ]; then
   fi
 else
   success "Lint skipped. No changed workspace has a lint task."
-fi
-
-# Run Build
-if [ -n "$build_filters" ] || [ "$global_changed" = true ]; then
-  section "Build"
-  info "Targets: $build_names"
-  if [ "$global_changed" = true ]; then
-    $TURBO_BIN run build || {
-      fail "Build failed. Commit blocked."
-      exit 1
-    }
-  else
-    $TURBO_BIN run build $build_filters || {
-      fail "Build failed. Commit blocked."
-      exit 1
-    }
-  fi
-else
-  success "Build skipped. No workspace files changed."
 fi
 
 # Format with Prettier

@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# 1. Colors and Formatting
+if [ -t 1 ]; then
+  reset="$(tput sgr0)"
+  bold="$(tput bold)"
+  dim="$(tput dim)"
+  red="$(tput setaf 1)"
+  green="$(tput setaf 2)"
+  yellow="$(tput setaf 3)"
+  blue="$(tput setaf 4)"
+  cyan="$(tput setaf 6)"
+else
+  reset=""
+  bold=""
+  dim=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  cyan=""
+fi
+
+section() {
+  printf "\n%s%s%s\n" "$bold$cyan" "$1" "$reset"
+  printf "%s\n" "${dim}----------------------------------------${reset}"
+}
+
+info() {
+  printf "%s%s%s\n" "$blue" "$1" "$reset"
+}
+
+success() {
+  printf "%s%s%s\n" "$green" "$1" "$reset"
+}
+
+warn() {
+  printf "%s%s%s\n" "$yellow" "$1" "$reset"
+}
+
+fail() {
+  printf "%s%s%s\n" "$red" "$1" "$reset"
+}
+
+# 2. Resolve fast local binaries (Avoids slow npx lookup)
+resolve_bin() {
+  _bin="./node_modules/.bin/$1"
+  if [ -x "$_bin" ]; then
+    printf "%s" "$_bin"
+  else
+    printf "npx --no-install %s" "$1"
+  fi
+}
+
+section "Pre-push Build Verification"
+
+TURBO_BIN="$(resolve_bin turbo)"
+
+info "Verifying that the project builds successfully before pushing..."
+
+# Run full project build (Turborepo caching makes this extremely fast if no changes exist)
+$TURBO_BIN run build || {
+  fail "Build failed. Push blocked. Please fix the build errors before pushing."
+  exit 1
+}
+
+success "Build successful! Proceeding with git push."
