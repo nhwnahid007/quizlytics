@@ -12,6 +12,8 @@ interface MakeExamProps {
   setSearchCategory: Dispatch<SetStateAction<string>>;
   setSearchLavel: Dispatch<SetStateAction<string>>;
   setLoadData: Dispatch<SetStateAction<boolean>>;
+  questionCount?: number;
+  setQuestionCount?: Dispatch<SetStateAction<number>>;
 }
 
 const MakeExam = ({
@@ -19,6 +21,8 @@ const MakeExam = ({
   setSearchCategory,
   setSearchLavel,
   setLoadData,
+  questionCount = 10,
+  setQuestionCount,
 }: MakeExamProps) => {
   const router = useRouter();
   const [searchError, setSearchError] = useState("");
@@ -32,9 +36,10 @@ const MakeExam = ({
 
   const handleStart = () => {
     let hasError = false;
+    const trimmedSearch = search.trim();
 
-    if (!search) {
-      setSearchError("Field is required!");
+    if (!trimmedSearch) {
+      setSearchError("Enter a topic to continue.");
       hasError = true;
     } else {
       setSearchError("");
@@ -48,7 +53,7 @@ const MakeExam = ({
     }
 
     if (!hasError) {
-      setSearchCategory(search);
+      setSearchCategory(trimmedSearch);
       setSearchLavel(lavel);
       setShowMakeExam(false);
       setLoadData(true);
@@ -56,67 +61,114 @@ const MakeExam = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] md:w-145 p-8 rounded-lg shadow-lg relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
         <button
+          type="button"
           onClick={() => router.push("/Dashboard")}
-          className="absolute top-4 right-4 text-black"
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40"
+          aria-label="Close AI quiz setup"
         >
-          <X size={24} />
+          <X size={22} aria-hidden="true" />
         </button>
-        <h1 className="text-primary-color font-bold text-center text-xl md:text-3xl">
-          Quick Exam
+        <h1 className="pr-10 text-center text-2xl font-black text-gray-950 md:text-3xl">
+          Start AI Quiz
         </h1>
-        <div className="w-full md:w-120 mx-auto mt-8 flex flex-col md:flex-row text-center md:text-start justify-around">
-          <div className="flex flex-col space-y-1">
-            <h1 className="font-medium">
-              <span className="font-bold">Duration:</span> 300 Seconds
-            </h1>
-            <h1 className="font-medium">
-              <span className="font-bold">Examinee:</span>{" "}
-              {name ? name : "Guest"}
-            </h1>
+        <p className="mx-auto mt-2 max-w-md text-center text-sm leading-6 text-gray-500">
+          Generate questions from any topic. Pick a difficulty and question
+          count before starting.
+        </p>
+
+        <div className="mx-auto mt-6 grid max-w-xl grid-cols-1 gap-3 rounded-2xl bg-gray-50 p-4 text-sm text-gray-600 sm:grid-cols-3">
+          <div>
+            <span className="block font-bold text-gray-950">Duration</span>
+            30 seconds/question
           </div>
-          <div className="flex flex-col justify-between it  space-y-1">
-            <h1 className="font-medium">
-              <span className="font-bold">MCQ:</span> 10
-            </h1>
-            <h1 className="font-medium">
-              <span className="font-bold">Total Marks:</span> 1 x 10 = 10
-            </h1>
+          <div>
+            <span className="block font-bold text-gray-950">Examinee</span>
+            {name ? name : "Guest"}
+          </div>
+          <div>
+            <span className="block font-bold text-gray-950">Marks</span>1 per
+            question
           </div>
         </div>
-        <div className="w-full md:w-120 mx-auto flex flex-col md:flex-row gap-4 mt-6">
-          <div className="w-full md:w-1/2">
-            <input
-              onChange={(e) => setSearch(e.target.value)}
-              type="text"
-              className="bg-secondary-color/10 text-gray-900 w-full py-2 px-4 rounded-lg text-md md:text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all h-11"
-              placeholder="Write topics"
-            />
-            {searchError && <p className="text-red-600 text-xs mt-1">{searchError}</p>}
-          </div>
-          <div className="w-full md:w-1/2">
-            <select
-              onChange={(e) => setLavel(e.target.value)}
-              className="bg-secondary-color/10 w-full py-2 px-4 text-gray-900 rounded-lg text-lg h-11 focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all"
+
+        <div className="mx-auto mt-6 grid w-full max-w-xl grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="md:col-span-3">
+            <label
+              htmlFor="quiz-topic"
+              className="mb-2 block text-sm font-bold text-gray-700"
             >
-              <option value="" disabled selected>
+              Topic
+            </label>
+            <input
+              id="quiz-topic"
+              onChange={e => setSearch(e.target.value)}
+              type="text"
+              className="min-h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-900 placeholder:text-gray-400 focus:border-primary-color/40 focus:outline-none focus:ring-2 focus:ring-primary-color/20"
+              placeholder="Example: Photosynthesis, JavaScript arrays"
+              aria-describedby={searchError ? "quiz-topic-error" : undefined}
+            />
+            {searchError && (
+              <p id="quiz-topic-error" className="mt-1 text-sm text-red-600">
+                {searchError}
+              </p>
+            )}
+          </div>
+          <div className="md:col-span-2">
+            <label
+              htmlFor="quiz-level"
+              className="mb-2 block text-sm font-bold text-gray-700"
+            >
+              Difficulty
+            </label>
+            <select
+              id="quiz-level"
+              value={lavel}
+              onChange={e => setLavel(e.target.value)}
+              className="min-h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-900 focus:border-primary-color/40 focus:outline-none focus:ring-2 focus:ring-primary-color/20"
+              aria-describedby={levelError ? "quiz-level-error" : undefined}
+            >
+              <option value="" disabled>
                 Level
               </option>
               <option value="beginner">Beginner</option>
               <option value="moderate">Moderate</option>
               <option value="advanced">Advanced</option>
             </select>
-            {levelError && <p className="text-red-600 text-xs mt-1">{levelError}</p>}
+            {levelError && (
+              <p id="quiz-level-error" className="mt-1 text-sm text-red-600">
+                {levelError}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="question-count"
+              className="mb-2 block text-sm font-bold text-gray-700"
+            >
+              Questions
+            </label>
+            <select
+              id="question-count"
+              value={questionCount}
+              onChange={e => setQuestionCount?.(Number(e.target.value))}
+              className="min-h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-gray-900 focus:border-primary-color/40 focus:outline-none focus:ring-2 focus:ring-primary-color/20"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+            </select>
           </div>
         </div>
-        <div className="flex justify-center mt-6">
+
+        <div className="mt-6 flex justify-center">
           <Button
+            type="button"
             onClick={handleStart}
-            className="btn bg-primary-color text-white text-lg px-12"
+            className="min-h-12 w-full max-w-xs rounded-xl bg-primary-color px-8 text-base font-bold text-white hover:bg-primary-color/90"
           >
-            Start
+            Generate Quiz
           </Button>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import { getMarks } from "@/requests/get";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState, useMemo } from "react";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import moment from "moment/moment";
 import useRouterHook from "@/app/hooks/useRouterHook";
 import { SectionTitleMinimal } from "@/components/Shared/SectionTitle";
 import type { HistoryWithMongoId } from "@/requests/get";
-import LoadingSpinner from "@/components/Spinner/LoadingSpinner";
-import { ArrowUpDown, Eye } from "lucide-react";
+import { EmptyState, SkeletonBlock } from "@/components/Shared/StateBlocks";
+import { ArrowUpDown, Eye, History } from "lucide-react";
 
 type SortOption = "recent" | "highest" | "lowest";
 
@@ -41,12 +41,7 @@ const QuizHistory = () => {
         setHistory(data);
         setIsLoading(false);
       } catch {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!!!",
-          toast: true,
-        });
+        toast.error("Quiz history failed to load.");
         setIsLoading(false);
       }
     };
@@ -168,20 +163,47 @@ const QuizHistory = () => {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-40 text-center">
-                      <div className="flex justify-center">
-                        <LoadingSpinner />
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  <>
+                    {[0, 1, 2, 3].map(item => (
+                      <TableRow key={item}>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="h-5 w-28" />
+                        </TableCell>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="h-5 w-40" />
+                        </TableCell>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="h-5 w-24" />
+                        </TableCell>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="mx-auto h-5 w-16" />
+                        </TableCell>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="mx-auto h-7 w-20 rounded-full" />
+                        </TableCell>
+                        <TableCell className="py-5 px-6">
+                          <SkeletonBlock className="ml-auto h-9 w-24 rounded-xl" />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
                 ) : sortedHistory.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="h-40 text-center text-muted-foreground font-medium"
-                    >
-                      No quiz history found. Start your first journey!
+                    <TableCell colSpan={6} className="p-6">
+                      <EmptyState
+                        icon={History}
+                        title="No submissions yet"
+                        description="Start your first quiz to see saved progress and reviews here."
+                        action={
+                          <Button
+                            type="button"
+                            onClick={() => router.push("/quickExam")}
+                            className="min-h-11 rounded-xl bg-primary-color px-5 font-bold text-white"
+                          >
+                            Start a Quiz
+                          </Button>
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -29,22 +29,26 @@ const ExamineeList = () => {
   const [role, roleLoading, roleError] = useRole();
 
   const getPageRange = () => {
-    if (window.innerWidth >= 1024) {
-      return 10;
-    } else if (window.innerWidth >= 768) {
-      return 5;
-    } else {
-      return 3;
+    if (typeof window !== "undefined") {
+      if (window.innerWidth >= 1024) {
+        return 10;
+      } else if (window.innerWidth >= 768) {
+        return 5;
+      } else {
+        return 3;
+      }
     }
+    return 10;
   };
 
-  const [pageRange, setPageRange] = useState<number>(getPageRange());
+  const [pageRange, setPageRange] = useState<number>(10);
 
   useEffect(() => {
     const handleResize = () => {
       setPageRange(getPageRange());
     };
 
+    handleResize(); // Set initial value on client
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -67,7 +71,7 @@ const ExamineeList = () => {
   }, []);
 
   const filteredExaminees = examinees.filter(
-    (examinee) =>
+    examinee =>
       typeof examinee.userName === "string" &&
       examinee.userName.toLowerCase().includes(nameFilter.toLowerCase()) &&
       (examinee.quizStartKey ?? "").includes(quizStartKey)
@@ -77,7 +81,10 @@ const ExamineeList = () => {
   const getVisiblePages = () => {
     const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
     const endPage = Math.min(totalPages, startPage + pageRange - 1);
-    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    return Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i
+    );
   };
 
   const handlePageChange = (page: number) => {
@@ -94,20 +101,24 @@ const ExamineeList = () => {
     setCurrentPage(1);
   };
 
-  if (roleLoading) return (
-    <div>
-      <LoadingSpinner />
-    </div>
-  );
+  if (roleLoading)
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
   if (roleError) return <NotFound />;
-  if (!roleLoading && (role !== "teacher" && role !== "admin")) {
+  if (!roleLoading && role !== "teacher" && role !== "admin") {
     return <NotFound />;
   }
 
   return (
     <div className="h-screen px-5 lg:mx-20 mx-auto overflow-hidden">
       {/* <div className="text-center my-5 text-3xl font-bold">All Examinees</div> */}
-      <SectionTitleMinimal heading={"All Examinees"} subHeading={"List of all examinees"}></SectionTitleMinimal>
+      <SectionTitleMinimal
+        heading={"All Examinees"}
+        subHeading={"List of all examinees"}
+      ></SectionTitleMinimal>
 
       <div className="flex flex-col sm:flex-row justify-between mb-4 gap-3">
         <input
@@ -127,22 +138,27 @@ const ExamineeList = () => {
       </div>
 
       <div className="overflow-hidden">
-        <div className="overflow-hidden shadow-md h-[375px] sm:rounded-lg">
+        <div className="overflow-hidden shadow-md h-93.75 sm:rounded-lg">
           <Table className="w-full min-w-full table-fixed">
             <TableHeader className="bg-gray-100">
               <TableRow>
-                <TableHead className="w-[50px] text-left">#</TableHead>
-                <TableHead className="text-center w-[80px]">Photo</TableHead>
-                <TableHead className="w-[150px]">Name</TableHead>
-                <TableHead className="w-[220px]">Email</TableHead>
-                <TableHead className="w-[150px]">Quiz Title</TableHead>
-                <TableHead className="w-[80px]">Marks</TableHead>
-                <TableHead className="text-right w-[220px]">Examiner&apos;s Email</TableHead>
+                <TableHead className="w-12.5 text-left">#</TableHead>
+                <TableHead className="text-center w-20">Photo</TableHead>
+                <TableHead className="w-37.5">Name</TableHead>
+                <TableHead className="w-55">Email</TableHead>
+                <TableHead className="w-37.5">Quiz Title</TableHead>
+                <TableHead className="w-20">Marks</TableHead>
+                <TableHead className="text-right w-55">
+                  Examiner&apos;s Email
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredExaminees
-                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
                 .map((examinee, idx) => (
                   <TableRow
                     key={examinee._id}
@@ -163,7 +179,7 @@ const ExamineeList = () => {
                     <TableCell className="font-medium text-gray-700">
                       {examinee.userName}
                     </TableCell>
-                    <TableCell className="font-light text-gray-500 truncate max-w-[200px]">
+                    <TableCell className="font-light text-gray-500 truncate max-w-50">
                       {examinee.userEmail}
                     </TableCell>
                     <TableCell className="font-light text-gray-500">
@@ -172,11 +188,11 @@ const ExamineeList = () => {
                     <TableCell className="font-semibold text-gray-600">
                       {examinee.marks}%
                     </TableCell>
-                    <TableCell className="text-right font-light text-gray-500 truncate max-w-[200px]">
+                    <TableCell className="text-right font-light text-gray-500 truncate max-w-50">
                       {examinee.quizCreator}
                     </TableCell>
                   </TableRow>
-              ))}
+                ))}
             </TableBody>
           </Table>
         </div>
@@ -193,12 +209,14 @@ const ExamineeList = () => {
             &#8592;
           </Button>
 
-          {getVisiblePages().map((page) => (
+          {getVisiblePages().map(page => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
               className={`px-4 py-2 rounded-md transition duration-300 ${
-                currentPage === page ? "bg-primary-color text-white" : "bg-gray-200"
+                currentPage === page
+                  ? "bg-primary-color text-white"
+                  : "bg-gray-200"
               }`}
             >
               {page}
@@ -209,7 +227,9 @@ const ExamineeList = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-md transition duration-300 ${
-              currentPage === totalPages ? "bg-gray-300" : "bg-primary-color text-white"
+              currentPage === totalPages
+                ? "bg-gray-300"
+                : "bg-primary-color text-white"
             }`}
           >
             &#8594;

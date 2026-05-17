@@ -42,7 +42,7 @@ export default function QuizTimer({
     localStorage.setItem(storageKey, String(secondsLeft));
 
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
+      setSecondsLeft(prev => {
         const next = prev - 1;
         if (next <= 0) {
           clearInterval(interval);
@@ -60,8 +60,7 @@ export default function QuizTimer({
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
-  const isWarning = secondsLeft <= 60;
-  const isCritical = secondsLeft <= 30;
+  const isWarning = secondsLeft <= 5;
 
   return (
     <div
@@ -70,16 +69,14 @@ export default function QuizTimer({
         shadow-lg backdrop-blur-md border font-mono text-lg font-bold
         transition-all duration-300
         ${
-          isCritical
-            ? "bg-red-500/90 text-white border-red-400 animate-pulse"
-            : isWarning
-              ? "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700"
-              : "bg-background/80 text-foreground border-border"
+          isWarning
+            ? "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 border-red-300 dark:border-red-700"
+            : "bg-background/80 text-foreground border-border"
         }
       `}
     >
       <Timer
-        className={`h-5 w-5 ${isCritical ? "text-white" : isWarning ? "text-red-600 dark:text-red-400" : "text-primary-color"}`}
+        className={`h-5 w-5 ${isWarning ? "text-red-600 dark:text-red-400" : "text-primary-color"}`}
       />
       <span>
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}

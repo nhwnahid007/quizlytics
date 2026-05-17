@@ -58,8 +58,7 @@ const Exam = () => {
     const updatingMark = () => {
       try {
         const correctMCQ = userExamData.filter(
-          (data) =>
-            data.user_answer === data.options[Number(data.correct_answer)]
+          data => data.user_answer === data.options[Number(data.correct_answer)]
         );
         const calculatedMark = correctMCQ.length;
         setMyMark(calculatedMark);
@@ -79,7 +78,7 @@ const Exam = () => {
           const response = await postUserExamData(userExamData);
           if (response && response.status === 200) {
             const correctMCQ = userExamData.filter(
-              (data) =>
+              data =>
                 data.user_answer === data.options[Number(data.correct_answer)]
             );
             const calculatedMark = correctMCQ.length;
@@ -136,11 +135,11 @@ const Exam = () => {
             <LoadingSpinner />
           ) : !showResult ? (
             <>
-              <div className="w-[580px] mx-auto bg-black text-[#ffefd3] rounded-lg mb-3 p-1">
+              <div className="mx-auto mb-3 w-full max-w-2xl rounded-2xl bg-black p-4 text-[#ffefd3]">
                 <h2 className="text-2xl text-center font-bold text-[#39FF14]">
                   Assessment Overview
                 </h2>
-                <div className="w-full md:w-[480px] mx-auto my-6 flex justify-between">
+                <div className="mx-auto my-6 flex w-full max-w-xl flex-col justify-between gap-4 sm:flex-row">
                   <div className="flex flex-col space-y-1">
                     <h1>
                       <span className="font-semibold text-[#f08f45]">

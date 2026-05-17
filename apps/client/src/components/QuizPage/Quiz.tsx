@@ -1,10 +1,12 @@
-import { Clock, X } from "lucide-react";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { flushSync } from "react-dom";
-import { GrRadialSelected } from "react-icons/gr";
+import { CheckCircle2, Clock3, X } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuizQuestion } from "@quizlytics/types";
 import type { MarkedAnswer } from "@/types/client";
+import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/Shared/StateBlocks";
+import ConfirmExitModal from "./ConfirmExitModal";
+import { cn } from "@/lib/utils";
 
 interface QuizProps {
   question?: QuizQuestion;
@@ -13,167 +15,201 @@ interface QuizProps {
   setAnswer: (index: MarkedAnswer) => void;
 }
 
-const Quiz = ({ question, currentQuestion, totalQuestion, setAnswer }: QuizProps) => {
+const QUESTION_SECONDS = 30;
+
+const Quiz = ({
+  question,
+  currentQuestion,
+  totalQuestion,
+  setAnswer,
+}: QuizProps) => {
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [remainingTime, setRemainingTime] = useState<number>(30); // Changed from 15 to 30
-  const selectedOptionRef = useRef<number | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const progressBar = useRef<HTMLProgressElement | null>(null);
+  const [remainingTime, setRemainingTime] = useState<number>(QUESTION_SECONDS);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const autoSubmittedRef = useRef(false);
 
-  const radius = 30; // Radius for the circle
-  const circumference = 2 * Math.PI * radius;
-  const offset = (1 - remainingTime / 30) * circumference; // Update calculation for 30 seconds
+  const progressPercent =
+    totalQuestion > 0 ? Math.round((currentQuestion / totalQuestion) * 100) : 0;
+  const timerPercent = Math.round((remainingTime / QUESTION_SECONDS) * 100);
+  const isTimerWarning = remainingTime <= 5;
 
-  useEffect(() => {
-    selectedOptionRef.current = selectedOption;
-  }, [selectedOption]);
-
-  const handleGoToNextQuiz = useCallback(() => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-    }
-    flushSync(() => {
-      setAnswer(selectedOptionRef.current);
-    });
-
-    setSelectedOption(null);
-  }, [setAnswer]);
+  const submitAnswer = useCallback(
+    (answer: MarkedAnswer) => {
+      autoSubmittedRef.current = true;
+      setAnswer(answer);
+      setSelectedOption(null);
+    },
+    [setAnswer]
+  );
 
   useEffect(() => {
-    if (progressBar.current) {
-      progressBar.current.value = 100;
-      progressBar.current.classList.add("progress-success");
+    autoSubmittedRef.current = false;
+    setRemainingTime(QUESTION_SECONDS);
+    const interval = setInterval(() => {
+      setRemainingTime(prev => Math.max(prev - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [question, submitAnswer]);
+
+  useEffect(() => {
+    if (remainingTime === 0 && !autoSubmittedRef.current) {
+      autoSubmittedRef.current = true;
+      submitAnswer(null);
     }
+  }, [remainingTime, submitAnswer]);
 
-    const duration = 30 * 1000; // Changed from 15 to 30
-    const stepTime = 1000; // Update every second
-    const steps = duration / stepTime;
-    const decrement = 100 / steps;
-
-    let stepCount = 0;
-
-    const updateProgressBar = () => {
-      stepCount++;
-      if (progressBar.current) {
-        progressBar.current.value = Math.max(100 - stepCount * decrement, 0);
-
-        if (stepCount === 5) {
-          progressBar.current.classList.remove("progress-success");
-          progressBar.current.classList.add("progress-error");
-        }
-      }
-      setRemainingTime(Math.max(30 - stepCount, 0)); // Update for 30 seconds
-      if (stepCount < steps) {
-        timer.current = setTimeout(updateProgressBar, stepTime);
-      } else {
-        handleGoToNextQuiz();
-      }
-    };
-
-    timer.current = setTimeout(updateProgressBar, stepTime);
-
-    return () => {
-      if (timer.current) {
-        clearTimeout(timer.current);
-      }
-    };
-  }, [question, handleGoToNextQuiz]);
-
-  const handleOptionClick = (index: number) => {
-    setSelectedOption(index);
+  const handleNext = () => {
+    if (selectedOption === null) return;
+    submitAnswer(selectedOption);
   };
 
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-2 sm:p-4">
-      <div className="w-full max-w-4xl h-full md:h-[600px] overflow-y-auto bg-white p-3 sm:p-4 md:p-6 pt-2 shadow-2xl rounded-lg flex flex-col min-h-[400px] max-h-[90vh] overflow-auto relative">
-        <button
-          onClick={() => router.push("/Dashboard")}
-          className="absolute top-4 right-4 text-black"
-        >
-          <X size={24} />
-        </button>
-        <div className="text-center flex justify-center items-center text-sm sm:text-base">
-          <svg width="120" height="120">
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              stroke="#d6d6d6"
-              strokeWidth="10"
-              fill="transparent"
-            />
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              className="stroke-primary-color"
-              strokeWidth="10"
-              fill="transparent"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              style={{ transition: "stroke-dashoffset 1s linear" }}
-            />
-            <text
-              x="50%"
-              y="50%"
-              dominantBaseline="middle"
-              textAnchor="middle"
-              className="fill-primary-color font-bold"
-              fontSize="18px"
-            >
-              {remainingTime} S
-            </text>
-          </svg>
-        </div>
+  const handleSkip = () => {
+    submitAnswer(null);
+  };
 
-        <div className="flex flex-col flex-grow">
-          <h1 className="text-center text-sm sm:text-base md:text-lg font-light mb-2 sm:mb-4">
-            Question <span className="font-medium">{currentQuestion}</span> of{" "}
-            <span className="font-medium">{totalQuestion}</span>
+  if (!question) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 text-center">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h1 className="text-xl font-bold text-gray-950">
+            Question unavailable
           </h1>
-
-          <div className="mb-3 sm:mb-4">
-            <h2 className="text-justify font-semibold text-base sm:text-lg md:text-xl text-black">
-              {question?.question}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-4">
-            {question?.options.map((item: string, index: number) => (
-              <div
-                key={index}
-                className={`flex items-center p-3 sm:p-4 rounded-lg cursor-pointer transition duration-200 ${
-                  index === selectedOption
-                    ? "bg-gray-300 text-black border-2 border-primary-color"
-                    : "bg-white text-black border-2 border-gray-300 hover:bg-gray-100"
-                }`}
-                onClick={() => handleOptionClick(index)}
-              >
-                <GrRadialSelected className="mr-2 text-lg sm:text-xl md:text-2xl flex-shrink-0" />
-                <span className="text-sm sm:text-base md:text-lg leading-tight">
-                  {item}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-auto pt-3 sm:pt-4 flex justify-end">
-          <button
-            className={`btn flex-1 py-2 sm:py-3 text-sm sm:text-base rounded-lg transition duration-200 bg-primary-color text-white ${
-              selectedOption === null
-                ? "cursor-not-allowed"
-                : "hover:opacity-60"
-            }`}
-            onClick={handleGoToNextQuiz}
-            disabled={selectedOption === null}
+          <p className="mt-2 text-sm text-gray-500">
+            This quiz question could not be loaded.
+          </p>
+          <Button
+            type="button"
+            onClick={() => router.push("/Dashboard")}
+            className="mt-5 min-h-11 rounded-xl bg-primary-color px-5 text-white"
           >
-            Next Question
-          </button>
+            Back to Dashboard
+          </Button>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-3 py-5 sm:px-4">
+      <section className="relative flex w-full max-w-4xl flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-xl shadow-gray-200/60 sm:p-6">
+        <button
+          type="button"
+          onClick={() => setShowExitConfirm(true)}
+          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40"
+          aria-label="Close quiz"
+        >
+          <X size={22} aria-hidden="true" />
+        </button>
+
+        <div className="mb-6 pr-12">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-primary-color">
+                Question {currentQuestion} of {totalQuestion}
+              </p>
+              <h1 className="mt-1 text-sm font-semibold text-gray-500">
+                {progressPercent}% complete
+              </h1>
+            </div>
+            <div
+              className={cn(
+                "inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border px-3 py-2 font-mono text-sm font-bold transition",
+                isTimerWarning
+                  ? "border-red-200 bg-red-50 text-red-700"
+                  : "border-gray-200 bg-gray-50 text-gray-700"
+              )}
+              aria-live={isTimerWarning ? "assertive" : "polite"}
+            >
+              <Clock3 className="h-4 w-4" aria-hidden="true" />
+              {remainingTime}s
+            </div>
+          </div>
+          <ProgressBar value={progressPercent} label="Quiz progress" />
+          <ProgressBar
+            value={timerPercent}
+            label="Question timer"
+            className="mt-2 h-1 bg-gray-100"
+            indicatorClassName={isTimerWarning ? "bg-red-500" : "bg-gray-400"}
+          />
+        </div>
+
+        <div className="mb-6 rounded-2xl bg-gray-50 p-4 sm:p-5">
+          <h2 className="text-lg font-bold leading-7 text-gray-950 sm:text-xl">
+            {question.question}
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {question.options.map((item: string, index: number) => {
+            const isSelected = index === selectedOption;
+
+            return (
+              <button
+                type="button"
+                key={index}
+                onClick={() => setSelectedOption(index)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "flex min-h-14 items-center gap-3 rounded-2xl border p-4 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40 sm:text-base",
+                  isSelected
+                    ? "border-primary-color bg-primary-color/10 text-gray-950 shadow-sm"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-primary-color/40 hover:bg-primary-color/5"
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-black",
+                    isSelected
+                      ? "border-primary-color bg-primary-color text-white"
+                      : "border-gray-200 bg-gray-50 text-gray-500"
+                  )}
+                  aria-hidden="true"
+                >
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span className="flex-1 leading-6">{item}</span>
+                {isSelected ? (
+                  <>
+                    <CheckCircle2
+                      className="h-5 w-5 shrink-0 text-primary-color"
+                      aria-hidden="true"
+                    />
+                    <span className="sr-only">Selected</span>
+                  </>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSkip}
+            className="min-h-11 rounded-xl border-gray-200 px-5 font-bold text-gray-600 hover:bg-gray-100"
+          >
+            Skip
+          </Button>
+          <Button
+            type="button"
+            onClick={handleNext}
+            disabled={selectedOption === null}
+            className="min-h-11 rounded-xl bg-primary-color px-6 font-bold text-white hover:bg-primary-color/90 disabled:cursor-not-allowed"
+          >
+            Next Question
+          </Button>
+        </div>
+      </section>
+
+      <ConfirmExitModal
+        open={showExitConfirm}
+        onOpenChange={setShowExitConfirm}
+        onLeave={() => router.push("/Dashboard")}
+      />
+    </main>
   );
 };
 

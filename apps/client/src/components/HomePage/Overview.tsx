@@ -1,7 +1,6 @@
 "use client";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import {
   Bar,
@@ -22,10 +21,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, TimerReset, XCircle, MessageSquare, Share2 } from "lucide-react"; // Import the icons
-import { toast } from "react-toastify";
+import {
+  CheckCircle,
+  TimerReset,
+  XCircle,
+  MessageSquare,
+  Share2,
+} from "lucide-react"; // Import the icons
+import { toast } from "sonner";
 import { SectionTitleMinimal } from "../Shared/SectionTitle";
-import type { HistoryWithMongoId } from "@/requests/get";
 import { getExaminees } from "@/services/quiz.service";
 
 interface CategoryCount {
@@ -56,14 +60,17 @@ const Overview = () => {
       const data = await getExaminees();
 
       // Process data to count quizzes per category
-      const quizCategoryCounts = data.reduce<Record<string, number>>((acc, item) => {
-        const category = item.quizCategory ?? "Unknown";
-        acc[category] = (acc[category] || 0) + 1;
-        return acc;
-      }, {});
+      const quizCategoryCounts = data.reduce<Record<string, number>>(
+        (acc, item) => {
+          const category = item.quizCategory ?? "Unknown";
+          acc[category] = (acc[category] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
 
       // Format the data for the BarChart
-      const formattedData = Object.keys(quizCategoryCounts).map((category) => ({
+      const formattedData = Object.keys(quizCategoryCounts).map(category => ({
         quizCategory: category,
         count: quizCategoryCounts[category] ?? 0,
       }));
@@ -87,11 +94,12 @@ const Overview = () => {
   return (
     <div className=" py-8 ">
       <div className="w-[90%]  max-w-6xl mx-auto">
-        <SectionTitleMinimal 
-          heading={"Overview"} 
-          subHeading={"Explore quiz statistics, try demo questions, and discover key features"}
-        >
-        </SectionTitleMinimal>
+        <SectionTitleMinimal
+          heading={"Overview"}
+          subHeading={
+            "Explore quiz statistics, try demo questions, and discover key features"
+          }
+        ></SectionTitleMinimal>
 
         {/* Trending Topics & Question Type */}
         <div className="flex flex-col lg:flex-row gap-8 mt-12">
@@ -209,9 +217,9 @@ const Overview = () => {
                 Add Time Limits
               </h1>
               <p className="text-gray-600 text-lg">
-                Experience the thrill of competitive quizzing with our timed challenges. 
-                Race against the clock as you tackle questions of varying difficulty, 
-                making every second count!
+                Experience the thrill of competitive quizzing with our timed
+                challenges. Race against the clock as you tackle questions of
+                varying difficulty, making every second count!
               </p>
             </div>
           </div>
@@ -221,13 +229,17 @@ const Overview = () => {
               <div className="bg-gray-50 w-14 h-14 rounded-2xl flex items-center justify-center">
                 <MessageSquare className="w-7 h-7 text-primary-color" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Share Feedback</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Share Feedback
+              </h1>
               <p className="text-gray-600 text-lg">
-                Provide valuable feedback on quizzes and share your scores with others. Help improve the learning experience and celebrate achievements within the quiz community.
+                Provide valuable feedback on quizzes and share your scores with
+                others. Help improve the learning experience and celebrate
+                achievements within the quiz community.
               </p>
             </div>
           </div>
-          
+
           <div className="w-full lg:w-1/3 bg-gray-100 rounded-3xl p-8 shadow-md">
             <div className="flex flex-col gap-4">
               <div className="bg-gray-50 w-14 h-14 rounded-2xl flex items-center justify-center">
@@ -235,7 +247,9 @@ const Overview = () => {
               </div>
               <h1 className="text-2xl font-bold text-gray-800">Share Score</h1>
               <p className="text-gray-600 text-lg">
-                Share your quiz scores with friends and colleagues. Compare results, track progress, and motivate each other to achieve higher scores.
+                Share your quiz scores with friends and colleagues. Compare
+                results, track progress, and motivate each other to achieve
+                higher scores.
               </p>
             </div>
           </div>

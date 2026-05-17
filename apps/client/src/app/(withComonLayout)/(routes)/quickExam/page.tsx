@@ -78,6 +78,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [generationStep, setGenerationStep] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
+  const [questionCount, setQuestionCount] = useState<number>(10);
 
   const fetchQuiz = useCallback(async () => {
     setIsLoading(true);
@@ -86,7 +87,7 @@ const Page = () => {
 
     // Update steps dynamically every 1.5s while waiting
     const stepInterval = setInterval(() => {
-      setGenerationStep((prev) => (prev < 2 ? prev + 1 : prev));
+      setGenerationStep(prev => (prev < 2 ? prev + 1 : prev));
     }, 1500);
 
     try {
@@ -94,19 +95,23 @@ const Page = () => {
       if (!data || data.length === 0) {
         throw new Error("No questions were generated. Please try again.");
       }
-      setAllMCQ(data);
+      setAllMCQ(data.slice(0, questionCount));
       clearInterval(stepInterval);
       setGenerationStep(3);
       // Small pause to let the "Finalizing" success state be visible
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 400));
     } catch (err) {
       setAllMCQ([]);
       clearInterval(stepInterval);
-      setError(err instanceof Error ? err.message : "Failed to generate quiz. AI might be busy.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to generate quiz. AI might be busy."
+      );
     } finally {
       setIsLoading(false);
     }
-  }, [searchCategory, searchLavel, setAllMCQ]);
+  }, [questionCount, searchCategory, searchLavel, setAllMCQ]);
 
   useEffect(() => {
     if (loadData) {
@@ -137,6 +142,8 @@ const Page = () => {
             setSearchLavel={setSearchLavel}
             setSearchCategory={setSearchCategory}
             setLoadData={setLoadData}
+            questionCount={questionCount}
+            setQuestionCount={setQuestionCount}
           />
         ) : isLoading ? (
           <GenerationProgress step={generationStep} />
@@ -144,17 +151,19 @@ const Page = () => {
           <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
             <div className="bg-red-50 p-6 rounded-3xl border border-red-100 max-w-md">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Generation Failed</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Generation Failed
+              </h2>
               <p className="text-gray-600 mb-6">{error}</p>
               <div className="flex flex-col gap-3">
-                <Button 
+                <Button
                   onClick={() => fetchQuiz()}
                   className="bg-primary-color hover:bg-primary-color/90 text-white gap-2 h-12 rounded-xl"
                 >
                   <RefreshCw className="h-5 w-5" />
                   Try Again
                 </Button>
-                <Button 
+                <Button
                   variant="ghost"
                   onClick={() => setShowMakeExam(true)}
                   className="text-muted-foreground"

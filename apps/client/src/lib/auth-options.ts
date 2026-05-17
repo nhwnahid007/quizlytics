@@ -96,18 +96,29 @@ export const authOptions: AuthOptions = {
         user?.email
       ) {
         try {
-          await fetch(`${apiBaseUrl}/authenticating_with_providers`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.name,
-              image: user.image,
-            }),
-          });
-        } catch {}
+          const res = await fetch(
+            `${apiBaseUrl}/authenticating_with_providers`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                name: user.name,
+                image: user.image,
+              }),
+            }
+          );
+          if (!res.ok && res.status !== 409) {
+            console.error(
+              `[NextAuth] Failed to authenticate provider user on server. Status: ${res.status}`,
+              await res.text()
+            );
+          }
+        } catch (error) {
+          console.error("[NextAuth] Error in signIn fetch:", error);
+        }
       }
 
       return true;
@@ -145,9 +156,20 @@ export const authOptions: AuthOptions = {
               token.role = dbUser.role ?? token.role;
               token.userStatus = dbUser.userStatus ?? token.userStatus;
               token.picture = dbUser.image ?? token.picture;
+            } else {
+              console.warn(
+                `[NextAuth] user/role returned empty response for ${token.email}`
+              );
             }
+          } else {
+            console.error(
+              `[NextAuth] Failed to fetch user/role. Status: ${roleResponse.status}`,
+              await roleResponse.text()
+            );
           }
-        } catch {}
+        } catch (error) {
+          console.error("[NextAuth] Error fetching user/role:", error);
+        }
       }
 
       return token;

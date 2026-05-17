@@ -11,61 +11,87 @@ interface CustomExamProps {
   quizKey: string | null;
 }
 
-const CustomExam = ({ setCustomExam, setQuizKey, quizKey }: CustomExamProps) => {
+const CustomExam = ({
+  setCustomExam,
+  setQuizKey,
+  quizKey,
+}: CustomExamProps) => {
   const [searchError, setSearchError] = useState("");
   const router = useRouterHook();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuizKey(e.target.value);
   };
   const handleStart = () => {
-
     let hasError = false;
+    const trimmedKey = quizKey?.trim() ?? "";
 
-    if (!quizKey) {
-      setSearchError("Field is required!");
+    if (!trimmedKey) {
+      setSearchError("Enter a quiz key to continue.");
       hasError = true;
     } else {
       setSearchError("");
     }
 
     if (!hasError) {
+      setQuizKey(trimmedKey);
       setCustomExam(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white w-[90%] md:w-145 p-8 rounded-lg shadow-lg relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-xl rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
         <button
+          type="button"
           onClick={() => router.push("/Dashboard")}
-          className="absolute top-4 right-4 text-black"
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40"
+          aria-label="Close custom quiz setup"
         >
-          <X size={24} />
+          <X size={22} aria-hidden="true" />
         </button>
-        <h1 className="text-primary-color font-bold text-center text-xl md:text-3xl">
-          Enter Quiz Key to Start
+        <h1 className="pr-10 text-center text-2xl font-black text-gray-950 md:text-3xl">
+          Join Quiz with Key
         </h1>
+        <p className="mx-auto mt-2 max-w-md text-center text-sm leading-6 text-gray-500">
+          Enter the key shared by your teacher or admin to open an assigned
+          quiz.
+        </p>
 
-        <div className="w-full md:w-120 mx-auto mt-6">
-          <div className="w-full">
+        <div className="mx-auto mt-6 w-full max-w-md">
+          <div>
+            <label
+              htmlFor="quiz-key"
+              className="mb-2 block text-sm font-bold text-gray-700"
+            >
+              Quiz key
+            </label>
             <input
+              id="quiz-key"
               type="text"
               name="quizKey"
               onChange={handleChange}
-              className="bg-secondary-color/10 placeholder:text-gray-500 w-full py-3 px-4 text-gray-900 rounded-lg text-md md:text-lg text-center focus:outline-none focus:ring-2 focus:ring-primary-color/20 border border-transparent focus:border-primary-color/30 transition-all"
-              placeholder="Enter Quiz Key Here"
+              className="min-h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-center text-gray-900 placeholder:text-gray-400 focus:border-primary-color/40 focus:outline-none focus:ring-2 focus:ring-primary-color/20"
+              placeholder="Enter quiz key"
+              aria-describedby={searchError ? "quiz-key-error" : undefined}
             />
-            {searchError && <p className="text-red-600 text-sm mt-1 text-center">{searchError}</p>}
+            {searchError && (
+              <p
+                id="quiz-key-error"
+                className="mt-2 text-center text-sm text-red-600"
+              >
+                {searchError}
+              </p>
+            )}
           </div>
         </div>
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
           <Button
             onClick={handleStart}
-            type="submit"
-            className="mt-4 bg-primary-color text-white"
+            type="button"
+            className="min-h-12 w-full max-w-xs rounded-xl bg-primary-color px-8 text-base font-bold text-white hover:bg-primary-color/90"
             variant="default"
           >
-            Start
+            Start Quiz
           </Button>
         </div>
       </div>

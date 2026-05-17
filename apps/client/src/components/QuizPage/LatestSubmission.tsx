@@ -7,9 +7,8 @@ import {
 } from "@/requests/get";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 import SubmitCard from "./SubmitCard";
-import LoadingSpinner from "../Spinner/LoadingSpinner";
 import moment from "moment";
 import type { HistoryRecord, MarkedAnswer } from "@/types/client";
 import type { QuizQuestion } from "@quizlytics/types";
@@ -23,9 +22,13 @@ import {
   Trophy,
   CheckCircle,
   XCircle,
-  Clock,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import {
+  EmptyState,
+  ErrorState,
+  SkeletonBlock,
+} from "@/components/Shared/StateBlocks";
 
 const isQuizQuestion = (value: unknown): value is QuizQuestion => {
   if (typeof value !== "object" || value === null) return false;
@@ -48,6 +51,7 @@ const LatestSubmission = ({
 
   const [latestSubmission, setLatestSubmission] =
     useState<HistoryRecord | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: session } = useSession();
   const email = session?.user?.email;
@@ -55,6 +59,7 @@ const LatestSubmission = ({
   useEffect(() => {
     const getLatestSubmission = async () => {
       try {
+        setError(null);
         const sessionEmail = email ?? undefined;
 
         setIsLoading(true);
@@ -83,12 +88,8 @@ const LatestSubmission = ({
           setLatestSubmission(data?.at(-1) ?? null);
         }
       } catch {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!!!",
-          toast: true,
-        });
+        setError("We could not load this submission.");
+        toast.error("Submission failed to load.");
       } finally {
         setIsLoading(false);
       }
@@ -126,15 +127,12 @@ const LatestSubmission = ({
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      Swal.fire({
-        icon: "success",
-        title: "Link Copied!",
-        text: "Quiz link copied to clipboard.",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Submission link copied.");
+      } catch {
+        toast.error("Could not copy submission link.");
+      }
     }
   };
 
@@ -149,7 +147,7 @@ const LatestSubmission = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-24">
         {/* Top Header with Back Button */}
         <div className="flex items-center justify-between mb-8">
@@ -166,13 +164,15 @@ const LatestSubmission = ({
               Submission Date
             </p>
             <p className="text-sm font-semibold">
-              {moment(latestSubmission?.date).format("MMM Do, YYYY")}
+              {latestSubmission?.date
+                ? moment(latestSubmission.date).format("MMM Do, YYYY")
+                : "Not available"}
             </p>
           </div>
         </div>
 
         {/* Title and Summary Card */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-border mb-12 relative overflow-hidden">
+        <div className="bg-card rounded-3xl p-8 shadow-sm border border-border mb-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5">
             <Trophy size={120} />
           </div>
@@ -184,8 +184,8 @@ const LatestSubmission = ({
 
             {!isLoading && submissionQuestions.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-primary-color/5 rounded-2xl p-4 border border-primary-color/10">
-                  <div className="flex items-center gap-3 text-primary-color mb-1">
+                <div className="bg-primary-color/5 dark:bg-primary-color/10 rounded-2xl p-4 border border-primary-color/10 dark:border-primary-color/20">
+                  <div className="flex items-center gap-3 text-primary-color dark:text-purple-400 mb-1">
                     <Trophy className="h-5 w-5" />
                     <span className="text-sm font-semibold">Score</span>
                   </div>
@@ -197,20 +197,22 @@ const LatestSubmission = ({
                   </p>
                 </div>
 
-                <div className="bg-green-50 rounded-2xl p-4 border border-green-100">
-                  <div className="flex items-center gap-3 text-green-600 mb-1">
+                <div className="bg-green-50 dark:bg-green-950/20 rounded-2xl p-4 border border-green-100 dark:border-green-900/50">
+                  <div className="flex items-center gap-3 text-green-600 dark:text-green-400 mb-1">
                     <CheckCircle className="h-5 w-5" />
                     <span className="text-sm font-semibold">Correct</span>
                   </div>
-                  <p className="text-2xl font-bold text-green-700">{score}</p>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                    {score}
+                  </p>
                 </div>
 
-                <div className="bg-red-50 rounded-2xl p-4 border border-red-100">
-                  <div className="flex items-center gap-3 text-red-600 mb-1">
+                <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-4 border border-red-100 dark:border-red-900/50">
+                  <div className="flex items-center gap-3 text-red-600 dark:text-red-400 mb-1">
                     <XCircle className="h-5 w-5" />
                     <span className="text-sm font-semibold">Incorrect</span>
                   </div>
-                  <p className="text-2xl font-bold text-red-700">
+                  <p className="text-2xl font-bold text-red-700 dark:text-red-300">
                     {submissionQuestions.length - score}
                   </p>
                 </div>
@@ -220,11 +222,31 @@ const LatestSubmission = ({
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <LoadingSpinner />
-            <p className="text-muted-foreground animate-pulse font-medium">
-              Loading your submission...
-            </p>
+          <div className="space-y-5">
+            {[0, 1, 2].map(item => (
+              <div
+                key={item}
+                className="rounded-3xl border border-border bg-card p-6 shadow-sm"
+              >
+                <SkeletonBlock className="mb-4 h-5 w-32" />
+                <SkeletonBlock className="mb-5 h-7 w-full" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                  <SkeletonBlock className="h-14 w-full rounded-2xl" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="py-16">
+            <ErrorState
+              title="Submission unavailable"
+              description="We could not fetch the saved answers. Check your connection and retry."
+              onRetry={() => window.location.reload()}
+              retryLabel="Retry"
+            />
           </div>
         ) : submissionQuestions.length > 0 ? (
           <div className="space-y-8">
@@ -266,16 +288,21 @@ const LatestSubmission = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-20">
-            <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <XCircle className="text-muted-foreground h-10 w-10" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">
-              No Submissions Found
-            </h3>
-            <p className="text-muted-foreground">
-              It seems you haven&apos;t taken this quiz yet.
-            </p>
+          <div className="py-16">
+            <EmptyState
+              icon={XCircle}
+              title="No submissions yet"
+              description="Save a quiz result first, then your answer review will appear here."
+              action={
+                <Button
+                  type="button"
+                  onClick={handleRetake}
+                  className="min-h-11 rounded-xl bg-primary-color px-5 font-bold text-white"
+                >
+                  Start a Quiz
+                </Button>
+              }
+            />
           </div>
         )}
       </div>
