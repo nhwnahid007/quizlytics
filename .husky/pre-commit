@@ -8,7 +8,6 @@ if [ -t 1 ]; then
   green="$(tput setaf 2)"
   yellow="$(tput setaf 3)"
   blue="$(tput setaf 4)"
-  magenta="$(tput setaf 5)"
   cyan="$(tput setaf 6)"
 else
   reset=""
@@ -18,13 +17,12 @@ else
   green=""
   yellow=""
   blue=""
-  magenta=""
   cyan=""
 fi
 
 section() {
   printf "\n%s%s%s\n" "$bold$cyan" "$1" "$reset"
-  printf "%s\n" "${dim}────────────────────────────────────────${reset}"
+  printf "%s\n" "${dim}----------------------------------------${reset}"
 }
 
 info() {
@@ -43,47 +41,28 @@ fail() {
   printf "%s%s%s\n" "$red" "$1" "$reset"
 }
 
-section "✨ Pre-commit checks"
-info "Formatting staged files..."
-
-formatted_count=0
-checked_count=0
-
-# Prettier format staged files first
-for file in $(git diff --cached --name-only --diff-filter=ACMR); do
-  case "$file" in
-  *.js|*.ts|*.tsx|*.mjs|*.json|*.css|*.md)
-    if [ ! -f "$file" ]; then
-      continue
-    fi
-
-    checked_count=$((checked_count + 1))
-    printf "%s  🔎 %s%s\n" "$dim" "$file" "$reset"
-
-    if npx prettier --check "$file" >/dev/null 2>&1; then
-      success "  ✓ Already formatted"
-    else
-      npx prettier --write "$file" >/dev/null 2>&1 || {
-        fail "  ✗ Formatting failed: $file"
-        exit 1
-      }
-
-      git add "$file"
-      formatted_count=$((formatted_count + 1))
-      success "  ✓ Formatted"
-    fi
-    ;;
+append_filter() {
+  case " $1 " in
+    *" $2 "*) printf "%s" "$1" ;;
+    *) printf "%s --filter=%s" "$1" "$2" ;;
   esac
-done
+}
 
-if [ "$checked_count" -eq 0 ]; then
-  warn "ℹ No staged files matched formatting rules."
-else
-  success "✓ Formatting complete: $checked_count checked, $formatted_count changed."
+append_name() {
+  case " $1 " in
+    *" $2 "*) printf "%s" "$1" ;;
+    *) printf "%s %s" "$1" "$2" ;;
+  esac
+}
+
+section "Pre-commit checks"
+
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if [ -z "$staged_files" ]; then
+  warn "No staged files. Skipping checks."
+  exit 0
 fi
-
-# Detect changed workspaces
-staged_files=$(git diff --cached --name-only)
 
 client_changed=false
 server_changed=false
@@ -105,52 +84,118 @@ for file in $staged_files; do
     packages/types/*)
       types_changed=true
       ;;
-    package.json|package-lock.json|tsconfig.base.json|turbo.json)
+    package.json|package-lock.json|tsconfig.base.json|turbo.json|commitlint.config.js)
       global_changed=true
       ;;
   esac
 done
 
+lint_filters=""
+lint_names=""
+build_filters=""
+build_names=""
+
 if [ "$global_changed" = true ]; then
-  warn "⚙ Global config changed. Running lint and build for all workspaces."
-  client_changed=true
-  server_changed=true
-  db_changed=true
-  types_changed=true
-fi
-
-# Construct turbo filters
-filters=""
-workspace_names=""
-if [ "$client_changed" = true ]; then
-  filters="$filters --filter=@quizlytics/client"
-  workspace_names="$workspace_names @quizlytics/client"
-fi
-if [ "$server_changed" = true ]; then
-  filters="$filters --filter=@quizlytics/server"
-  workspace_names="$workspace_names @quizlytics/server"
-fi
-if [ "$db_changed" = true ]; then
-  filters="$filters --filter=@quizlytics/db"
-  workspace_names="$workspace_names @quizlytics/db"
-fi
-if [ "$types_changed" = true ]; then
-  filters="$filters --filter=@quizlytics/types"
-  workspace_names="$workspace_names @quizlytics/types"
-fi
-
-if [ -z "$filters" ]; then
-  success "✨ No workspace files modified. Skipping lint and build."
+  warn "Global config changed. Running all workspace checks."
+  lint_filters=""
+  lint_names="all workspaces"
+  build_filters=""
+  build_names="all workspaces"
 else
-  section "🔍 Type, lint, and build"
-  info "Workspaces:$workspace_names"
-  printf "%sCommand:%s npx turbo run lint build%s\n\n" "$dim" "$reset" "$filters"
+  if [ "$client_changed" = true ]; then
+    lint_filters="$(append_filter "$lint_filters" "@quizlytics/client")"
+    lint_names="$(append_name "$lint_names" "@quizlytics/client")"
+    build_filters="$(append_filter "$build_filters" "@quizlytics/client")"
+    build_names="$(append_name "$build_names" "@quizlytics/client + dependencies")"
+  fi
 
-  # Run lint and build for changed workspaces
-  npx turbo run lint build $filters || {
-    fail "❌ Checks failed. Commit blocked."
-    exit 1
-  }
+  if [ "$server_changed" = true ]; then
+    lint_filters="$(append_filter "$lint_filters" "@quizlytics/server")"
+    lint_names="$(append_name "$lint_names" "@quizlytics/server")"
+    build_filters="$(append_filter "$build_filters" "@quizlytics/server")"
+    build_names="$(append_name "$build_names" "@quizlytics/server + dependencies")"
+  fi
+
+  if [ "$types_changed" = true ]; then
+    build_filters="$(append_filter "$build_filters" "@quizlytics/types...")"
+    build_names="$(append_name "$build_names" "@quizlytics/types + dependents")"
+  fi
+
+  if [ "$db_changed" = true ]; then
+    build_filters="$(append_filter "$build_filters" "@quizlytics/db...")"
+    build_names="$(append_name "$build_names" "@quizlytics/db + dependents")"
+  fi
 fi
 
-success "✅ All checks passed."
+if [ -n "$lint_filters" ] || [ "$global_changed" = true ]; then
+  section "Lint"
+  info "Targets: $lint_names"
+  if [ "$global_changed" = true ]; then
+    npx turbo run lint || {
+      fail "Lint failed. Commit blocked."
+      exit 1
+    }
+  else
+    npx turbo run lint $lint_filters || {
+      fail "Lint failed. Commit blocked."
+      exit 1
+    }
+  fi
+else
+  success "Lint skipped. No changed workspace has a lint task."
+fi
+
+if [ -n "$build_filters" ] || [ "$global_changed" = true ]; then
+  section "Build"
+  info "Targets: $build_names"
+  if [ "$global_changed" = true ]; then
+    npx turbo run build || {
+      fail "Build failed. Commit blocked."
+      exit 1
+    }
+  else
+    npx turbo run build $build_filters || {
+      fail "Build failed. Commit blocked."
+      exit 1
+    }
+  fi
+else
+  success "Build skipped. No workspace files changed."
+fi
+
+section "Format"
+formatted_count=0
+checked_count=0
+
+for file in $staged_files; do
+  case "$file" in
+    *.js|*.ts|*.tsx|*.mjs|*.json|*.css|*.md)
+      if [ ! -f "$file" ]; then
+        continue
+      fi
+
+      checked_count=$((checked_count + 1))
+      printf "%s  %s%s\n" "$dim" "$file" "$reset"
+
+      if npx prettier --check "$file" >/dev/null 2>&1; then
+        success "  already formatted"
+      else
+        npx prettier --write "$file" >/dev/null 2>&1 || {
+          fail "Formatting failed: $file"
+          exit 1
+        }
+        git add "$file"
+        formatted_count=$((formatted_count + 1))
+        success "  formatted"
+      fi
+      ;;
+  esac
+done
+
+if [ "$checked_count" -eq 0 ]; then
+  warn "No staged files matched formatting rules."
+else
+  success "Format complete: $checked_count checked, $formatted_count changed."
+fi
+
+success "All checks passed."
