@@ -1,12 +1,19 @@
-import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
-import {AlignJustify} from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { AlignJustify } from "lucide-react";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {useState} from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/blogs", label: "Blogs" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
 
 const MobileNav = () => {
-  const [isOpen, setIsOpen] = useState(false); // State to manage sheet open/close
-  const pathname = usePathname(); // Hook to get current route
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleLinkClick = () => {
     setIsOpen(false); // Close the sheet when a link is clicked
@@ -14,76 +21,38 @@ const MobileNav = () => {
 
   return (
     <div className="lg:hidden">
-      {/* Sheet component for mobile navigation */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        {/* Icon to trigger the Sheet (side menu) */}
-        <SheetTrigger>
-          <AlignJustify className="h-6 mt-2 w-8 md:h-10 md:w-10 my-auto text-primary-color" />
+        <SheetTrigger
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-primary-color transition hover:bg-primary-color/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Open navigation menu"
+        >
+          <AlignJustify className="h-6 w-6" aria-hidden="true" />
         </SheetTrigger>
 
-        {/* Content inside the Sheet */}
         <SheetContent side="left">
-          {/* Navigation links in the mobile menu */}
-          <nav className="flex flex-col gap-3 mt-6">
-            <Link
-              href="/"
-              className={`py-2 font-semibold ${
-                pathname === "/"
-                  ? "text-primary-color font-bold"
-                  : "text-secondary-color"
-              }`}
-              onClick={handleLinkClick}
-            >
-              Home
-            </Link>
+          <nav
+            className="mt-6 flex flex-col gap-2"
+            aria-label="Mobile navigation"
+          >
+            {navItems.map(item => {
+              const isActive = pathname === item.href;
 
-            <Link
-              href="/blogs"
-              className={`py-2 font-semibold ${
-                pathname === "/blogs"
-                  ? "text-primary-color font-bold"
-                  : "text-secondary-color"
-              }`}
-              onClick={handleLinkClick}
-            >
-              Blogs
-            </Link>
-
-            <Link
-              href="/about"
-              className={`py-2 font-semibold ${
-                pathname === "/about"
-                  ? "text-primary-color font-bold"
-                  : "text-secondary-color"
-              }`}
-              onClick={handleLinkClick}
-            >
-              About
-            </Link>
-
-            <Link
-              href="/contact"
-              className={`py-2 font-semibold ${
-                pathname === "/contact"
-                  ? "text-primary-color font-bold"
-                  : "text-secondary-color"
-              }`}
-              onClick={handleLinkClick}
-            >
-              Contact
-            </Link>
-
-            {/* <Link
-              href="/team"
-              className={`py-2 font-semibold ${
-                pathname === "/team"
-                  ? "text-primary-color font-bold"
-                  : "text-secondary-color"
-              }`}
-              onClick={handleLinkClick}
-            >
-              Our Team
-            </Link> */}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`rounded-lg px-3 py-2 font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    isActive
+                      ? "bg-primary-color/10 text-primary-color"
+                      : "text-foreground hover:bg-muted hover:text-primary-color"
+                  }`}
+                  onClick={handleLinkClick}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </SheetContent>
       </Sheet>

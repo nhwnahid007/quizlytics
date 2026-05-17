@@ -24,7 +24,7 @@ export function ProgressBar({
   return (
     <div
       className={cn(
-        "h-2 w-full overflow-hidden rounded-full bg-gray-200",
+        "h-2 w-full overflow-hidden rounded-full bg-muted",
         className
       )}
       role="progressbar"
@@ -45,9 +45,7 @@ export function ProgressBar({
 }
 
 export function SkeletonBlock({ className }: { className?: string }) {
-  return (
-    <div className={cn("animate-pulse rounded-xl bg-gray-200/80", className)} />
-  );
+  return <div className={cn("animate-pulse rounded-xl bg-muted", className)} />;
 }
 
 export function DashboardSkeleton() {
@@ -61,7 +59,7 @@ export function DashboardSkeleton() {
         {[0, 1, 2].map(item => (
           <div
             key={item}
-            className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm"
+            className="rounded-xl border border-border bg-card p-5 shadow-sm"
           >
             <SkeletonBlock className="mb-4 h-11 w-11 rounded-xl" />
             <SkeletonBlock className="mb-2 h-4 w-28" />
@@ -73,7 +71,7 @@ export function DashboardSkeleton() {
         {[0, 1, 2].map(item => (
           <div
             key={item}
-            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+            className="rounded-xl border border-border bg-card p-6 shadow-sm"
           >
             <SkeletonBlock className="mb-5 h-12 w-12 rounded-xl" />
             <SkeletonBlock className="mb-3 h-6 w-36" />
@@ -105,15 +103,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50/80 px-4 py-10 text-center",
+        "flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/60 px-4 py-10 text-center",
         className
       )}
     >
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-primary-color shadow-sm">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-card text-primary-color shadow-sm">
         <Icon className="h-6 w-6" aria-hidden="true" />
       </div>
-      <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-gray-500">{description}</p>
+      <h3 className="text-lg font-bold text-foreground">{title}</h3>
+      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+        {description}
+      </p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
   );
@@ -139,23 +139,19 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        "mx-auto flex max-w-md flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50 px-5 py-8 text-center",
+        "mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-red-100 bg-red-50 px-5 py-8 text-center dark:border-red-900/60 dark:bg-red-950/30",
         className
       )}
       role="alert"
     >
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-red-600 shadow-sm">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-card text-red-600 shadow-sm">
         <AlertCircle className="h-6 w-6" aria-hidden="true" />
       </div>
-      <h3 className="text-lg font-bold text-gray-950">{title}</h3>
-      <p className="mt-1 text-sm text-gray-600">{description}</p>
+      <h3 className="text-lg font-bold text-foreground">{title}</h3>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         {onRetry ? (
-          <Button
-            type="button"
-            onClick={onRetry}
-            className="min-h-11 rounded-xl bg-primary-color px-5 text-white hover:bg-primary-color/90"
-          >
+          <Button type="button" onClick={onRetry} className="min-h-11 px-5">
             {retryLabel}
           </Button>
         ) : null}
@@ -175,7 +171,7 @@ export function InlineLoading({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-2 text-sm text-gray-500",
+        "flex items-center justify-center gap-2 text-sm text-muted-foreground",
         className
       )}
     >

@@ -179,7 +179,7 @@ const QuizResult = ({
       <div className="mx-auto flex min-h-full max-w-3xl items-center justify-center">
         <section
           id="quiz-result-card"
-          className="w-full rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl sm:p-7"
+          className="w-full rounded-xl border border-border bg-card p-5 shadow-2xl sm:p-7"
           aria-labelledby="quiz-result-title"
         >
           <div className="text-center">
@@ -191,11 +191,11 @@ const QuizResult = ({
             </p>
             <h1
               id="quiz-result-title"
-              className="mt-2 text-4xl font-black text-gray-950 sm:text-5xl"
+              className="mt-2 text-4xl font-black text-foreground sm:text-5xl"
             >
               {result?.percentageMark}%
             </h1>
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-muted-foreground">
               {result?.correctAnswers} correct out of {result?.totalQuiz}{" "}
               questions
             </p>
@@ -222,11 +222,11 @@ const QuizResult = ({
             />
           </div>
 
-          <div className="mt-5 rounded-2xl border border-primary-color/10 bg-primary-color/5 p-4">
+          <div className="mt-5 rounded-xl border border-primary-color/10 bg-primary-color/5 p-4">
             <h2 className={cn("text-lg font-bold", performance.color)}>
               {performance.title}
             </h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
               {performance.description}
             </p>
           </div>
@@ -262,10 +262,10 @@ const QuizResult = ({
               disabled={!isSaved || isNavigating}
               variant="outline"
               className={cn(
-                "min-h-12 rounded-xl border-gray-200 font-bold",
+                "min-h-12 rounded-xl font-bold",
                 isSaved
                   ? "border-primary-color text-primary-color hover:bg-primary-color/10"
-                  : "text-gray-400"
+                  : "text-muted-foreground"
               )}
             >
               <Eye className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -283,7 +283,7 @@ const QuizResult = ({
               variant="outline"
               size="sm"
               onClick={handleExportPDF}
-              className="min-h-10 rounded-xl border-gray-200 px-4 text-gray-700"
+              className="min-h-10 rounded-xl px-4"
             >
               <Download className="mr-2 h-4 w-4" aria-hidden="true" />
               Export PDF
@@ -293,15 +293,15 @@ const QuizResult = ({
               onClick={handleGoToHome}
               variant="outline"
               size="sm"
-              className="min-h-10 rounded-xl border-gray-200 px-4 text-gray-700"
+              className="min-h-10 rounded-xl px-4"
             >
               <Home className="mr-2 h-4 w-4" aria-hidden="true" />
               Back to Dashboard
             </Button>
           </div>
 
-          <div className="mt-6 border-t border-gray-100 pt-5">
-            <div className="mb-3 flex items-center justify-center gap-2 text-sm font-bold text-gray-500">
+          <div className="mt-6 border-t border-border pt-5">
+            <div className="mb-3 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground">
               <Share2 className="h-4 w-4" aria-hidden="true" />
               Share your score
             </div>
@@ -362,7 +362,7 @@ function BreakdownCard({
   className: string;
 }) {
   return (
-    <div className={cn("rounded-2xl border p-4", className)}>
+    <div className={cn("rounded-xl border p-4", className)}>
       <div className="mb-2 flex items-center gap-2 text-sm font-bold">
         <Icon className="h-4 w-4" aria-hidden="true" />
         {label}

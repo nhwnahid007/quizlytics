@@ -7,14 +7,15 @@ import QuizScreen from "@/components/QuizPage/QuizScreen";
 import QuizEditor from "@/components/QuizPage/QuizEditor";
 import { getMCQ } from "@/requests/get";
 import React, { useEffect, useState, useCallback } from "react";
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import type { QuizQuestion } from "@quizlytics/types";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/Shared/StateBlocks";
 
 function GenerationProgress({ elapsedSeconds }: { elapsedSeconds: number }) {
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-card w-[90%] max-w-md p-8 rounded-2xl shadow-2xl border border-border text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="w-[90%] max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-2xl">
         <Loader2 className="h-10 w-10 text-primary-color animate-spin mx-auto mb-5" />
         <h2 className="text-xl font-bold text-foreground mb-3">
           Generating your quiz with AI...
@@ -127,30 +128,26 @@ const Page = () => {
         ) : isLoading ? (
           <GenerationProgress elapsedSeconds={elapsedSeconds} />
         ) : error ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
-            <div className="bg-red-50 p-6 rounded-3xl border border-red-100 max-w-md">
-              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Generation Failed
-              </h2>
-              <p className="text-gray-600 mb-6">{error}</p>
-              <div className="flex flex-col gap-3">
-                <Button
-                  onClick={() => fetchQuiz()}
-                  className="bg-primary-color hover:bg-primary-color/90 text-white gap-2 h-12 rounded-xl"
-                >
-                  <RefreshCw className="h-5 w-5" />
-                  Try Again
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowMakeExam(true)}
-                  className="text-muted-foreground"
-                >
-                  Change Topic
-                </Button>
-              </div>
-            </div>
+          <div className="flex min-h-[60vh] items-center justify-center p-4 text-center">
+            <ErrorState
+              title="Generation Failed"
+              description={error}
+              action={
+                <div className="flex flex-col gap-3">
+                  <Button onClick={() => fetchQuiz()} className="h-12 gap-2">
+                    <RefreshCw className="h-5 w-5" />
+                    Try Again
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowMakeExam(true)}
+                    className="text-muted-foreground"
+                  >
+                    Change Topic
+                  </Button>
+                </div>
+              }
+            />
           </div>
         ) : showEditor && allMCQ.length > 0 ? (
           <QuizEditor

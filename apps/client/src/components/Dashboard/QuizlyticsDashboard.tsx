@@ -169,10 +169,10 @@ const QuizlyticsDashboard = () => {
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             Learning dashboard
           </p>
-          <h1 className="text-3xl font-black tracking-tight text-gray-950 md:text-4xl">
+          <h1 className="text-3xl font-black tracking-tight text-foreground md:text-4xl">
             Hello, {session?.user?.name?.split(" ")[0] || "Explorer"}
           </h1>
-          <p className="mt-2 max-w-2xl text-gray-500">
+          <p className="mt-2 max-w-2xl text-muted-foreground">
             Pick a quiz mode, practice, then review saved submissions from one
             place.
           </p>
@@ -180,7 +180,7 @@ const QuizlyticsDashboard = () => {
         <Button
           type="button"
           onClick={() => router.push("/quickExam")}
-          className="min-h-11 rounded-xl bg-primary-color px-5 font-bold text-white hover:bg-primary-color/90"
+          className="min-h-11 px-5 font-bold"
         >
           Start a Quiz
           <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
@@ -221,7 +221,7 @@ const QuizlyticsDashboard = () => {
 
       <section className="mb-10">
         <div className="mb-5 flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+          <h2 className="flex items-center gap-2 text-xl font-bold text-foreground">
             <FiZap className="text-yellow-500" aria-hidden="true" />
             Choose Quiz Mode
           </h2>
@@ -239,19 +239,19 @@ const QuizlyticsDashboard = () => {
       </section>
 
       <section className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-2 md:p-6">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm lg:col-span-2 md:p-6">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">
+              <h3 className="text-lg font-bold text-foreground">
                 Recent Activity
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Your latest saved quiz result appears here.
               </p>
             </div>
             <Link
               href="/Dashboard/quizHistory"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-bold text-primary-color hover:bg-primary-color/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40"
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-bold text-primary-color hover:bg-primary-color/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               View All History
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -259,29 +259,29 @@ const QuizlyticsDashboard = () => {
           </div>
 
           {latestAttempt ? (
-            <div className="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-muted/60 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-primary-color shadow-sm">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-card text-primary-color shadow-sm">
                   <FileText className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-950">
+                  <h4 className="font-bold text-foreground">
                     {latestAttempt.quizTitle ||
                       latestAttempt.quizCategory ||
                       "Quiz attempt"}
                   </h4>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {latestAttempt.date
                       ? moment(latestAttempt.date).fromNow()
                       : "Recently saved"}
                   </p>
                 </div>
               </div>
-              <div className="rounded-xl bg-white px-4 py-3 text-left shadow-sm sm:text-right">
+              <div className="rounded-xl bg-card px-4 py-3 text-left shadow-sm sm:text-right">
                 <span className="block text-2xl font-black text-primary-color">
                   {latestAttempt.marks ?? 0}%
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Score
                 </span>
               </div>
@@ -295,7 +295,7 @@ const QuizlyticsDashboard = () => {
                 <Button
                   type="button"
                   onClick={() => router.push("/quickExam")}
-                  className="min-h-11 rounded-xl bg-primary-color px-5 font-bold text-white hover:bg-primary-color/90"
+                  className="min-h-11 px-5 font-bold"
                 >
                   Start a Quiz
                 </Button>
@@ -304,7 +304,7 @@ const QuizlyticsDashboard = () => {
           )}
         </div>
 
-        <div className="flex flex-col justify-between rounded-2xl bg-gray-950 p-6 text-white shadow-sm">
+        <div className="flex flex-col justify-between rounded-xl bg-secondary-color p-6 text-white shadow-sm dark:bg-muted">
           <div>
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
               <Activity className="h-5 w-5" aria-hidden="true" />
@@ -340,15 +340,15 @@ function StatCard({
   bg: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <div
         className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${bg}`}
       >
         <Icon className={`h-5 w-5 ${color}`} aria-hidden="true" />
       </div>
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <h3 className="mt-1 text-3xl font-black text-gray-950">{value}</h3>
-      <p className="mt-1 text-xs text-gray-400">{helper}</p>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <h3 className="mt-1 text-3xl font-black text-foreground">{value}</h3>
+      <p className="mt-1 text-xs text-muted-foreground">{helper}</p>
     </div>
   );
 }
@@ -361,14 +361,14 @@ function QuizModeCard({
   onStart: () => void;
 }) {
   return (
-    <article className="group flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary-color/20 hover:shadow-md">
+    <article className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary-color/20 hover:shadow-md">
       <div
         className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl ${mode.bg}`}
       >
         <mode.icon className={`h-6 w-6 ${mode.color}`} aria-hidden="true" />
       </div>
-      <h3 className="text-xl font-bold text-gray-950">{mode.title}</h3>
-      <p className="mt-2 min-h-12 text-sm leading-6 text-gray-500">
+      <h3 className="text-xl font-bold text-foreground">{mode.title}</h3>
+      <p className="mt-2 min-h-12 text-sm leading-6 text-muted-foreground">
         {mode.description}
       </p>
 
@@ -376,7 +376,7 @@ function QuizModeCard({
         {mode.bullets.map(bullet => (
           <li
             key={bullet}
-            className="flex items-start gap-2 text-sm text-gray-600"
+            className="flex items-start gap-2 text-sm text-muted-foreground"
           >
             <FiCheckCircle
               className="mt-0.5 shrink-0 text-emerald-500"
@@ -390,7 +390,7 @@ function QuizModeCard({
       <Button
         type="button"
         onClick={onStart}
-        className="mt-6 min-h-11 w-full rounded-xl bg-gray-950 font-bold text-white hover:bg-primary-color"
+        className="mt-6 min-h-11 w-full rounded-xl bg-secondary-color font-bold text-white hover:bg-primary-color"
       >
         {mode.btnText}
         <ArrowRight
