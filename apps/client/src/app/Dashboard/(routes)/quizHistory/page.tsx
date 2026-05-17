@@ -19,6 +19,7 @@ import { SectionTitleMinimal } from "@/components/Shared/SectionTitle";
 import type { HistoryWithMongoId } from "@/requests/get";
 import { EmptyState, SkeletonBlock } from "@/components/Shared/StateBlocks";
 import { ArrowUpDown, Eye, History } from "lucide-react";
+import type { QuizQuestion } from "@quizlytics/types";
 
 type SortOption = "recent" | "highest" | "lowest";
 
@@ -66,9 +67,46 @@ const QuizHistory = () => {
   };
 
   const getScoreColor = (marks: number) => {
-    if (marks > 70) return { bar: "bg-green-500", text: "text-green-600" };
-    if (marks >= 40) return { bar: "bg-yellow-500", text: "text-yellow-600" };
-    return { bar: "bg-red-500", text: "text-red-600" };
+    if (marks > 70)
+      return {
+        bar: "bg-green-500",
+        text: "text-green-700 dark:text-green-400",
+        track: "bg-green-100 dark:bg-green-950/40",
+      };
+    if (marks >= 40)
+      return {
+        bar: "bg-yellow-500",
+        text: "text-yellow-700 dark:text-yellow-400",
+        track: "bg-yellow-100 dark:bg-yellow-950/40",
+      };
+    return {
+      bar: "bg-red-500",
+      text: "text-red-700 dark:text-red-400",
+      track: "bg-red-100 dark:bg-red-950/40",
+    };
+  };
+
+  const getScoreSummary = (item: HistoryWithMongoId) => {
+    const questions = Array.isArray(item.questions)
+      ? (item.questions as unknown as QuizQuestion[])
+      : [];
+    const answers = Array.isArray(item.answers) ? item.answers : [];
+    const total = questions.length || 10;
+    const percent = Math.min(100, Math.max(0, item.marks ?? 0));
+
+    const correctFromAnswers = questions.reduce((count, question, index) => {
+      const answer = answers[index];
+      return String(question.correct_answer) === String(answer)
+        ? count + 1
+        : count;
+    }, 0);
+
+    const correct =
+      questions.length > 0 && answers.length > 0
+        ? correctFromAnswers
+        : Math.round((percent / 100) * total);
+
+    return { correct, total, percent };
   };
 
   const getStatusBadge = (marks: number) => {
@@ -213,8 +251,8 @@ const QuizHistory = () => {
                       currentPage * itemsPerPage
                     )
                     .map(item => {
-                      const score = item.marks ?? 0;
-                      const colors = getScoreColor(score);
+                      const score = getScoreSummary(item);
+                      const colors = getScoreColor(score.percent);
                       return (
                         <TableRow
                           key={item._id}
@@ -239,22 +277,26 @@ const QuizHistory = () => {
                             {item.quizCreator || "System AI"}
                           </TableCell>
                           <TableCell className="py-5 px-6">
-                            <div className="flex flex-col items-center gap-1.5">
+                            <div className="flex min-w-28 flex-col items-center gap-1.5">
                               <span
-                                className={`text-lg font-black ${colors.text}`}
+                                className={`text-base font-black ${colors.text}`}
                               >
-                                {score}%
+                                {score.correct}/{score.total}
                               </span>
-                              <div className="w-full max-w-20">
+                              <span className="text-[10px] font-semibold text-muted-foreground">
+                                {score.percent}% score
+                              </span>
+                              <div className="w-full max-w-24">
                                 <Progress
-                                  value={score}
-                                  className={`h-1.5 ${colors.bar}`}
+                                  value={score.percent}
+                                  className={`h-1.5 ${colors.track}`}
+                                  indicatorClassName={colors.bar}
                                 />
                               </div>
                             </div>
                           </TableCell>
                           <TableCell className="py-5 px-6 text-center">
-                            {getStatusBadge(score)}
+                            {getStatusBadge(score.percent)}
                           </TableCell>
                           <TableCell className="py-5 px-6 text-right">
                             <div className="flex gap-2 justify-end">

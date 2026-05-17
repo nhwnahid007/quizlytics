@@ -35,7 +35,7 @@ export function ProgressBar({
     >
       <div
         className={cn(
-          "h-full rounded-full bg-primary-color transition-all duration-300",
+          "h-full rounded-full bg-primary-color transition-all duration-700 ease-out will-change-[width]",
           indicatorClassName
         )}
         style={{ width: `${safeValue}%` }}
