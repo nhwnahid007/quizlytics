@@ -1,21 +1,11 @@
-
-echo "🔍 Running lint check..."
-npm run lint || {
-  echo "❌ Lint failed! Commit blocked."
-  exit 1
-}
-
-echo "🏗️ Running build check..."
-npm run build || {
-  echo "❌ Build failed! Commit blocked."
-  exit 1
-}
+#!/bin/sh
 
 echo "✨ Checking and formatting staged files one by one..."
 
 formatted_count=0
 checked_count=0
 
+# Prettier format staged files first
 for file in $(git diff --cached --name-only --diff-filter=ACMR); do
   case "$file" in
   *.js|*.ts|*.tsx|*.mjs|*.json|*.css|*.md)
@@ -46,6 +36,70 @@ if [ "$checked_count" -eq 0 ]; then
   echo "ℹ️ No staged files matched formatting rules."
 else
   echo "🧾 Checked: $checked_count file(s), formatted: $formatted_count file(s)."
+fi
+
+# Detect changed workspaces
+staged_files=$(git diff --cached --name-only)
+
+client_changed=false
+server_changed=false
+db_changed=false
+types_changed=false
+global_changed=false
+
+for file in $staged_files; do
+  case "$file" in
+    apps/client/*)
+      client_changed=true
+      ;;
+    apps/server/*)
+      server_changed=true
+      ;;
+    packages/db/*)
+      db_changed=true
+      ;;
+    packages/types/*)
+      types_changed=true
+      ;;
+    package.json|package-lock.json|tsconfig.base.json|turbo.json)
+      global_changed=true
+      ;;
+  esac
+done
+
+if [ "$global_changed" = true ]; then
+  echo "⚙️ Global config changed! Running lint & build for ALL workspaces..."
+  client_changed=true
+  server_changed=true
+  db_changed=true
+  types_changed=true
+fi
+
+# Construct turbo filters
+filters=""
+if [ "$client_changed" = true ]; then
+  filters="$filters --filter=@quizlytics/client"
+fi
+if [ "$server_changed" = true ]; then
+  filters="$filters --filter=@quizlytics/server"
+fi
+if [ "$db_changed" = true ]; then
+  filters="$filters --filter=@quizlytics/db"
+fi
+if [ "$types_changed" = true ]; then
+  filters="$filters --filter=@quizlytics/types"
+fi
+
+if [ -z "$filters" ]; then
+  echo "✨ No workspace files modified. Skipping lint and build checks."
+else
+  echo "🔍 Running lint and build checks for modified workspaces: $filters"
+  
+  # Run lint and build for changed workspaces
+  npx turbo run lint build $filters || {
+    echo "❌ Checks failed! Commit blocked."
+    exit 1
+  }
 fi
 
 echo "✅ All checks passed!"
