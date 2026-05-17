@@ -3,33 +3,43 @@ import React from "react";
 import { SectionTitleMinimal } from "../Shared/SectionTitle";
 
 const HelloTeacher = () => {
-
-
   return (
-    <div className="my-auto mt-10 flex gap-10 flex-col md:text-center lg:text-left md:items-center lg:flex-row p-4 md:p-8 lg:gap-20">
-      <div className="flex-1 lg:pl-14">
-          <SectionTitleMinimal heading={"Hello Teachers!"} subHeading={"Add Interactivity to your Teaching"}></SectionTitleMinimal>
-          
-          <p className="text-base text-center md:text-lg mb-2 md:mb-4 opacity-80 ">
-            A quiz can teach anything to your students. From primary school to
-            university, quizzes make education more engaging and fun. You can also
-            test the knowledge of your students and view their results in real time.
-            Your quiz automatically records the participants and their answers.
-            In the report, you have access to the participants&apos; answers, the
-          time they spent on your quiz, and their score.
+    <section className="mx-auto w-[92%] max-w-6xl py-8 md:py-12">
+      <div className="grid grid-cols-1 gap-6 rounded-2xl border border-border bg-card p-5 shadow-sm md:p-8 lg:grid-cols-2 lg:items-center lg:gap-10">
+        <div>
+          <SectionTitleMinimal
+            heading={"Hello Teachers"}
+            subHeading={
+              "Run interactive assessments with clear student insights"
+            }
+          />
+
+          <p className="mt-3 text-sm leading-7 text-muted-foreground md:text-base">
+            Quizlytics helps you convert lessons into engaging quizzes for
+            school, coaching, or university classes. Track participant activity,
+            review answer quality, and evaluate time spent per attempt from one
+            report-friendly dashboard.
           </p>
-          
+
+          <p className="mt-3 text-sm leading-7 text-muted-foreground md:text-base">
+            Share quizzes with keys, monitor progress in real time, and use
+            result history to identify learners who need targeted support.
+          </p>
+        </div>
+
+        <div className="flex justify-center lg:justify-end">
+          <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-border bg-muted/40 p-2">
+            <Image
+              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop"
+              alt="Teacher using quiz analytics dashboard"
+              width={1200}
+              height={800}
+              className="h-auto w-full rounded-lg object-cover"
+            />
+          </div>
+        </div>
       </div>
-      <div className="flex-1 flex justify-end items-center lg:pr-14">
-        <Image
-          src="https://svgshare.com/i/1C9Q.svg"
-          alt="Quiz Illustration"
-          width={700}
-          height={700}
-          className="max-w-full h-auto"
-        />
-      </div>
-    </div>
+    </section>
   );
 };
 
