@@ -19,10 +19,12 @@ export type LinkHistoryWithMongoId = LinkQuizHistory & { _id?: string };
 
 export const getMCQ = async (
   category: string,
-  level: string
+  level: string,
+  count = 10,
+  includeExplanations = false
 ): Promise<QuizQuestion[]> => {
   const { data } = await apiClient.get<QuizQuestion[]>("/quiz", {
-    params: { category, skill: level },
+    params: { category, skill: level, count, includeExplanations },
   });
   return data;
 };

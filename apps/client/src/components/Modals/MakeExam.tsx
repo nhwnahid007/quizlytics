@@ -1,6 +1,6 @@
 "use client";
 // import useMakeExam from '@/app/hooks/useMakeExam';
-import { X } from "lucide-react";
+import { Info, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,8 @@ interface MakeExamProps {
   setLoadData: Dispatch<SetStateAction<boolean>>;
   questionCount?: number;
   setQuestionCount?: Dispatch<SetStateAction<number>>;
+  includeExplanations?: boolean;
+  setIncludeExplanations?: Dispatch<SetStateAction<boolean>>;
 }
 
 const MakeExam = ({
@@ -23,6 +25,8 @@ const MakeExam = ({
   setLoadData,
   questionCount = 10,
   setQuestionCount,
+  includeExplanations = false,
+  setIncludeExplanations,
 }: MakeExamProps) => {
   const router = useRouter();
   const [searchError, setSearchError] = useState("");
@@ -159,6 +163,21 @@ const MakeExam = ({
               <option value={5}>5</option>
               <option value={10}>10</option>
             </select>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 md:col-span-3">
+            <label className="flex min-h-6 items-center gap-3 text-sm font-bold text-gray-700">
+              <input
+                type="checkbox"
+                checked={includeExplanations}
+                onChange={e => setIncludeExplanations?.(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 accent-primary-color"
+              />
+              Add answer explanations
+            </label>
+            <p className="mt-2 flex items-start gap-2 text-xs leading-5 text-gray-500">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary-color" />
+              This can take longer because AI writes reasoning for each answer.
+            </p>
           </div>
         </div>
 

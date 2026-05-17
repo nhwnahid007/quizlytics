@@ -34,18 +34,117 @@ const generatedQuizSchema = z
   .array(
     z
       .object({
-        id: z.union([z.string(), z.number()]).optional(),
         question: z.string().min(1).max(2000),
         options: z.array(z.string().min(1).max(1000)).length(4),
-        correct_answer: z.union([z.string(), z.number()]),
-        explain: z.string().max(3000).optional(),
+        correct_answer: z.union([
+          z.enum(["0", "1", "2", "3"]),
+          z.number().int().min(0).max(3),
+        ]),
+        explain: z.string().min(1).max(3000).optional(),
       })
       .strict()
   )
   .min(1)
-  .max(25);
+  .max(20);
+
+type GeneratedQuizQuestion = Omit<
+  z.infer<typeof generatedQuizSchema>[number],
+  "correct_answer"
+> & {
+  id: string;
+  correct_answer: string;
+  explain?: string;
+};
+
+type QuizCacheEntry = {
+  expiresAt: number;
+  quiz: GeneratedQuizQuestion[];
+};
+
+const AI_TIMEOUT_MS = 30_000;
+const QUIZ_CACHE_TTL_MS = 60 * 60 * 1000;
+const quizCache = new Map<string, QuizCacheEntry>();
 
 const promptValue = (value: string): string => JSON.stringify(value);
+
+export const normalizeQuizCacheKey = (
+  category: string,
+  skill: string,
+  count: number,
+  includeExplanations = false
+): string =>
+  `${category.trim().toLowerCase()}::${skill.trim().toLowerCase()}::${count}::${includeExplanations ? "explain" : "answer"}`;
+
+const cloneQuiz = (quiz: GeneratedQuizQuestion[]): GeneratedQuizQuestion[] =>
+  quiz.map(question => ({
+    ...question,
+    options: [...question.options],
+  }));
+
+export const addGeneratedQuizDefaults = (
+  quiz: z.infer<typeof generatedQuizSchema>,
+  includeExplanations = false
+): GeneratedQuizQuestion[] =>
+  quiz.map((question, index) => {
+    const correctAnswer = String(question.correct_answer);
+    const correctOption = question.options[Number(correctAnswer)];
+    const nextQuestion: GeneratedQuizQuestion = {
+      ...question,
+      id: String(index + 1),
+      correct_answer: correctAnswer,
+    };
+
+    if (includeExplanations) {
+      nextQuestion.explain =
+        question.explain ??
+        (correctOption
+          ? `Correct answer is option ${Number(correctAnswer) + 1}: ${correctOption}.`
+          : `Correct answer is option ${Number(correctAnswer) + 1}.`);
+    }
+
+    return nextQuestion;
+  });
+
+const getCachedQuiz = (key: string): GeneratedQuizQuestion[] | null => {
+  const entry = quizCache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt <= Date.now()) {
+    quizCache.delete(key);
+    return null;
+  }
+  return cloneQuiz(entry.quiz);
+};
+
+const setCachedQuiz = (
+  key: string,
+  quiz: GeneratedQuizQuestion[]
+): GeneratedQuizQuestion[] => {
+  quizCache.set(key, {
+    expiresAt: Date.now() + QUIZ_CACHE_TTL_MS,
+    quiz: cloneQuiz(quiz),
+  });
+  return cloneQuiz(quiz);
+};
+
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number
+): Promise<T> => {
+  let timeout: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error(`AI request timed out after ${timeoutMs}ms`)),
+          timeoutMs
+        );
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+};
 
 const parseGeneratedQuizPayload = (text: string): unknown => {
   try {
@@ -72,30 +171,62 @@ const parseGeneratedQuizPayload = (text: string): unknown => {
   }
 };
 
-const generateContent = async (prompt: string) => {
-  try {
-    const response = await ai.models.generateContent({
+const requestGeneratedQuiz = async (
+  prompt: string,
+  expectedCount?: number,
+  includeExplanations = false
+) => {
+  const response = await withTimeout(
+    ai.models.generateContent({
       model: env.AI_MODEL,
       contents: prompt,
-    });
-    const text = response.text;
-    if (!text) {
-      throw new Error("AI provider returned empty response");
-    }
-    const parsed = parseGeneratedQuizPayload(text);
-    const validated = generatedQuizSchema.safeParse(parsed);
-    if (!validated.success) {
-      logger.warn(
-        { issues: validated.error.issues.map(issue => issue.path.join(".")) },
-        "AI quiz response failed validation"
-      );
-      throw new Error("AI provider returned invalid quiz data");
-    }
-    return validated.data;
-  } catch (error) {
-    logger.warn({ err: error }, "AI quiz generation failed");
-    throw new AppError(502, "Failed to generate quiz from AI provider");
+    }),
+    AI_TIMEOUT_MS
+  );
+  const text = response.text;
+  if (!text) {
+    throw new Error("AI provider returned empty response");
   }
+  const parsed = parseGeneratedQuizPayload(text);
+  const validated = generatedQuizSchema.safeParse(parsed);
+  if (!validated.success) {
+    logger.warn(
+      { issues: validated.error.issues.map(issue => issue.path.join(".")) },
+      "AI quiz response failed validation"
+    );
+    throw new Error("AI provider returned invalid quiz data");
+  }
+  if (expectedCount && validated.data.length !== expectedCount) {
+    throw new Error(
+      `AI provider returned ${validated.data.length} questions instead of ${expectedCount}`
+    );
+  }
+  return addGeneratedQuizDefaults(validated.data, includeExplanations);
+};
+
+const generateContent = async (
+  prompt: string,
+  expectedCount?: number,
+  includeExplanations = false
+) => {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    try {
+      return await requestGeneratedQuiz(
+        prompt,
+        expectedCount,
+        includeExplanations
+      );
+    } catch (error) {
+      lastError = error;
+      logger.warn({ err: error, attempt }, "AI quiz generation attempt failed");
+    }
+  }
+  logger.warn({ err: lastError }, "AI quiz generation failed after retry");
+  throw new AppError(
+    502,
+    "Quiz generation is taking too long right now. Please try again."
+  );
 };
 
 const isAdmin = (authUser: AuthUser): boolean => authUser.role === "admin";
@@ -287,30 +418,69 @@ export const getAllFeedback = async () => {
   }));
 };
 
-export const generateQuiz = async (category: string, skill: string) =>
-  generateContent(`
-Generate a JSON array of exactly 10 unique multiple-choice questions based on the topic ${promptValue(category)}. Each question should be designed for a learner at the ${promptValue(skill)} level and can feature formats like "fill in the blanks", "find the true statement", or similar types.
+export const generateQuiz = async (
+  category: string,
+  skill: string,
+  count = 10,
+  includeExplanations = false
+) => {
+  const cacheKey = normalizeQuizCacheKey(
+    category,
+    skill,
+    count,
+    includeExplanations
+  );
+  const cachedQuiz = getCachedQuiz(cacheKey);
+  if (cachedQuiz) return cachedQuiz;
 
-Each question object must meet the following criteria:
-1. The question is labeled as "question" and is a string.
-2. There are exactly four answer options stored in an array labeled as "options". Only one option should be correct.
-3. The index of the correct answer (from the options array) is labeled as "correct_answer", stored as a string representing the index position (0, 1, 2, or 3).
-4. Each question must have a unique identifier, labeled as "id", which is a string containing the index number (e.g., "1", "2", "3").
-5. Include an explanation for the correct answer, labeled as "explain", stored as a string.
+  const quiz = await generateContent(
+    `
+Return ONLY valid JSON array. No markdown. No explanation outside JSON.
 
-The output should be only the JSON array without any additional commentary or headings.
-`);
+Create exactly ${count} MCQ questions.
+
+Topic: ${promptValue(category)}
+Level: ${promptValue(skill)}
+
+Schema:
+[
+  {
+    "question": "",
+    "options": ["", "", "", ""],
+    "correct_answer": "0"${includeExplanations ? ',\n    "explain": ""' : ""}
+  }
+]
+
+Rules:
+- options must contain exactly 4 strings
+- correct_answer must be "0", "1", "2", or "3"
+- no duplicate questions
+${includeExplanations ? "- explain must briefly describe why the correct answer is right" : "- do not include explain"}
+`,
+    count,
+    includeExplanations
+  );
+
+  return setCachedQuiz(cacheKey, quiz);
+};
 
 export const generateQuizByLink = async (link: string) =>
   generateContent(`
-Generate a JSON array of maximum unique multiple-choice questions possible based on the article at ${promptValue(link)}. Each question should feature formats like "fill in the blanks", "find the true statement", or similar types.
+Return ONLY valid JSON array. No markdown. No explanation outside JSON.
 
-Each question object must meet the following criteria:
-1. The question is labeled as "question" and is a string.
-2. There are exactly four answer options stored in an array labeled as "options". Only one option should be correct.
-3. The index of the correct answer (from the options array) is labeled as "correct_answer", stored as a string representing the index position (0, 1, 2, or 3).
-4. Each question must have a unique identifier, labeled as "id", which is a string containing the index number (e.g., "1", "2", "3").
-5. Include an explanation for the correct answer, labeled as "explain", stored as a string.
+Create up to 10 MCQ questions from article URL: ${promptValue(link)}
 
-The output should be only the JSON array without any additional commentary or headings.
+Schema:
+[
+  {
+    "question": "",
+    "options": ["", "", "", ""],
+    "correct_answer": "0"
+  }
+]
+
+Rules:
+- options must contain exactly 4 strings
+- correct_answer must be "0", "1", "2", or "3"
+- no duplicate questions
 `);
