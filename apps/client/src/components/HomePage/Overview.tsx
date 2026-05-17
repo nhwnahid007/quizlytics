@@ -7,6 +7,7 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -92,8 +93,8 @@ const Overview = () => {
   }, []);
 
   return (
-    <div className=" py-8 ">
-      <div className="w-[90%]  max-w-6xl mx-auto">
+    <section className="py-8">
+      <div className="mx-auto w-[92%] max-w-6xl">
         <SectionTitleMinimal
           heading={"Overview"}
           subHeading={
@@ -102,33 +103,72 @@ const Overview = () => {
         ></SectionTitleMinimal>
 
         {/* Trending Topics & Question Type */}
-        <div className="flex flex-col lg:flex-row gap-8 mt-12">
-          <div
-            className="w-full lg:w-1/2 bg-gray-100 bg-opacity-90 rounded-2xl p-8"
-            style={{ color: "#2C2F33" }}
-          >
-            <h2 className="text-3xl border-b-2 border-gray-300 font-bold pb-2 mb-4 text-semibold">
+        <div className="mt-12 flex flex-col gap-6 lg:flex-row">
+          <div className="w-full rounded-lg border border-border bg-card p-5 shadow-sm md:p-8 lg:w-1/2">
+            <h2 className="mb-4 border-b border-border pb-2 text-2xl font-bold text-foreground">
               Trending Topics
             </h2>
-            <div className="flex justify-center">
-              <BarChart width={400} height={300} data={chartData}>
-                <XAxis dataKey="quizCategory" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" fill="#7A1CAC" />
-              </BarChart>
+            <div className="h-[300px] w-full">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--border))"
+                    />
+                    <XAxis
+                      dataKey="quizCategory"
+                      tick={{
+                        fill: "hsl(var(--muted-foreground))",
+                        fontSize: 12,
+                      }}
+                    />
+                    <YAxis
+                      tick={{
+                        fill: "hsl(var(--muted-foreground))",
+                        fontSize: 12,
+                      }}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "hsl(var(--muted))" }}
+                      contentStyle={{
+                        background: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                        color: "hsl(var(--foreground))",
+                      }}
+                    />
+                    <Legend
+                      formatter={value => (
+                        <span className="text-muted-foreground">{value}</span>
+                      )}
+                    />
+                    <Bar
+                      dataKey="count"
+                      fill="hsl(var(--brand))"
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background/60 p-6 text-center">
+                  <p className="text-sm font-semibold text-foreground">
+                    No topic data yet
+                  </p>
+                  <p className="mt-2 max-w-xs text-sm leading-6 text-muted-foreground">
+                    Quiz activity will appear here once learners start saving
+                    submissions.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
-          <div
-            className="w-full lg:w-1/2 bg-gray-100 bg-opacity-90 rounded-2xl p-8"
-            style={{ color: "#2C2F33" }}
-          >
-            <h2 className="text-3xl font-bold border-b-2 border-gray-300 pb-2 mb-8 text-semibold">
+          <div className="w-full rounded-lg border border-border bg-card p-5 shadow-sm md:p-8 lg:w-1/2">
+            <h2 className="mb-8 border-b border-border pb-2 text-2xl font-bold text-foreground">
               Check Your Knowledge Now!
             </h2>
-            <h3 className="text-xl font-semibold text-semibold">
+            <h3 className="text-lg font-semibold text-foreground md:text-xl">
               What is the primary use of Node.js in the MERN stack?
             </h3>
             <div>
@@ -141,10 +181,10 @@ const Overview = () => {
                 ].map((option, index) => (
                   <li
                     key={index}
-                    className={`flex items-center border-2 border-gray-300 py-2 px-4 rounded-xl ${
+                    className={`flex items-center rounded-lg border px-4 py-3 transition ${
                       selectedOption === option
-                        ? "bg-secondary-color opacity-80 text-white"
-                        : ""
+                        ? "border-primary-color bg-primary-color/10 text-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary-color/40 hover:text-foreground"
                     }`}
                   >
                     <input
@@ -154,17 +194,14 @@ const Overview = () => {
                       className="mr-2 accent-primary-color"
                       onChange={() => setSelectedOption(option)}
                     />
-                    <label htmlFor={`option${index}`} className="text-semibold">
+                    <label htmlFor={`option${index}`} className="font-medium">
                       {option}
                     </label>
                   </li>
                 ))}
               </ul>
             </div>
-            <Button
-              onClick={handleCheckAnswer}
-              className="mt-4 py-2 px-4 rounded"
-            >
+            <Button onClick={handleCheckAnswer} className="mt-4 px-5">
               Check
             </Button>
           </div>
@@ -207,16 +244,16 @@ const Overview = () => {
         </Dialog>
 
         {/* Achievement */}
-        <div className="flex flex-col lg:flex-row gap-8 mt-8">
-          <div className="w-full lg:w-1/3 bg-gray-100 rounded-3xl p-8 shadow-md">
+        <div className="mt-8 flex flex-col gap-6 lg:flex-row">
+          <div className="w-full rounded-lg border border-border bg-card p-6 shadow-sm lg:w-1/3">
             <div className="flex flex-col gap-4">
-              <div className="bg-gray-50 w-14 h-14 rounded-2xl flex items-center justify-center">
-                <TimerReset className="w-7 h-7 text-gray-800" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary-color/10">
+                <TimerReset className="h-7 w-7 text-primary-color" />
               </div>
-              <h1 className="text-2xl font-bold text-primary-color">
+              <h1 className="text-2xl font-bold text-foreground">
                 Add Time Limits
               </h1>
-              <p className="text-gray-600 text-lg">
+              <p className="text-base leading-7 text-muted-foreground">
                 Experience the thrill of competitive quizzing with our timed
                 challenges. Race against the clock as you tackle questions of
                 varying difficulty, making every second count!
@@ -224,15 +261,15 @@ const Overview = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/3 bg-gray-100 rounded-3xl p-8 shadow-md">
+          <div className="w-full rounded-lg border border-border bg-card p-6 shadow-sm lg:w-1/3">
             <div className="flex flex-col gap-4">
-              <div className="bg-gray-50 w-14 h-14 rounded-2xl flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
                 <MessageSquare className="w-7 h-7 text-primary-color" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-2xl font-bold text-foreground">
                 Share Feedback
               </h1>
-              <p className="text-gray-600 text-lg">
+              <p className="text-base leading-7 text-muted-foreground">
                 Provide valuable feedback on quizzes and share your scores with
                 others. Help improve the learning experience and celebrate
                 achievements within the quiz community.
@@ -240,13 +277,15 @@ const Overview = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/3 bg-gray-100 rounded-3xl p-8 shadow-md">
+          <div className="w-full rounded-lg border border-border bg-card p-6 shadow-sm lg:w-1/3">
             <div className="flex flex-col gap-4">
-              <div className="bg-gray-50 w-14 h-14 rounded-2xl flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
                 <Share2 className="w-7 h-7 text-primary-color" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Share Score</h1>
-              <p className="text-gray-600 text-lg">
+              <h1 className="text-2xl font-bold text-foreground">
+                Share Score
+              </h1>
+              <p className="text-base leading-7 text-muted-foreground">
                 Share your quiz scores with friends and colleagues. Compare
                 results, track progress, and motivate each other to achieve
                 higher scores.
@@ -255,7 +294,7 @@ const Overview = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

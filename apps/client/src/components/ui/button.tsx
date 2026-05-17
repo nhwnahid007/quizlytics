@@ -5,22 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "rounded-xl bg-primary-color text-white shadow-sm hover:bg-primary-color/90",
+          "bg-primary-color text-primary-foreground shadow-sm hover:bg-primary-color/90",
         destructive:
-          "rounded-xl bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "rounded-xl border border-[#7A1CAC] bg-transparent text-[#7A1CAC] shadow-sm hover:bg-[#7A1CAC]/10",
+          "border border-border bg-card text-foreground shadow-sm hover:border-primary-color/50 hover:bg-primary-color/10 hover:text-primary-color",
         secondary:
-          "rounded-xl bg-[#090909] text-white shadow-sm hover:bg-[#232323]",
-        ghost: "rounded-xl hover:bg-[#7A1CAC]/10 hover:text-[#7A1CAC]",
-        link: "text-[#7A1CAC] underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90",
+        ghost: "hover:bg-primary-color/10 hover:text-primary-color",
+        link: "text-primary-color underline-offset-4 hover:underline",
         buttonOutline:
-          "rounded-xl border border-red-500 text-red-500 text-lg hover:bg-red-500 hover:text-white",
+          "border border-destructive text-destructive text-lg hover:bg-destructive hover:text-destructive-foreground",
       },
       size: {
         default: "h-11 px-4 py-2",

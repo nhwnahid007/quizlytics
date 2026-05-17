@@ -32,15 +32,18 @@ const Feedback = () => {
   }, []);
 
   return (
-    <div className=" overflow-hidden mt-4 pb-12">
-     <SectionTitleMinimal heading={"Feedback & Reviewss"} subHeading={"What our clients say about us"} ></SectionTitleMinimal>
+    <section className="mt-4 overflow-hidden pb-12">
+      <SectionTitleMinimal
+        heading={"Feedback & Reviews"}
+        subHeading={"What learners and teachers say about Quizlytics"}
+      />
 
       <Carousel
         opts={{
           align: "start",
         }}
         plugins={[autoplay]}
-        className="w-full max-w-5xl mx-auto"
+        className="mx-auto w-full max-w-5xl"
       >
         <CarouselContent className="flex justify-center md:justify-start -ml-1">
           {feedback.map((item: FeedbackRecord, index: number) => (
@@ -49,7 +52,7 @@ const Feedback = () => {
               className="pl-1 md:basis-1/2 lg:basis-1/3"
             >
               <div className="p-1 flex justify-center items-center">
-                <Card className="relative p-3 bg-white shadow-lg rounded-lg overflow-hidden w-80 h-80 border-l-4 border-primary-color">
+                <Card className="relative h-80 w-80 overflow-hidden border-l-4 border-l-primary-color bg-card p-3 shadow-sm">
                   <div className="flex items-center p-4">
                     <div className="w-16 h-16 bg-primary-color rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
                       {item?.image ? (
@@ -77,16 +80,20 @@ const Feedback = () => {
                       )}
                     </div>
                     <div className="ml-4">
-                      <h2 className="text-lg font-bold text-black">{item.name || 'Anonymous'}</h2>
-                      <p className="text-gray-600">{item.designation || "Teacher"}</p>
+                      <h2 className="text-lg font-bold text-foreground">
+                        {item.name || "Anonymous"}
+                      </h2>
+                      <p className="text-muted-foreground">
+                        {item.designation || "Teacher"}
+                      </p>
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <p className="italic text-gray-600 text-justify">
+                    <p className="text-justify text-sm italic leading-6 text-muted-foreground">
                       {item.message || "No feedback provided"}
                     </p>
                   </CardContent>
-                  <div className="absolute top-1 right-1 bg-primary-color opacity-80 text-white rounded-lg p-2">
+                  <div className="absolute right-2 top-2 rounded-lg bg-primary-color p-2 text-primary-foreground shadow-sm">
                     <div className="flex gap-0.5">
                       {[...Array(item.rating || 5)].map((_, i) => (
                         <FaStar key={i} className="text-[#F3C623] w-3 h-3" />
@@ -101,7 +108,7 @@ const Feedback = () => {
         <CarouselPrevious className="hidden md:flex" />
         <CarouselNext className="hidden md:flex" />
       </Carousel>
-    </div>
+    </section>
   );
 };
 
