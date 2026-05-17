@@ -1,6 +1,50 @@
 #!/bin/sh
 
-echo "✨ Checking and formatting staged files one by one..."
+if [ -t 1 ]; then
+  reset="$(tput sgr0)"
+  bold="$(tput bold)"
+  dim="$(tput dim)"
+  red="$(tput setaf 1)"
+  green="$(tput setaf 2)"
+  yellow="$(tput setaf 3)"
+  blue="$(tput setaf 4)"
+  magenta="$(tput setaf 5)"
+  cyan="$(tput setaf 6)"
+else
+  reset=""
+  bold=""
+  dim=""
+  red=""
+  green=""
+  yellow=""
+  blue=""
+  magenta=""
+  cyan=""
+fi
+
+section() {
+  printf "\n%s%s%s\n" "$bold$cyan" "$1" "$reset"
+  printf "%s\n" "${dim}────────────────────────────────────────${reset}"
+}
+
+info() {
+  printf "%s%s%s\n" "$blue" "$1" "$reset"
+}
+
+success() {
+  printf "%s%s%s\n" "$green" "$1" "$reset"
+}
+
+warn() {
+  printf "%s%s%s\n" "$yellow" "$1" "$reset"
+}
+
+fail() {
+  printf "%s%s%s\n" "$red" "$1" "$reset"
+}
+
+section "✨ Pre-commit checks"
+info "Formatting staged files..."
 
 formatted_count=0
 checked_count=0
@@ -14,28 +58,28 @@ for file in $(git diff --cached --name-only --diff-filter=ACMR); do
     fi
 
     checked_count=$((checked_count + 1))
-    echo "🔎 Checking: $file"
+    printf "%s  🔎 %s%s\n" "$dim" "$file" "$reset"
 
     if npx prettier --check "$file" >/dev/null 2>&1; then
-      echo "👌 Already formatted: $file"
+      success "  ✓ Already formatted"
     else
       npx prettier --write "$file" >/dev/null 2>&1 || {
-        echo "❌ Formatting failed: $file"
+        fail "  ✗ Formatting failed: $file"
         exit 1
       }
 
       git add "$file"
       formatted_count=$((formatted_count + 1))
-      echo "✅ Formatted: $file"
+      success "  ✓ Formatted"
     fi
     ;;
   esac
 done
 
 if [ "$checked_count" -eq 0 ]; then
-  echo "ℹ️ No staged files matched formatting rules."
+  warn "ℹ No staged files matched formatting rules."
 else
-  echo "🧾 Checked: $checked_count file(s), formatted: $formatted_count file(s)."
+  success "✓ Formatting complete: $checked_count checked, $formatted_count changed."
 fi
 
 # Detect changed workspaces
@@ -68,7 +112,7 @@ for file in $staged_files; do
 done
 
 if [ "$global_changed" = true ]; then
-  echo "⚙️ Global config changed! Running lint & build for ALL workspaces..."
+  warn "⚙ Global config changed. Running lint and build for all workspaces."
   client_changed=true
   server_changed=true
   db_changed=true
@@ -77,29 +121,36 @@ fi
 
 # Construct turbo filters
 filters=""
+workspace_names=""
 if [ "$client_changed" = true ]; then
   filters="$filters --filter=@quizlytics/client"
+  workspace_names="$workspace_names @quizlytics/client"
 fi
 if [ "$server_changed" = true ]; then
   filters="$filters --filter=@quizlytics/server"
+  workspace_names="$workspace_names @quizlytics/server"
 fi
 if [ "$db_changed" = true ]; then
   filters="$filters --filter=@quizlytics/db"
+  workspace_names="$workspace_names @quizlytics/db"
 fi
 if [ "$types_changed" = true ]; then
   filters="$filters --filter=@quizlytics/types"
+  workspace_names="$workspace_names @quizlytics/types"
 fi
 
 if [ -z "$filters" ]; then
-  echo "✨ No workspace files modified. Skipping lint and build checks."
+  success "✨ No workspace files modified. Skipping lint and build."
 else
-  echo "🔍 Running lint and build checks for modified workspaces: $filters"
-  
+  section "🔍 Type, lint, and build"
+  info "Workspaces:$workspace_names"
+  printf "%sCommand:%s npx turbo run lint build%s\n\n" "$dim" "$reset" "$filters"
+
   # Run lint and build for changed workspaces
   npx turbo run lint build $filters || {
-    echo "❌ Checks failed! Commit blocked."
+    fail "❌ Checks failed. Commit blocked."
     exit 1
   }
 fi
 
-echo "✅ All checks passed!"
+success "✅ All checks passed."
