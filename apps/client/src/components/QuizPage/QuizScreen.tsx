@@ -136,13 +136,17 @@ const QuizScreen = ({
           question={allQuestions[currentQuizIndex]}
           currentQuestion={currentQuizIndex + 1}
           totalQuestion={allQuestions?.length}
+          currentAnswer={markedAnswer[currentQuizIndex]}
+          onBack={() => {
+            setCurrentQuizIndex(index => Math.max(index - 1, 0));
+          }}
           setAnswer={(index: MarkedAnswer) => {
             setMarkedAnswer(arr => {
               const newArray = [...arr];
               newArray[currentQuizIndex] = index;
               return newArray;
             });
-            setCurrentQuizIndex(currentQuizIndex + 1);
+            setCurrentQuizIndex(index => index + 1);
           }}
         />
       )}

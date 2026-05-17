@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, X } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock3, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { QuizQuestion } from "@quizlytics/types";
@@ -12,6 +12,8 @@ interface QuizProps {
   question?: QuizQuestion;
   currentQuestion: number;
   totalQuestion: number;
+  currentAnswer?: MarkedAnswer;
+  onBack?: () => void;
   setAnswer: (index: MarkedAnswer) => void;
 }
 
@@ -21,6 +23,8 @@ const Quiz = ({
   question,
   currentQuestion,
   totalQuestion,
+  currentAnswer,
+  onBack,
   setAnswer,
 }: QuizProps) => {
   const router = useRouter();
@@ -45,13 +49,14 @@ const Quiz = ({
 
   useEffect(() => {
     autoSubmittedRef.current = false;
+    setSelectedOption(typeof currentAnswer === "number" ? currentAnswer : null);
     setRemainingTime(QUESTION_SECONDS);
     const interval = setInterval(() => {
       setRemainingTime(prev => Math.max(prev - 1, 0));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [question, submitAnswer]);
+  }, [currentAnswer, question, submitAnswer]);
 
   useEffect(() => {
     if (remainingTime === 0 && !autoSubmittedRef.current) {
@@ -71,18 +76,18 @@ const Quiz = ({
 
   if (!question) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 text-center">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h1 className="text-xl font-bold text-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-background p-4 text-center">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h1 className="text-xl font-bold text-foreground">
             Question unavailable
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             This quiz question could not be loaded.
           </p>
           <Button
             type="button"
             onClick={() => router.push("/Dashboard")}
-            className="mt-5 min-h-11 rounded-xl bg-primary-color px-5 text-white"
+            className="mt-5 min-h-11 px-5"
           >
             Back to Dashboard
           </Button>
@@ -92,12 +97,12 @@ const Quiz = ({
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-3 py-5 sm:px-4">
-      <section className="relative flex w-full max-w-4xl flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-xl shadow-gray-200/60 sm:p-6">
+    <main className="flex min-h-screen items-center justify-center bg-background px-3 py-5 sm:px-4">
+      <section className="relative flex w-full max-w-4xl flex-col rounded-xl border border-border bg-card p-4 shadow-lg sm:p-6">
         <button
           type="button"
           onClick={() => setShowExitConfirm(true)}
-          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40"
+          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Close quiz"
         >
           <X size={22} aria-hidden="true" />
@@ -109,7 +114,7 @@ const Quiz = ({
               <p className="text-xs font-bold uppercase tracking-wide text-primary-color">
                 Question {currentQuestion} of {totalQuestion}
               </p>
-              <h1 className="mt-1 text-sm font-semibold text-gray-500">
+              <h1 className="mt-1 text-sm font-semibold text-muted-foreground">
                 {progressPercent}% complete
               </h1>
             </div>
@@ -117,8 +122,8 @@ const Quiz = ({
               className={cn(
                 "inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border px-3 py-2 font-mono text-sm font-bold transition",
                 isTimerWarning
-                  ? "border-red-200 bg-red-50 text-red-700"
-                  : "border-gray-200 bg-gray-50 text-gray-700"
+                  ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+                  : "border-border bg-muted text-muted-foreground"
               )}
               aria-live={isTimerWarning ? "assertive" : "polite"}
             >
@@ -130,13 +135,15 @@ const Quiz = ({
           <ProgressBar
             value={timerPercent}
             label="Question timer"
-            className="mt-2 h-1 bg-gray-100"
-            indicatorClassName={isTimerWarning ? "bg-red-500" : "bg-gray-400"}
+            className="mt-2 h-1 bg-muted"
+            indicatorClassName={
+              isTimerWarning ? "bg-red-500" : "bg-muted-foreground"
+            }
           />
         </div>
 
-        <div className="mb-6 rounded-2xl bg-gray-50 p-4 sm:p-5">
-          <h2 className="text-lg font-bold leading-7 text-gray-950 sm:text-xl">
+        <div className="mb-6 rounded-xl bg-muted p-4 sm:p-5">
+          <h2 className="text-lg font-bold leading-7 text-foreground sm:text-xl">
             {question.question}
           </h2>
         </div>
@@ -152,10 +159,10 @@ const Quiz = ({
                 onClick={() => setSelectedOption(index)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "flex min-h-14 items-center gap-3 rounded-2xl border p-4 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-color/40 sm:text-base",
+                  "flex min-h-14 items-center gap-3 rounded-xl border p-4 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-base",
                   isSelected
-                    ? "border-primary-color bg-primary-color/10 text-gray-950 shadow-sm"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-primary-color/40 hover:bg-primary-color/5"
+                    ? "border-primary-color bg-primary-color/10 text-foreground shadow-sm"
+                    : "border-border bg-card text-muted-foreground hover:border-primary-color/40 hover:bg-primary-color/5 hover:text-foreground"
                 )}
               >
                 <span
@@ -163,7 +170,7 @@ const Quiz = ({
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-black",
                     isSelected
                       ? "border-primary-color bg-primary-color text-white"
-                      : "border-gray-200 bg-gray-50 text-gray-500"
+                      : "border-border bg-muted text-muted-foreground"
                   )}
                   aria-hidden="true"
                 >
@@ -187,9 +194,19 @@ const Quiz = ({
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
+            variant="ghost"
+            onClick={onBack}
+            disabled={currentQuestion <= 1}
+            className="min-h-11 rounded-xl px-5 font-bold"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+            Back
+          </Button>
+          <Button
+            type="button"
             variant="outline"
             onClick={handleSkip}
-            className="min-h-11 rounded-xl border-gray-200 px-5 font-bold text-gray-600 hover:bg-gray-100"
+            className="min-h-11 rounded-xl px-5 font-bold"
           >
             Skip
           </Button>
@@ -197,7 +214,7 @@ const Quiz = ({
             type="button"
             onClick={handleNext}
             disabled={selectedOption === null}
-            className="min-h-11 rounded-xl bg-primary-color px-6 font-bold text-white hover:bg-primary-color/90 disabled:cursor-not-allowed"
+            className="min-h-11 rounded-xl px-6 font-bold disabled:cursor-not-allowed"
           >
             Next Question
           </Button>

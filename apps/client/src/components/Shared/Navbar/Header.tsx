@@ -39,8 +39,8 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 w-full py-2.5 z-20 transition-all duration-300 ${
         isScrolled
-          ? "bg-background text-foreground shadow-md"
-          : "bg-transparent text-white"
+          ? "border-b border-border bg-background/95 text-foreground shadow-sm backdrop-blur"
+          : "bg-background/90 text-foreground backdrop-blur"
       }`}
     >
       <div className="px-2 md:px-5 lg:px-20 mx-auto flex items-center justify-between">
@@ -68,13 +68,13 @@ const Header = () => {
             <div className="flex gap-2">
               <Link
                 href="/login"
-                className="border border-purple-600 text-primary-color font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
+                className="rounded-lg border border-primary-color px-4 py-2 text-center font-bold text-primary-color transition-colors duration-300 hover:bg-primary-color hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="border border-purple-600 hidden md:block text-secondary-color dark:text-white font-bold rounded-md px-4 py-2 text-center hover:bg-purple-600 hover:text-white transition-colors duration-300"
+                className="hidden rounded-lg border border-primary-color px-4 py-2 text-center font-bold text-foreground transition-colors duration-300 hover:bg-primary-color hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:block"
               >
                 Sign Up
               </Link>
@@ -82,7 +82,11 @@ const Header = () => {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center cursor-pointer">
+                <button
+                  type="button"
+                  className="flex items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label="Open user menu"
+                >
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     <Image
                       src={
@@ -96,16 +100,16 @@ const Header = () => {
                       className="rounded-full w-full h-full"
                     />
                   </div>
-                </div>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="bg-popover rounded-md p-4 shadow-lg absolute right-0 mt-2 z-50 w-48"
+                className="absolute right-0 z-50 mt-2 w-48 rounded-lg bg-popover p-2 shadow-lg"
                 sideOffset={10}
               >
                 <DropdownMenuLabel className="text-center font-bold text-sm truncate">
                   {name}
                 </DropdownMenuLabel>
-                <DropdownMenuItem className="bg-purple-600 flex flex-row items-center gap-2 text-white p-2 text-sm rounded-md mb-2 text-center">
+                <DropdownMenuItem className="mb-1 flex flex-row items-center gap-2 rounded-md p-2 text-sm">
                   <Link
                     href="/Dashboard/profile"
                     className="flex items-center gap-2"
@@ -113,13 +117,13 @@ const Header = () => {
                     <User className="h-4 w-4" /> Profile
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="bg-purple-600 flex flex-row items-center gap-2 text-white p-2 text-sm rounded-md mb-2 text-center">
+                <DropdownMenuItem className="mb-1 flex flex-row items-center gap-2 rounded-md p-2 text-sm">
                   <Link href="/Dashboard" className="flex items-center gap-2">
                     <LayoutDashboardIcon className="h-4 w-4" /> Dashboard
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="bg-purple-600 text-sm flex flex-row items-center gap-2 text-white p-2 rounded-md text-center cursor-pointer"
+                  className="flex cursor-pointer flex-row items-center gap-2 rounded-md p-2 text-sm text-red-600 focus:text-red-600"
                   onClick={() => signOut()}
                 >
                   <LogOut className="h-4 w-4" /> Logout

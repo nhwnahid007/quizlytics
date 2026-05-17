@@ -50,14 +50,14 @@ const Sidebar = ({
   };
 
   const Menus = [
-    { title: "Take your Quiz", route: "/Dashboard", icon: <BookOpenCheck /> },
+    { title: "Start Quiz", route: "/Dashboard", icon: <BookOpenCheck /> },
     {
-      title: "Make custom questions",
+      title: "Create Questions",
       route: "/Dashboard/customquestion",
       icon: <FileQuestion />,
     },
     {
-      title: "All Custom questions",
+      title: "Custom Questions",
       route: "/Dashboard/examinersDashboard",
       icon: <ShieldQuestion />,
     },
@@ -98,7 +98,7 @@ const Sidebar = ({
         [
           "Leaderboard",
           "My Progress",
-          "Take your Quiz",
+          "Start Quiz",
           "My Profile",
           "Quiz History",
         ].includes(menu.title)) ||
@@ -115,13 +115,16 @@ const Sidebar = ({
       >
         <div>
           <button
-            className="absolute text-3xl cursor-pointer -right-3 top-9 w-7 h-7 border-border border rounded-full bg-card text-primary-color shadow-md flex items-center justify-center hover:scale-110 transition-transform"
+            type="button"
+            className="absolute -right-3 top-9 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-border bg-card text-3xl text-primary-color shadow-md transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            aria-expanded={isSidebarOpen}
           >
             {isSidebarOpen ? (
-              <FiChevronLeft className="h-4 w-4" />
+              <FiChevronLeft className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <FiChevronRight className="h-4 w-4" />
+              <FiChevronRight className="h-4 w-4" aria-hidden="true" />
             )}
           </button>
           <div className="flex gap-x-4 items-center px-2">
@@ -137,64 +140,70 @@ const Sidebar = ({
               Quizlytics
             </Link>
           </div>
-          <ul className="pt-8 flex flex-col gap-4">
-            {Menus.map((Menu, index) => (
-              <Link href={Menu.route} key={index} className="block">
-                <li
-                  className={`flex rounded-xl transition-all duration-300 items-center group ${
-                    !isSidebarOpen
-                      ? "justify-center p-2 mx-auto w-12 h-12"
-                      : "p-3 gap-x-3"
-                  } ${
-                    isActive(Menu.route)
-                      ? "bg-primary-color text-white shadow-xl shadow-primary-color/20 scale-[1.02]"
-                      : "hover:bg-primary-color/10 text-muted-foreground hover:text-primary-color hover:scale-[1.02] hover:shadow-md"
-                  }`}
-                >
-                  <span
-                    className={`transition-colors duration-300 flex items-center justify-center ${
-                      !isSidebarOpen ? "text-2xl" : "text-xl"
+          <nav className="pt-8" aria-label="Dashboard navigation">
+            <ul className="flex flex-col gap-2">
+              {Menus.map(Menu => (
+                <li key={Menu.route}>
+                  <Link
+                    href={Menu.route}
+                    aria-current={isActive(Menu.route) ? "page" : undefined}
+                    className={`flex rounded-xl transition-all duration-300 items-center group ${
+                      !isSidebarOpen
+                        ? "justify-center p-2 mx-auto w-12 h-12"
+                        : "p-3 gap-x-3"
                     } ${
                       isActive(Menu.route)
-                        ? "text-white"
-                        : "text-muted-foreground group-hover:text-primary-color"
+                        ? "bg-primary-color text-white shadow-xl shadow-primary-color/20 scale-[1.02]"
+                        : "hover:bg-primary-color/10 text-muted-foreground hover:text-primary-color hover:scale-[1.02] hover:shadow-md"
                     }`}
                   >
-                    {Menu.icon}
-                  </span>
-                  <span
-                    className={`origin-left font-medium duration-300 ${
-                      !isSidebarOpen ? "hidden" : "block"
-                    }`}
-                  >
-                    {Menu.title}
-                  </span>
+                    <span
+                      className={`transition-colors duration-300 flex items-center justify-center ${
+                        !isSidebarOpen ? "text-2xl" : "text-xl"
+                      } ${
+                        isActive(Menu.route)
+                          ? "text-white"
+                          : "text-muted-foreground group-hover:text-primary-color"
+                      }`}
+                    >
+                      {Menu.icon}
+                    </span>
+                    <span
+                      className={`origin-left font-medium duration-300 ${
+                        !isSidebarOpen ? "hidden" : "block"
+                      }`}
+                    >
+                      {Menu.title}
+                    </span>
+                  </Link>
                 </li>
-              </Link>
-            ))}
-          </ul>
+              ))}
+            </ul>
+          </nav>
         </div>
         <div className="flex flex-col gap-y-4 mt-auto pt-10">
-          <Link href="/">
-            <li className="flex rounded-xl p-3 cursor-pointer hover:bg-muted text-muted-foreground font-medium items-center gap-x-4 transition-colors">
-              <span className="text-xl text-muted-foreground">
-                <House />
-              </span>
-              <span
-                className={`origin-left duration-200 ${
-                  !isSidebarOpen ? "hidden" : "block"
-                }`}
-              >
-                Go to Homepage
-              </span>
-            </li>
+          <Link
+            href="/"
+            className="flex rounded-xl p-3 cursor-pointer hover:bg-muted text-muted-foreground font-medium items-center gap-x-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="text-xl text-muted-foreground">
+              <House aria-hidden="true" />
+            </span>
+            <span
+              className={`origin-left duration-200 ${
+                !isSidebarOpen ? "hidden" : "block"
+              }`}
+            >
+              Go to Homepage
+            </span>
           </Link>
           <button
+            type="button"
             onClick={() => signOut()}
-            className="flex rounded-xl p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-600 font-medium items-center gap-x-4 transition-colors"
+            className="flex rounded-xl p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-600 font-medium items-center gap-x-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="text-xl text-muted-foreground group-hover:text-red-600">
-              <LogOut />
+              <LogOut aria-hidden="true" />
             </span>
             <span
               className={`origin-left duration-200 ${
