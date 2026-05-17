@@ -54,7 +54,12 @@ type HistoryByUserAiValidated = ValidatedRequestData & {
 };
 
 type GenerateQuizValidated = ValidatedRequestData & {
-  query: { category: string; skill: string };
+  query: {
+    category: string;
+    skill: string;
+    count: number;
+    includeExplanations: boolean;
+  };
 };
 
 type LinkQuizQueryValidated = ValidatedRequestData & {
@@ -239,7 +244,14 @@ export const generateQuiz = async (
   const { query } = getValidated<GenerateQuizValidated>(res);
   res
     .status(200)
-    .json(await quizService.generateQuiz(query.category, query.skill));
+    .json(
+      await quizService.generateQuiz(
+        query.category,
+        query.skill,
+        query.count,
+        query.includeExplanations
+      )
+    );
 };
 
 export const generateQuizByLink = async (

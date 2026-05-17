@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const booleanQuerySchema = z.preprocess(value => {
+  if (typeof value !== "string") return value;
+  if (value.toLowerCase() === "true") return true;
+  if (value.toLowerCase() === "false") return false;
+  return value;
+}, z.boolean());
+
 const quizHistoryBodySchema = z
   .object({
     userId: z.string().uuid().optional().nullable(),
@@ -78,6 +85,8 @@ export const generateQuizQuerySchema = z
   .object({
     category: z.string().trim().min(1).max(120),
     skill: z.string().trim().min(1).max(60),
+    count: z.coerce.number().int().min(1).max(20).default(10),
+    includeExplanations: booleanQuerySchema.default(false),
   })
   .strict();
 

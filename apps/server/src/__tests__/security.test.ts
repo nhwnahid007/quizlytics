@@ -122,6 +122,83 @@ test("strict validators reject extra request fields", async () => {
   );
 });
 
+test("quiz generation count query is coerced and bounded", async () => {
+  const { generateQuizQuerySchema } =
+    await import("../validators/quiz.validator.js");
+
+  const defaultCount = generateQuizQuerySchema.safeParse({
+    category: "JavaScript",
+    skill: "beginner",
+  });
+  assert.equal(defaultCount.success, true);
+  if (defaultCount.success) {
+    assert.equal(defaultCount.data.count, 10);
+    assert.equal(defaultCount.data.includeExplanations, false);
+  }
+
+  const customCount = generateQuizQuerySchema.safeParse({
+    category: "JavaScript",
+    skill: "beginner",
+    count: "5",
+    includeExplanations: "true",
+  });
+  assert.equal(customCount.success, true);
+  if (customCount.success) {
+    assert.equal(customCount.data.count, 5);
+    assert.equal(customCount.data.includeExplanations, true);
+  }
+
+  assert.equal(
+    generateQuizQuerySchema.safeParse({
+      category: "JavaScript",
+      skill: "beginner",
+      count: "21",
+    }).success,
+    false
+  );
+});
+
+test("quiz cache key normalizes category and skill", async () => {
+  const { normalizeQuizCacheKey } = await import("../services/quiz.service.js");
+
+  assert.equal(
+    normalizeQuizCacheKey(" JavaScript ", " Beginner ", 5),
+    normalizeQuizCacheKey("javascript", "beginner", 5)
+  );
+});
+
+test("generated quiz defaults add ids and optional fallback explanations", async () => {
+  const { addGeneratedQuizDefaults } =
+    await import("../services/quiz.service.js");
+
+  const quizWithoutExplanation = addGeneratedQuizDefaults([
+    {
+      question: "Which option is true?",
+      options: ["A", "B", "C", "D"],
+      correct_answer: "2",
+    },
+  ]);
+
+  assert.equal(quizWithoutExplanation[0]?.id, "1");
+  assert.equal(quizWithoutExplanation[0]?.correct_answer, "2");
+  assert.equal(quizWithoutExplanation[0]?.explain, undefined);
+
+  const quiz = addGeneratedQuizDefaults(
+    [
+      {
+        question: "Which option is true?",
+        options: ["A", "B", "C", "D"],
+        correct_answer: "2",
+      },
+    ],
+    true
+  );
+
+  assert.equal(quiz[0]?.id, "1");
+  assert.equal(quiz[0]?.correct_answer, "2");
+  assert.equal(quiz[0]?.explain, "Correct answer is option 3: C.");
+});
+
 test("plaintext password fallback does not work", async () => {
   const { verifyPassword } = await import("../services/auth.service.js");
   const hash = await bcrypt.hash("correct-password", 4);
