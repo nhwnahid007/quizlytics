@@ -22,24 +22,24 @@ else
 fi
 
 section() {
-  printf "\n%s%s%s\n" "$bold$cyan" "$1" "$reset"
-  printf "%s\n" "${dim}----------------------------------------${reset}"
+  printf "\n%s⚡ %s%s\n" "$bold$cyan" "$1" "$reset"
+  printf "%s\n" "${dim}────────────────────────────────────────────────────────────────────────${reset}"
 }
 
 info() {
-  printf "%s%s%s\n" "$blue" "$1" "$reset"
+  printf "%sℹ️  %s%s\n" "$blue" "$1" "$reset"
 }
 
 success() {
-  printf "%s%s%s\n" "$green" "$1" "$reset"
+  printf "%s✅ %s%s\n" "$green" "$1" "$reset"
 }
 
 warn() {
-  printf "%s%s%s\n" "$yellow" "$1" "$reset"
+  printf "%s⚠️  %s%s\n" "$yellow" "$1" "$reset"
 }
 
 fail() {
-  printf "%s%s%s\n" "$red" "$1" "$reset"
+  printf "%s❌ %s%s\n" "$red" "$1" "$reset"
 }
 
 # 2. Resolve fast local binaries (Avoids slow npx lookup)
@@ -72,7 +72,7 @@ section "Pre-commit checks"
 staged_files="$(git diff --cached --name-only --diff-filter=ACMR)"
 
 if [ -z "$staged_files" ]; then
-  warn "No staged files. Skipping checks."
+  warn "No staged files found. Skipping all checks."
   exit 0
 fi
 
@@ -132,7 +132,7 @@ fi
 
 # Run Lint
 if [ -n "$lint_filters" ] || [ "$global_changed" = true ]; then
-  section "Lint"
+  section "Linting Code"
   info "Targets: $lint_names"
   if [ "$global_changed" = true ]; then
     $TURBO_BIN run lint || {
@@ -150,7 +150,7 @@ else
 fi
 
 # Format with Prettier
-section "Format"
+section "Code Formatting"
 prettier_files=""
 checked_count=0
 
@@ -184,7 +184,7 @@ else
   
   # Re-stage all formatted files to git index
   eval "git add $prettier_files"
-  success "Format complete: $checked_count files checked and formatted successfully."
+  success "Format complete: $checked_count files checked and formatted successfully!"
 fi
 
-success "All checks passed."
+success "All pre-commit checks passed successfully! 🚀 Ready to commit."
