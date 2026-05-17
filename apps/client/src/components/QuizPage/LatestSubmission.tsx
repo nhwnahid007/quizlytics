@@ -147,7 +147,7 @@ const LatestSubmission = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-24">
         {/* Top Header with Back Button */}
         <div className="flex items-center justify-between mb-8">
@@ -172,7 +172,7 @@ const LatestSubmission = ({
         </div>
 
         {/* Title and Summary Card */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-border mb-12 relative overflow-hidden">
+        <div className="bg-card rounded-3xl p-8 shadow-sm border border-border mb-12 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-5">
             <Trophy size={120} />
           </div>
@@ -184,8 +184,8 @@ const LatestSubmission = ({
 
             {!isLoading && submissionQuestions.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-primary-color/5 rounded-2xl p-4 border border-primary-color/10">
-                  <div className="flex items-center gap-3 text-primary-color mb-1">
+                <div className="bg-primary-color/5 dark:bg-primary-color/10 rounded-2xl p-4 border border-primary-color/10 dark:border-primary-color/20">
+                  <div className="flex items-center gap-3 text-primary-color dark:text-purple-400 mb-1">
                     <Trophy className="h-5 w-5" />
                     <span className="text-sm font-semibold">Score</span>
                   </div>
@@ -197,20 +197,22 @@ const LatestSubmission = ({
                   </p>
                 </div>
 
-                <div className="bg-green-50 rounded-2xl p-4 border border-green-100">
-                  <div className="flex items-center gap-3 text-green-600 mb-1">
+                <div className="bg-green-50 dark:bg-green-950/20 rounded-2xl p-4 border border-green-100 dark:border-green-900/50">
+                  <div className="flex items-center gap-3 text-green-600 dark:text-green-400 mb-1">
                     <CheckCircle className="h-5 w-5" />
                     <span className="text-sm font-semibold">Correct</span>
                   </div>
-                  <p className="text-2xl font-bold text-green-700">{score}</p>
+                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                    {score}
+                  </p>
                 </div>
 
-                <div className="bg-red-50 rounded-2xl p-4 border border-red-100">
-                  <div className="flex items-center gap-3 text-red-600 mb-1">
+                <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-4 border border-red-100 dark:border-red-900/50">
+                  <div className="flex items-center gap-3 text-red-600 dark:text-red-400 mb-1">
                     <XCircle className="h-5 w-5" />
                     <span className="text-sm font-semibold">Incorrect</span>
                   </div>
-                  <p className="text-2xl font-bold text-red-700">
+                  <p className="text-2xl font-bold text-red-700 dark:text-red-300">
                     {submissionQuestions.length - score}
                   </p>
                 </div>
@@ -224,7 +226,7 @@ const LatestSubmission = ({
             {[0, 1, 2].map(item => (
               <div
                 key={item}
-                className="rounded-3xl border border-border bg-white p-6 shadow-sm"
+                className="rounded-3xl border border-border bg-card p-6 shadow-sm"
               >
                 <SkeletonBlock className="mb-4 h-5 w-32" />
                 <SkeletonBlock className="mb-5 h-7 w-full" />
