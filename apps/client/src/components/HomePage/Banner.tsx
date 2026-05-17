@@ -74,11 +74,11 @@ const Banner = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-background text-foreground">
+    <section className="relative overflow-hidden bg-transparent text-foreground">
       <div className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block">
-        <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-primary-color/10 to-transparent" />
-        <div className="absolute left-10 top-36 h-40 w-40 rotate-12 rounded-[2rem] border border-border bg-card/70 shadow-sm" />
-        <div className="absolute right-16 top-32 h-36 w-36 -rotate-12 rounded-[2rem] border border-border bg-card/70 shadow-sm" />
+        <div className="absolute inset-x-0 top-0 h-72 bg-linear-to-b from-primary-color/10 to-transparent" />
+        <div className="absolute left-10 top-36 h-40 w-40 rotate-12 rounded-4xl border border-border bg-card/60 shadow-sm backdrop-blur animate-float" />
+        <div className="absolute right-16 top-32 h-36 w-36 -rotate-12 rounded-4xl border border-border bg-card/60 shadow-sm backdrop-blur animate-float-delayed" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 lg:px-8">
@@ -144,7 +144,7 @@ const Banner = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 h-24 w-full bg-linear-to-t from-background to-transparent" />
     </section>
   );
 };
